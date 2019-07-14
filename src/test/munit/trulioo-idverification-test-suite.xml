@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="trulioo-idverification-test-suite.xml" />
+
+	<munit:test name="trulioo-idauthentication-Test" description="Test" doc:id="6b2a47da-fbcd-4803-8a9c-85f628814577" >
+		<munit:behavior >
+			<flow-ref doc:name="Flow Reference to TruliooIDVerificationMock_Sub_Flow" doc:id="ec7c3fff-2766-4e1a-b969-1aee0ba86482" name="TruliooIDVerificationMock_Sub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {"AcceptTruliooTermsAndConditions":true,"ConfigurationName":"Identity Verification","CountryCode":"CN","DataFields":{"Document":{"DocumentFrontImage":"/9j/4QAYRXhpZgAASUk=","DocumentBackImage":"/9j/4QAYRXhpZgAASUk=","DocumentType":"Passport/DrivingLicence/IdentityCard"}}}]' doc:name="Set Payload" doc:id="f92f89c3-34fe-4b56-9a21-dabf08f3233a" mimeType="application/json"/>
+			<flow-ref doc:name="Flow-ref to post:\process\customerverification\truliooauthentication:velo-process-api-config" doc:id="69e90edf-f9a3-4cc0-90cb-1ca9a6d60792" name="post:\process\customerverification\truliooauthentication:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Response" doc:id="1c49a2ac-e577-449a-8cd1-1fc26015c848" expression="#[payload.data]" is='#[MunitTools::equalTo({"TransactionID":"4cb32b42-e2a5-44c4-9a72-509ae962b007","UploadedDt":"2019-01-28T10:04:58","CountryCode":"CN","ProductName":"IdentityVerification","Record":{"TransactionRecordID":"154d6a8b-aa4e-4ef0-8618-f349fd58ad8f","RecordStatus":"match","DatasourceResults":[{"DatasourceName":"BankCard2","DatasourceFields":[],"AppendedFields":[],"Errors":[{"Code":"1001","Message":"Missingrequiredfield:MobileNumber"},{"Code":"1001","Message":"Missingrequiredfield:BankAccountNumber"}],"FieldGroups":[]},{"DatasourceName":"ChinaNationalID","DatasourceFields":[{"FieldName":"ProvinceOfIssue","Status":"missing"},{"FieldName":"DayOfBirth","Status":"match"},{"FieldName":"DistrictOfIssue","Status":"missing"},{"FieldName":"MonthOfBirth","Status":"match"},{"FieldName":"CountyOfIssue","Status":"missing"},{"FieldName":"YearOfBirth","Status":"match"},{"FieldName":"FirstSurName","Status":"match"},{"FieldName":"FullName","Status":"match"},{"FieldName":"FirstGivenName","Status":"match"},{"FieldName":"nationalid","Status":"match"},{"FieldName":"CityOfIssue","Status":"missing"}],"AppendedFields":[],"Errors":[],"FieldGroups":[]},{"DatasourceName":"MobileID","DatasourceFields":[],"AppendedFields":[],"Errors":[{"Code":"1001","Message":"Missingrequiredfield:MobileNumber"}],"FieldGroups":[]}],"Errors":[],"Rule":{"RuleName":"RuleScriptChina1","Note":"Scriptmanuallycreated"}},"Errors":[]})]' message="Request Failed"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="trulioo-idauthentication-Exception-Test" description="Test" doc:id="56b5b1f9-eca1-49aa-898b-32a4b41d135a" >
+		<munit:behavior >
+			<flow-ref doc:name="TruliooIDVerificationExceptionMock_Sub_Flow" doc:id="e860e4f4-2864-474f-add5-b50aee32a2bc" name="TruliooIDVerificationExceptionMock_Sub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {"AcceptTruliooTermsAndConditions":true,"ConfigurationName":"Identity Verification","CountryCode":"CN","DataFields":{"Document":{"DocumentFrontImage":"/9j/4QAYRXhpZgAASUk=","DocumentBackImage":"/9j/4QAYRXhpZgAASUk=","DocumentType":"Passport/DrivingLicence/IdentityCard"}}}]' doc:name="Set Payload" doc:id="4a815305-ca28-4334-a84e-d1c2a72537ab" mimeType="application/json"/>
+			<flow-ref doc:name="Flow-ref to post:\process\customerverification\truliooauthentication:velo-process-api-config" doc:id="9b6657e1-f17f-4af9-a0df-5f1f72701294" name="post:\process\customerverification\truliooauthentication:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="7f8db70a-af5e-4c10-ba3b-f1e403e61b5e" message="Payload"/>
+			<munit-tools:assert-that doc:name="Assert Response" doc:id="707fe47f-e0c1-4e1e-bf20-adcde3ebc79a" expression="#[vars.exceptionFlag]" is='#[MunitTools::equalTo("true")]' message="Request Failed"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>

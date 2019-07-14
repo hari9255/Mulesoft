@@ -1,0 +1,16 @@
+{
+    "data": {
+        "ApplicationId": "35650bbd-4947-45c4-9113-76a5ce901d5a",
+        "ApplicationStatus": "Approved",
+        "CaseNumber": "123456",
+        "CustomerNumber": "789456",
+        "AccountNumber": 178013000,
+        "RequestUUID": "35650bbd-4947-45c4-9113-76a5ce901d5a",
+        "ErrorMessageList": []
+    },
+    "result": {
+        "success": true,
+        "code": "200",
+        "message": "Success"
+    }
+}

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="idauthcheckflow" doc:id="ecbdee75-c663-4f25-9ff6-3fd473f934e2" >
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="6c1c7dd8-082d-4a64-8de7-d7c3eee03cf1" message="Request UUID #[correlationId] Flow Name #[flow.name]::IdAuthenticationResponse Object     ::::::::::::::::: #[payload.IdAuthenticationResponse]"/> -->
+		<json-logger:logger doc:name="IdAuthenticationResponse Object  " doc:id="62da4929-05b1-4347-b94f-de25725d2662" config-ref="JSON_Logger_Config" message="IdAuthenticationResponse Object  " priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	IdAuthenticationResponse: payload.IdAuthenticationResponse
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<try doc:name="Try" doc:id="414aaf1e-9314-44bb-89f3-e08e18780a52" >
+				
+				<ee:transform doc:name="Set IDAuthenticationResponse Variable" doc:id="997781e4-0cc9-448b-adb5-47fc94fa6b2a">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+					<ee:set-variable variableName="IdAuthenticationResponse" ><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+payload.IdAuthenticationResponse]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			<ee:transform doc:name="ID Auth Record Status" doc:id="965a7040-13c6-408e-8543-e683e626675f">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="idAuthRecordStatus"><![CDATA[%dw 2.0
+output application/java
+var recStatus = ((sizeOf ((vars.IdAuthenticationResponse default []) reduce ((IdAuthRespObj,DocTypeMap={
+}) -> 
+	(DocTypeMap - (IdAuthRespObj.DocumentType)) ++ {
+	(IdAuthRespObj.DocumentType) : IdAuthRespObj.Record.RecordStatus
+}	
+) filterObject ($ == "nomatch") )) == 0)
+---
+if (recStatus == true)  "Pass"
+else
+	"Fail"]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f0cd61d4-c474-4556-8c92-31e54c790ad6" >
+				<flow-ref doc:name="api-exceptions-response-build" doc:id="21c6cfaf-86de-4993-9e99-d214e7bea64e" name="api-exceptions-response-build"/>
+					<set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Exception Variable" doc:id="e73969d7-fb1f-4df4-af27-82945129e745" variableName="truliooIdAuthenticationException" />
+					<json-logger:logger doc:name="Exception Logger" doc:id="d412e095-4d8a-4e19-b36a-451f0e5b6b1e" config-ref="JSON_Logger_Config" message="TruliooIdAuthenticationException" priority="DEBUG" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	truliooIdAuthenticationException: vars.truliooIdAuthenticationException
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<set-variable value="true" doc:name="SetExceptionFlag" doc:id="3897a602-befe-424d-ab43-d1a885cbd424" variableName="exceptionFlag"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="c7b833f0-4bba-446f-bc04-8f3eef7d4e7a" message="Request UUID #[correlationId] Flow Name #[flow.name]::idAuthRecordStatus for ApplicationId #[vars.ApplicationId] is #[vars.idAuthRecordStatus]"/> -->
+		<json-logger:logger doc:name="idAuthRecordStatus" doc:id="b93af4c8-bdd1-4fbd-ac26-cf93cee92963" config-ref="JSON_Logger_Config" message="idAuthRecordStatus" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	ApplicationId: vars.ApplicationId,
+ 	idAuthRecordStatus: vars.idAuthRecordStatus
+}]]]></json-logger:content>
+		</json-logger:logger>
+	</flow>
+	<flow name="trulioo-idauthentication-system-api-call-flow" doc:id="6325b976-c507-4800-b8e3-59ab002fc927">
+		<logger level="INFO" doc:name="Logger"
+			doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Request UUID #[correlationId] Flow Name #[flow.name]::Request Body #[payload]" />
+		<try doc:name="Try" doc:id="c7a9d7e7-68c6-4262-85a9-2b328309808f" >
+			<json-logger:logger doc:name="Trulioo Id Auth Before Request" doc:id="c7df45a5-70ff-4fb3-94eb-d4e3ae29572f" config-ref="JSON_Logger_Config" message="Trulioo Id Auth Before Request" tracePoint="BEFORE_REQUEST" endpoint="POST:/${customerVerificationFlow.truliooIdAuth.path}"/>
+			<http:request method="POST" doc:name="Request" doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" path="/${customerVerificationFlow.truliooIdAuth.path}" target="truliooidauth" targetValue="#[output application/json --- payload]" config-ref="HTTPS_System_API_Config" responseTimeout="${http.request.timeout}">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+			<json-logger:logger doc:name="Trulioo Id Auth After Request" doc:id="08625d80-e4f1-49c5-94b2-a52ee2b5f509" config-ref="JSON_Logger_Config" message="Trulioo Id Auth After Request" tracePoint="AFTER_REQUEST" endpoint="/${customerVerificationFlow.truliooIdAuth.path}" status="#[vars.'httpStatus']"/>
+			<logger level="INFO" doc:name="Logger" doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Request UUID #[correlationId] Flow Name #[flow.name]::Response : #[vars.truliooidauth]" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="72585937-a8da-4ac9-ac72-8c5e2d7416df" >
+				<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build" />
+					<set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Exception Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="truliooIdAuthenticationException" />
+					<logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Request UUID #[correlationId] Flow Name #[flow.name]::Exception Found in truliooIdAuthenticationException :::::::: #[vars.truliooIdAuthenticationException]" />
+					<set-variable value="true" doc:name="SetExceptionFlag" doc:id="ca234502-c9dd-4d8f-a6d0-c66f8bebaafb" variableName="exceptionFlag"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<set-payload value="#[vars.truliooidauth]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<flow-ref doc:name="global-return-response-build" doc:id="464485ff-6096-4846-aaa8-be4b67cd4675"
+			name="global-return-response-build" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="8c6beeab-1a98-40e1-8a9b-df9d5991c4cb">
+				<flow-ref doc:name="generic-exception" doc:id="87c0af25-0aa5-4ecb-a70b-ecd38c4e2e35"
+					name="generic-exception" />
+			
+</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

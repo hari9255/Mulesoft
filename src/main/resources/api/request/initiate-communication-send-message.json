@@ -1,0 +1,23 @@
+{
+  "cis": "00000063510",
+  "Destination": "CustomerPreferences",
+  "CustomerPreferences": {
+    "correlationId": "3d135dfb-8cdf-42e2-9e9e-bb9f6a0d11d5",
+    "Activity": "WireValidation-Payments",
+    "channel": "Salesforce",
+    "campaignId": "",
+    "partnerId": "",
+    "language": "",
+    "country": "USA",
+    "CommunicationMessageAttributes": [
+      {
+        "key": "message",
+        "value": "test message 2"
+      },
+      {
+        "key": "mobile",
+        "value": "+4KWbMd5Bffn"
+      }
+    ]
+  }
+}

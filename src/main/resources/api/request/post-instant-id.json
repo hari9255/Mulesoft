@@ -1,0 +1,41 @@
+{
+  "Settings": {
+    "AccountNumber": "45065",
+    "Workflow": "public.testing.redherrings.open",
+    "Mode": "testing",
+    "Reference": "Reference1",
+    "Locale": "en_US",
+    "Venue": "online"
+  },
+  "Person": {
+    "Name": {
+      "FirstName": "John",
+      "LastName": "Doe"
+    },
+    "Addresses": [
+      {
+        "StreetAddress1": "3135 S Durango Ave APT 5", 
+        "City": "Los Angeles",
+        "State": "CA",
+        "Zip5": "90034",
+        "Country": "US",
+        "Context": "primary"
+      }
+    ],
+    "SSN": {
+      "Number": "213527485",
+      "Type": "ssn9"
+    },
+    "DateOfBirth": {
+      "Year": "1987",
+      "Month": "3",
+      "Day": "14"
+    },
+    "Phones": [
+      {
+        "Number": "8189347191",
+        "Context": "mobile"
+      }
+    ]
+  }
+}

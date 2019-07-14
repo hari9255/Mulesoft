@@ -1,0 +1,489 @@
+#%RAML 1.0 DataType
+type: object
+properties:
+  ApplicantType:
+    type: string
+    enum:
+    - NRA
+    - NONNRA
+    displayName: Applicanttype        
+    required: false
+  ApplicationId?:
+    type: string
+    displayName: Applicationid
+  CustomerInformation:
+    type: object
+    properties:
+      DateOfBirth:
+        type: string
+        displayName: Dateofbirth
+        required: false
+      FirstName:
+        type: string
+        minLength: 2
+        displayName: Firstname
+        required: false
+      LastName:
+        type: string
+        minLength: 2
+        displayName: Lastname
+        required: false
+      MiddleInitial:
+        type: string
+        minLength: 1
+        displayName: Middleinitial
+        required: false
+      CISNumber:
+        type: string
+        displayName: Cisnumber
+        required: false
+      Title:
+        type: string
+        displayName: Title
+        enum:
+        - Mr
+        - mr
+        - Mrs
+        - mrs
+        - Ms
+        - ms
+        required: false
+      EntityType:
+        type: string
+        displayName: Entitytype
+        required: false
+      SearchName:
+        type: string
+        displayName: Searchname
+        required: false
+      PEP:
+        type: string        
+        enum:
+        - Yes
+        - No
+        displayName: Pep
+        required: false
+      CountryOfBirth:
+        type: string
+        displayName: Countryofbirth
+        required: false
+      Address:
+        type: object
+        properties:
+          StreetAddress1:
+            type: string
+            displayName: Streetaddress1
+            required: false
+          StreetAddress2:
+            type: string
+            displayName: Streetaddress2
+            required: false
+          City:
+            type: string
+            displayName: City
+            required: false
+          State:
+            type: string
+            displayName: State
+            required: false
+          Zip:
+            type: string
+            minLength: 5
+            maxLength: 6
+            pattern: "[0-9|-]+"
+            required: false
+            displayName: Customer Zip Code
+          CountryCode:
+            type: string
+            displayName: Countrycode
+            enum:
+            - USA
+            - CHN
+            required: false
+          TimeAtAddress:
+            type: object
+            properties:
+              Years:
+                type: integer                
+                displayName: Years
+                required: false
+              Month:
+                type: integer                
+                displayName: Month
+                required: false
+            displayName: Timeataddress
+            required: false
+          IsForeignAddress:
+            type: boolean            
+            displayName: Isforeignaddress
+            required: false
+        displayName: Address
+      MailingAddress:
+        type: object
+        properties:
+          StreetAddress1:
+            type: string
+            displayName: Streetaddress1
+            required: false
+          StreetAddress2:
+            type: string
+            displayName: Streetaddress2
+            required: false
+          City:
+            type: string
+            displayName: City
+            required: false
+          State:
+            type: string
+            displayName: State
+            required: false
+          Zip:
+            type: string
+            minLength: 5
+            maxLength: 6
+            pattern: "[0-9|-]+"
+            required: false
+            displayName: Mailing Zip Code
+          CountryCode:
+            type: string
+            displayName: Countrycode
+            required: false
+        displayName: Mailingaddress
+        required: false
+      SourceofFunds:
+        type: object
+        properties:
+          Source:
+            type: string
+            displayName: Source
+            required: false
+          MiscDemographic:
+            type: integer            
+            displayName: Miscdemographic
+            required: false
+          CustomerIntentforIntWireTransfer:
+            type: object
+            properties:
+              TransferServices:
+                type: boolean                
+                displayName: Transferservices
+                required: false
+              ForeignInActivity:
+                type: object
+                properties:
+                  ForeignIncomingActivity:
+                    type: boolean                    
+                    displayName: Foreignincomingactivity
+                    required: false
+                  IncomingWires:
+                    type: integer                    
+                    displayName: Incomingwires
+                    required: false
+                  IncomingWiresAmount:
+                    type: number
+                    displayName: Incomingwiresamount
+                    required: false
+                displayName: Foreigninactivity
+              ForeignOutActivity:
+                type: object
+                properties:
+                  ForeignOutgoingActivity:
+                    type: boolean                    
+                    displayName: Foreignoutgoingactivity
+                    required: false
+                  OutgoingWires:
+                    type: integer                    
+                    displayName: Outgoingwires
+                    required: false
+                  OutgoingWiresAmount:
+                    type: number
+                    displayName: Outgoingwiresamount
+                    required: false
+                displayName: Foreignoutactivity
+            displayName: Customerintentforintwiretransfer
+            required: false
+        displayName: Sourceoffunds
+      PrimaryPhoneNumber:
+        type: string
+        pattern: "[0-9|-]+"
+        displayName: Primaryphonenumber
+        required: false
+      FaxPhoneNumber:
+        type: string
+        pattern: "[0-9|-]+"
+        displayName: Faxphonenumber
+        required: false
+      SecondaryPhoneNumber:
+        type: string
+        pattern: "[0-9|-]+"
+        displayName: Secondaryphonenumber
+        required: false
+      MobilePhoneNumber:
+        type: string
+        pattern: "[0-9|-]+"
+        displayName: Mobilephonenumber
+        required: false
+      TaxNumber:
+        type: string
+        pattern: "[0-9]+"
+        displayName: Taxnumber
+        required: false
+      TaxIdType:
+        type: string
+        displayName: Taxidtype
+        required: false
+      CitizenshipCode:
+        type: string
+        enum:
+        - USA
+        - CHN
+        displayName: Citizenshipcode
+        required: false
+      W8CertificateType:
+        type: string
+        displayName: W8certificatetype
+        required: false
+      PrimaryID:
+        type: string
+        displayName: Primaryid
+        required: false
+      BranchNumber:
+        type: string
+        displayName: Branchnumber
+        required: false
+      CostCenterNumber:
+        type: integer
+        displayName: Costcenternumber
+        required: false
+      MailCode:
+        type: string
+        displayName: Mailcode
+        required: false
+      PrimaryLanguage:
+        type: string
+        displayName: Primarylanguage
+        required: false
+      PrimaryOfficerNumber:
+        type: number        
+        displayName: Primaryofficernumber
+        required: false
+      SecondaryOfficerNumber:
+        type: integer
+        displayName: Secondaryofficernumber
+        required: false
+      Gender:
+        type: string
+        enum:
+        - Female
+        - Male
+        displayName: Gender
+        required: false
+      CategoryCode1:
+        type: string
+        displayName: Categorycode1
+        required: false
+      CountryofDualCitizenship:
+        type: string
+        displayName: Countryofdualcitizenship
+        required: false
+      EmploymentDate:
+        type: string
+        displayName: Employmentdate
+        required: false
+      EmploymentOrSchool:
+        type: string
+        displayName: Employmentorschool
+        required: false
+      Ethnicity:
+        type: string
+        displayName: Ethnicity
+        required: false
+      MaritalStatus:
+        type: string
+        displayName: Maritalstatus
+        required: false
+      MothersMaidenName:
+        type: string
+        displayName: Mothersmaidenname
+        required: false
+      Occupation:
+        type: string
+        displayName: Occupation
+        required: false
+      W8CertificateDate:
+        type: string
+        displayName: W8certificatedate
+        required: false
+      Identification:
+        type: object
+        properties:
+          Status:
+            type: string
+            displayName: Status
+            required: false
+          IsTINAppliedFor:
+            type: boolean
+            displayName: Istinappliedfor
+            required: false
+          NonDocumentaryIdentificationInformation:
+            type: string
+            displayName: Nondocumentaryidentificationinformation
+            required: false
+          IdentificationInformation1:
+            type: object
+            properties:
+              Type:
+                type: string
+                displayName: Type
+                required: false
+              Number:
+                type: string
+                displayName: Number
+                required: false
+              IssuingEntity:
+                type: string
+                displayName: Issuingentity
+                required: false
+              IssuingLocation:
+                type: string
+                displayName: Issuinglocation
+                required: false
+              IssueDate:
+                type: string
+                displayName: Issuedate
+                required: false
+              ExpirationDate:
+                type: string
+                displayName: Expirationdate
+                required: false
+            displayName: Identificationinformation1
+            required: false
+          IdentificationInformation2:
+            type: object
+            properties:
+              Type:
+                type: string
+                displayName: Type
+                required: false
+              Number:
+                type: string
+                displayName: Number
+                required: false
+              IssuingEntity:
+                type: string
+                displayName: Issuingentity
+                required: false
+              IssuingLocation:
+                type: string
+                displayName: Issuinglocation
+                required: false
+              IssueDate:
+                type: string
+                displayName: Issuedate
+                required: false
+              ExpirationDate:
+                type: string
+                displayName: Expirationdate
+                required: false
+            displayName: Identificationinformation2
+            required: false
+        displayName: Identification
+      EmailAddress:
+        type: string
+        displayName: Emailaddress
+        required: false
+    displayName: Customerinformation
+    required: false
+  Promotions:
+    type: object
+    properties:
+      Status:
+        type: string
+        enum:        
+        - Finished        
+        - New
+        displayName: Status
+        required: false
+      PromoCode:
+        type: string
+        displayName: Promocode
+        required: false
+      OnboardingInvitation:
+        type: object
+        properties:
+          EmailAddress:
+            type: string
+            displayName: Emailaddress
+            required: false
+          PhoneNumber:
+            type: string
+            displayName: Phonenumber
+            required: false
+        displayName: Onboardinginvitation
+    displayName: Promotions
+  AccountInformation:
+    type: object
+    properties:
+      AccountType:
+        type: string
+        enum:
+        - CHK_I_PERS_PREMIER
+        - SVG_PERS_PREM_SAVINGS_STMT
+        - CUP_CARD
+        displayName: Accounttype
+        required: false
+      DepositAccount:
+        type: object
+        properties:
+          WithholdingIndicator:
+            type: string
+            displayName: Withholdingindicator
+            required: false
+          UserCode:
+            type: string
+            displayName: Usercode
+            required: false
+          StatusCodes:
+            type: array
+            displayName: Statuscodes
+            required: false
+          BulkFileType:
+            type: string
+            displayName: Bulkfiletype
+            required: false
+        displayName: Depositaccount
+      CardAccount?:
+        type: object
+        properties:
+          CardNameLine1:
+            type: string
+            displayName: CardNameLine1
+            required: false
+        displayName: Cardaccount
+      CustomerToAccountRelationship:
+        type: object
+        properties:
+          Customer1AccountRelationshipCode:
+            type: string
+            displayName: Customer1accountrelationshipcode
+            required: false
+          Customer1AccountAssociationType:
+            type: string
+            displayName: Customer1accountassociationtype
+            required: false
+          Customer2AccountAssociationType:
+            type: string
+            displayName: Customer2accountassociationtype
+            required: false
+          NumberOfStatementCopies:
+            type: integer
+            displayName: Numberofstatementcopies
+            required: false
+          AddressLineOfTINOwner:
+            type: integer
+            displayName: Addresslineoftinowner
+            required: false
+        displayName: Customertoaccountrelationship
+    displayName: Accountinformation
+displayName: Case Approved Submit Request
+example: !include /api/request/post-case-approved-submission.json

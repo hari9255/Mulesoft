@@ -1,0 +1,14 @@
+{
+    "data": {
+        "CaseNumber": "CAS-01563-S5L7Z1",
+        "ApplicationId": "a04m000000BAcfJAAT",
+        "Error": {
+            "Message": null
+        }
+    },
+    "result": {
+        "success": true,
+        "code": "200",
+        "message": "Application declined. Pinpoint Authentication Failed. Case Created with declined status."
+    }
+}

@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="caseSynergy" format="json">
+      <types:example format="json" location="examples/caseSynergy.json"/>
+    </types:type>
+    <types:type name="caseFis" format="json">
+      <types:example format="json" location="examples/caseFis.json"/>
+    </types:type>
+    <types:type name="updatePromocode" format="json">
+      <types:example format="json" location="examples/caseUpdatePromocode.json"/>
+    </types:type>
+    <types:type name="applicationChecking" format="json">
+      <types:example format="json" location="examples/caseApproved.json"/>
+    </types:type>
+    <types:type name="app-submit" format="json">
+      <types:example format="json" location="examples/submit.json"/>
+    </types:type>
+    <types:type name="submit" format="json">
+      <types:example format="json" location="examples/submit-1.json"/>
+    </types:type>
+    <types:type name="synergyReq" format="json">
+      <types:example format="json" location="examples/SynergyRequest-1.json"/>
+    </types:type>
+    <types:type name="caseReq" format="json">
+      <types:example format="json" location="examples/jsonResponse-1.json"/>
+    </types:type>
+    <types:type name="submitReq" format="json">
+      <types:example format="json" location="examples/checkingOrSavingsAccountCreation.json"/>
+    </types:type>
+    <types:type name="SubmitRequest" format="json">
+      <types:example format="json" location="examples/SubmitRequest.json"/>
+    </types:type>
+    <types:type name="caseCrtReq" format="json">
+      <types:example format="json" location="examples/jsonResponse-WithTrueID_v2-1.json"/>
+    </types:type>
+    <types:type name="pipointInput" format="json">
+      <types:example format="json" location="examples/PinpointInput.json"/>
+    </types:type>
+    <types:type name="pinpointReqData" format="json">
+      <types:example format="json" location="examples/PinPointRequiredData.json"/>
+    </types:type>
+    <types:type name="nonnra-output" format="json">
+      <types:example format="json" location="examples/output.json"/>
+    </types:type>
+    <types:type name="nonnra-input" format="json">
+      <types:example format="json" location="examples/input.json"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#b621853c-257d-4352-8dab-4b742d33dcfe">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="SubmitRequest"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="caseReq"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#7701f0be-013a-4ea7-bee8-0529de6afec4">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="pipointInput"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="pinpointReqData"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#707039e5-c85b-46cf-932d-94190771d336">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="nonnra-input"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="nonnra-output"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#38d7e885-7801-4b0e-a4b4-1e1281eea983">
+    <types:processor-declaration/>
+  </types:enrichment>
+  <types:enrichment select="#f1cdb0e5-50f3-417b-b6c3-09226e1e1c0e">
+    <types:processor-declaration/>
+  </types:enrichment>
+</types:mule>

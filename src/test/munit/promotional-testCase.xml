@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="promotional-testCase.xml" />
+	<munit:test name="promotional-testCase-updatePromotionCodeFlowTest" description="Test" doc:id="16c62f95-b349-4972-8725-cb471c0251f5" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b215e314-8cc6-4a7e-a860-5fbde3c4908f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="resPromoUpdate" value='#[output application/json --- {
+  "data": {
+    
+  },
+  "result": {
+    "success": true,
+    "code": null,
+    "message": null
+  }
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "Promotion": {
+    "Status": "New"
+  },
+  "OnboardingInvitation": {
+    "FirstName": "John",
+    "LastName": "Smith",
+    "EmailAddress": "email.address@gmail.com",
+    "PhoneNumber": "893-929-9391"
+  },
+  "RequestUUID": "9d08dc0d-86ea-4061-bc12-abd34e59d7ae"
+}]' doc:name="Set Payload" doc:id="50386524-60aa-42d8-8bf9-809b31eabc35" />
+			<ee:transform doc:name="Transform Message" doc:id="1537e86f-3641-493a-90a7-395217d6a2d1">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="attVar"><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"attributes" : {
+		"uriParams" : {
+			"promocode" : "CV0DKA0D"
+		}
+	}
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<munit:set-event doc:name="Set Event" doc:id="f235eea4-32a8-4689-8191-d8604149916f">
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attVar]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to put:\process\promotions\(promocode):application\json:velo-process-api-config" doc:id="da82e4af-da33-4044-8686-ea9e69a9ba80" name="put:\process\promotions\(promocode):application\json:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="ec743464-40ef-4cfd-bfab-4db822a20b50" expression="#[payload..success[0]]" is='#[MunitTools::equalTo(true)]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="promotional-testCase-getPromoCodeDetailFlowTest" description="Test" doc:id="c5f0991e-35b8-493f-a750-93207d15108f">
+		<munit:behavior >
+			<flow-ref doc:name="getPromoDetails" doc:id="c6f91a9f-c2c0-42c5-a808-74e8b4069165" name="getPromoDetails"/>
+			
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value="#[payload]" doc:name="Set Payload" doc:id="fc3c4259-13dd-4dc1-90f9-1641263054e5" />
+			<flow-ref doc:name="Flow-ref to get:\process\promotions\(promocode)\verify:velo-process-api-config" doc:id="7ca490a3-2b98-4cf2-b78b-bf59448f88ba" name="get:\process\promotions\(promocode)\verify:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Success" doc:id="bdf90b69-e2ad-4abb-a324-7a9fb4604f72" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

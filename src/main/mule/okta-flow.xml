@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="okta-flow-update-partner-Sub_Flow" doc:id="2cc2764d-70da-4b9f-9d84-c7daebf020bf" >
+		<ee:transform doc:name="Transform Message" doc:id="c36c1610-e6d9-4ec9-b577-aa18e24b97db" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+					<ee:set-variable variableName="oktaUserProfileRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	profile: {
+     "firstName": vars.CustomerName.FirstName[0],
+    "lastName": vars.CustomerName.LastName[0],
+    "email": payload..EmailAddress[0],
+    "login": payload..EmailAddress[0],
+    "mobilePhone": if(null != vars.primaryContactNumber[0].CountryCode and null != vars.primaryContactNumber[0].Number)
+    				vars.primaryContactNumber[0].CountryCode ++ vars.primaryContactNumber[0].Number
+    			else if (null != vars.primaryContactNumber[0].Number)
+    				vars.primaryContactNumber[0].Number
+    			else ""	,
+    CIS_Number : if (null != vars.originalPayload.CustomerInformation.CISNumber and vars.originalPayload.CustomerInformation.CISNumber != "")
+    				vars.originalPayload.CustomerInformation.CISNumber
+    			else if (null != vars.FisResponse.data.CustomerNumber and "" != vars.FisResponse.data.CustomerNumber)
+    				vars.FisResponse.data.CustomerNumber
+    			else ""	
+  }
+  /* ,
+  credentials: {
+    password : {
+      value: "secure-password"
+     }
+  }*/
+}]]></ee:set-variable>
+					<ee:set-variable variableName="oktaUserId" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	oktaUserId: payload..EmailAddress[0]
+}]]></ee:set-variable>
+				</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="OktaUpdateUserprofile" doc:id="d46bb468-21d6-4be5-aac5-1af82d8356f0" name="OktaUpdateUserprofile"/>
+	</sub-flow>
+	<sub-flow name="okta-flowSub_Flow1" doc:id="2ba64234-b4a6-4306-ac89-88f2a36723a1" >
+		<ee:transform doc:name="Transform Message" doc:id="d3576855-f55b-4ea2-ae49-b90cc6252d4f" >
+			<ee:message >
+				
+			</ee:message>
+			<ee:variables >
+					<ee:set-variable variableName="oktaUserProfileRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	profile: {
+    firstName: vars.originalPayload.CustomerInformation.FirstName,
+    lastName: vars.originalPayload.CustomerInformation.LastName ,
+    email: vars.originalPayload.CustomerInformation.EmailAddress,
+    login: vars.originalPayload.CustomerInformation.EmailAddress,
+    mobilePhone: if(null != vars.originalPayload.CustomerInformation.CountryCode and null != vars.originalPayload.CustomerInformation.MobilePhoneNumber)
+    				vars.originalPayload.CustomerInformation.CountryCode ++ vars.originalPayload.CustomerInformation.MobilePhoneNumber
+    			else if (null != vars.originalPayload.CustomerInformation.MobilePhoneNumber)
+    				vars.originalPayload.CustomerInformation.MobilePhoneNumber
+    			else ""	,
+    CIS_Number : if (null != vars.originalPayload.CustomerInformation.CISNumber and vars.originalPayload.CustomerInformation.CISNumber != "")
+    				vars.originalPayload.CustomerInformation.CISNumber
+    			else if (null != vars.FisResponse.data.CustomerNumber and "" != vars.FisResponse.data.CustomerNumber)
+    				vars.FisResponse.data.CustomerNumber
+    			else ""	
+  }
+}]]></ee:set-variable>
+					<ee:set-variable variableName="oktaUserId" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	oktaUserId: vars.originalPayload.CustomerInformation.EmailAddress
+}]]></ee:set-variable>
+				</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="OktaUpdateUserprofile" doc:id="b32175ea-0720-433e-8e39-2b6f67d60b1c" name="OktaUpdateUserprofile"/>
+	</sub-flow>
+	<flow name="okta-users" doc:id="6ce01ab6-132e-4b0c-8ae3-fd867c1dacab">
+		<!-- <logger level="INFO" doc:name="Log Incoming Payload"
+			doc:id="6f8cace1-f08a-4036-bb44-b77314c41e93" message="Request Body #[payload] Request UUID #[correlationId] Flow Name #[flow.name]" /> -->
+		<json-logger:logger doc:name="Okta User Create Request Payload" doc:id="c90aa66e-07f4-4185-af91-3b2adde13973" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT" endpoint="POST:/${okta.endpoints.user}" message="Okta User Create Request Payload">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	requestPayload: payload
+
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Okta User Create Before Request" doc:id="30e5d178-1da5-4b62-82ae-6754ba069d32" config-ref="JSON_Logger_Config" message="Okta User Create Before Request" endpoint="POST:/${okta.endpoints.user}" tracePoint="BEFORE_REQUEST">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+	
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="POST" doc:name="Request"
+			doc:id="3b17ebd1-867f-415a-81bc-812669942434" config-ref="HTTPS_System_API_Config"
+			path="/${okta.endpoints.user}" target="usersResponse"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="a9ea87ba-83c6-4366-ae85-84383f6c409a" message="Response from User Create #[vars.usersResponse] Request UUID #[correlationId] Flow Name #[flow.name]" /> -->
+		<json-logger:logger doc:name="Okta User Create After Request" doc:id="92d53f5a-e3c0-4f0e-a10b-a5c4f5aaf7ed" config-ref="JSON_Logger_Config" endpoint="POST:/${okta.endpoints.user}" tracePoint="AFTER_REQUEST" status="#[vars.'httpStatus']" message="Okta User Create After Request"/>
+		<json-logger:logger doc:name="Okta User Create Response" doc:id="5573de89-e4f5-4074-93c9-ac7600064f0b" config-ref="JSON_Logger_Config" message="Okta User Create Response" tracePoint="PRINT" endpoint="POST:/${okta.endpoints.user}" priority="DEBUG">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+	
+	usersResponse: vars.usersResponse
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.usersResponse]" doc:name="Set Payload"
+			doc:id="3a7ca476-568d-4a12-abe4-b7791d19a900" mimeType="application/json" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="0cc24cd5-39ff-4fdd-81f0-3fbd48c3d04e">
+				<flow-ref doc:name="generic-exception" doc:id="fb855816-a397-4766-998b-fc2bbcb4f94a"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="okta-verify" doc:id="6ce01ab6-132e-4b0c-8ae3-fd867c1dacab">
+		<!-- <logger level="INFO" doc:name="Log Incoming Payload"
+			doc:id="6f8cace1-f08a-4036-bb44-b77314c41e93" message="Request Body #[payload]" /> -->
+		<json-logger:logger doc:name="Okta Verify Request Payload" doc:id="2544dcb0-265b-4392-a852-d44621b801a1" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT" endpoint="POST:/${okta.endpoints.verify}" message="Okta Verify Request Payload">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	RequestBody: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Okta Verify Before Request" doc:id="33ccfc78-c165-4099-8c2a-ed87d2ca9a8d" config-ref="JSON_Logger_Config" message="Okta Verify Before Request" tracePoint="BEFORE_REQUEST" endpoint="POST:/${okta.endpoints.verify}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="POST" doc:name="Request"
+			doc:id="3b17ebd1-867f-415a-81bc-812669942434" config-ref="HTTP_Request_configuration_Okta_System"
+			path="/${okta.endpoints.verify}" target="usersResponse"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="a9ea87ba-83c6-4366-ae85-84383f6c409a" message="Response from Verify #[vars.usersResponse] " /> -->
+		<json-logger:logger doc:name="Okta Verify After Request" doc:id="55273ca7-8cc0-44a6-99b5-b9a9bfde9e70" config-ref="JSON_Logger_Config" message="Okta Verify After Request" tracePoint="AFTER_REQUEST" endpoint="POST:/${okta.endpoints.verify}" status="#[vars.'httpStatus']">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+	
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Okta Verify Response" doc:id="748ae8e8-deca-41a1-8e3d-08fdb9b325f8" config-ref="JSON_Logger_Config" endpoint="POST:/${okta.endpoints.verify}" message="Okta Verify Response" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	usersResponse: vars.usersResponse
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.usersResponse]" doc:name="Set Payload"
+			doc:id="3a7ca476-568d-4a12-abe4-b7791d19a900" mimeType="application/json" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="0cc24cd5-39ff-4fdd-81f0-3fbd48c3d04e">
+				<flow-ref doc:name="generic-exception" doc:id="fb855816-a397-4766-998b-fc2bbcb4f94a"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="okta-challengeFlow" doc:id="bb6b9b65-9669-4e11-983a-5cf225bcbd7f">
+		<json-logger:logger doc:name="Okta Challenge Request Payload" doc:id="36b4d674-9943-4bb7-9543-c15a61758dce" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT" message="Okta Challenge Request Payload" endpoint="POST:/${okta.endpoints.challenge}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	RequestBody: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Okta Challenge Before Request" doc:id="2eb3584f-e5c5-47ca-8457-12ace0365d04" config-ref="JSON_Logger_Config" message="Okta Challenge Before Request" tracePoint="BEFORE_REQUEST" endpoint="POST:/${okta.endpoints.challenge}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="POST" doc:name="Request"
+			doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" config-ref="HTTP_Request_configuration_Okta_System"
+			path="/${okta.endpoints.challenge}" target="challenge"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Response : #[vars.challenge]" /> -->
+		<json-logger:logger doc:name="Okta Challenge After Request" doc:id="42eed4da-c45a-4f28-9ff9-3e70783fe9fa" config-ref="JSON_Logger_Config" message="Okta Challenge After Request" tracePoint="AFTER_REQUEST" endpoint="POST:/${okta.endpoints.challenge}" status="#[vars.'httpStatus']">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+	
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Okta Challenge Response" doc:id="56322834-400a-406f-9a4c-a2a9a28dd12f" config-ref="JSON_Logger_Config" message="Okta Challenge Response" endpoint="POST:/${okta.endpoints.challenge}" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	challenge: vars.challenge
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.challenge]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="da76f87e-5427-49b2-ace4-a95dd8268535">
+				<flow-ref doc:name="generic-exception" doc:id="8bdc901b-b40b-49c1-bf51-151f532b9bab"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="okta-factors-sms-verifyFlow" doc:id="cb84baf8-c5e3-4f9c-9556-89b3d714a2ab">
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Request Body #[payload]" /> -->
+		<json-logger:logger doc:name="Okta Factor Sms Verify Request Payload" doc:id="0ec1ec9d-4f39-445c-94b7-b0409ba4e103" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT" endpoint="POST:/${okta.endpoints.factorsmsverify}" message="Okta Factor Sms Verify Request Payload">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	RequestBody: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Okta Factor Sms Verify Before Request" doc:id="24303de6-3fb7-4959-8e82-202595bb8e96" config-ref="JSON_Logger_Config" message="Okta Factor Sms Verify Before Request" tracePoint="BEFORE_REQUEST" endpoint="POST:/${okta.endpoints.factorsmsverify}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="POST" doc:name="Request"
+			doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" config-ref="HTTP_Request_configuration_Okta_System"
+			path="/${okta.endpoints.factorsmsverify}" target="smsVerify"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+		<!-- <logger level="INFO" doc:name="Copy_of_Logger"
+			doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Response : #[vars.smsVerify]" /> -->
+		<json-logger:logger doc:name="Okta Factor Sms Verify After Request" doc:id="ed4b1e81-15e8-4ddf-a437-70cb48e97c44" config-ref="JSON_Logger_Config" message="Okta Factor Sms Verify After Request" tracePoint="AFTER_REQUEST" endpoint="POST:/${okta.endpoints.factorsmsverify}" status="#[vars.'httpStatus']">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+	
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Okta Factor Sms Verify Response" doc:id="88a6f06e-6117-420b-af44-60825812e8fa" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT" message="Okta Factor Sms Verify Response" endpoint="POST:/${okta.endpoints.factorsmsverify}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	smsVerify: vars.smsVerify
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.smsVerify]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="da76f87e-5427-49b2-ace4-a95dd8268535">
+				<flow-ref doc:name="generic-exception" doc:id="8bdc901b-b40b-49c1-bf51-151f532b9bab"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="okta-factor-smsFlow" doc:id="36822b63-6823-43ae-9ad5-74ff2a8ca098">
+		<json-logger:logger doc:name="Okta Factor SMS Request Payload" doc:id="6baf378b-3465-438b-8c63-3f7d3eeb4ac7" tracePoint="PRINT" message='Okta Factor SMS Request Payload' config-ref="JSON_Logger_Config" priority="DEBUG" endpoint="POST:/${okta.endpoints.factorsms}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Okta Factor SMS Before Request" doc:id="9a546c60-3b8d-45fd-b501-46e172d7d919" config-ref="JSON_Logger_Config" message="Okta Factor SMS Before Request" endpoint="POST:/${okta.endpoints.factorsms}" tracePoint="BEFORE_REQUEST"/>
+		<http:request method="POST" doc:name="Request"
+			doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" config-ref="HTTP_Request_configuration_Okta_System"
+			path="/${okta.endpoints.factorsms}" target="factorSMS"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+		<json-logger:logger doc:name="Okta Factor SMS After Request" doc:id="66190f96-31d3-4c00-a03d-bbde65b9de62" config-ref="JSON_Logger_Config" message="Okta Factor SMS After Request" endpoint="POST:/${okta.endpoints.factorsms}" status="#[vars.'httpStatus']" tracePoint="AFTER_REQUEST"/>
+		<json-logger:logger doc:name="Okta Factor SMS Response" doc:id="3c48d4c8-ceac-4266-ae5a-03c12a1ae809" tracePoint="PRINT" message="Okta Factor SMS Response" config-ref="JSON_Logger_Config" priority="DEBUG" endpoint="POST:/${okta.endpoints.factorsms}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+	factorSMS: vars.factorSMS
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.factorSMS]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="da76f87e-5427-49b2-ace4-a95dd8268535">
+				<flow-ref doc:name="generic-exception" doc:id="8bdc901b-b40b-49c1-bf51-151f532b9bab"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="okta-create-user" doc:id="f02e8260-4d1a-42ee-ba38-4918b88407c1" >
+		<ee:transform doc:name="Transform Message" doc:id="3f333453-c2f3-45a5-a91f-e9a4c03a5906" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="oktaCrtUsrReq" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "profile": {
+    "firstName": vars.CustomerName.FirstName[0],
+    "lastName": vars.CustomerName.LastName[0],
+    "email": payload.CustomerInformation.EmailAddress,
+    "login": payload.CustomerInformation.EmailAddress,
+    "mobilePhone": if(null != vars.primaryContactNumber[0].CountryCode and null != vars.primaryContactNumber[0].Number)
+    				vars.primaryContactNumber[0].CountryCode ++ vars.primaryContactNumber[0].Number
+    			else if (null != vars.primaryContactNumber[0].Number)
+    				vars.primaryContactNumber[0].Number
+    			else ""	,
+    "CIS_Number": vars.FisResponse..CustomerNumber[0] default null,
+    "AccountNumber": vars.FisResponse..AccountNumber[0] default null
+  }
+} ]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<try doc:name="Try" doc:id="af33775e-7a04-45da-ad5d-ccb5dad175bd" >
+			<logger level="INFO" doc:name="Logger" doc:id="08109967-c0a8-4532-bf3c-e00473e9f2f2" message="Partner API request #[correlationId] ::::::: #[vars.oktaCrtUsrReq]"/>
+			<json-logger:logger doc:name="User Creater Okta Request Payload" doc:id="23b88545-79ac-4c38-89a7-24f87703810d" tracePoint="PRINT" message='User Creater Okta Request Payload' config-ref="JSON_Logger_Config" priority="DEBUG" endpoint="POST:/${okta.endpoints.user}">
+				<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	
+	oktaCrtUsrReq: vars.oktaCrtUsrReq
+}]]]></json-logger:content>
+			</json-logger:logger>
+			<json-logger:logger doc:name="User Creater Okta Before Request" doc:id="70cf3559-cc0b-424f-8483-a9b6a01aee5a" config-ref="JSON_Logger_Config" message="User Creater Okta Before Request" tracePoint="BEFORE_REQUEST" endpoint="POST:/${okta.endpoints.user}"/>
+			<http:request method="POST" doc:name="okta-User-create-request" doc:id="3d98d078-27b7-4349-91b7-e1e797b107cb" config-ref="HTTPS_System_API_Config" path="/${okta.endpoints.user}" responseTimeout="${http.request.timeout}" targetValue="#[output application/json --- payload]" target="oktaCrtUsrResp">
+				<http:body ><![CDATA[#[vars.oktaCrtUsrReq]]]></http:body>
+				<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+				<http:response-validator >
+					<http:success-status-code-validator values="200,400" />
+				</http:response-validator>
+		</http:request>
+			<json-logger:logger doc:name="User Creater Okta After Request" doc:id="0ede944b-4eac-47ae-bebc-ba0d8431c04a" config-ref="JSON_Logger_Config" message="User Creater Okta After Request" tracePoint="AFTER_REQUEST" endpoint="POST:/${okta.endpoints.user}" status="#[vars.'httpStatus']"/>
+			<json-logger:logger doc:name="User Create Okta Response" doc:id="ad7a9ef9-7886-43c5-8d41-f4c8053e9e98" tracePoint="PRINT" message="User Create Okta Response" config-ref="JSON_Logger_Config" priority="DEBUG" endpoint="POST:/${okta.endpoints.user}">
+				<json-logger:content><![CDATA[#[output application/json ---
+{
+	oktaCrtUsrResp: vars.oktaCrtUsrResp
+}]]]></json-logger:content>
+			</json-logger:logger>
+			<logger level="INFO" doc:name="Logger" doc:id="acead7ec-04b7-4377-9bbf-f472ddc40ada" message="Partner API request #[correlationId] ::::::: #[vars.oktaCrtUsrResp]"/>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="9f012375-6c07-47d6-8194-01334932a9f9" >
+				<logger level="INFO" doc:name="Logger" doc:id="0d912c40-2a6f-4189-a900-2740b92db40a" message="Partner API request #[correlationId] ::::::: Error in creating okta user profile"/>
+						<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build"/>
+					<set-variable value="#[vars.tempApiExceptionVar]" doc:name="SetOkatException" doc:id="58bcabb5-9773-4c6a-af81-676809955c74" variableName="oktaException"/>
+					<set-variable value="true" doc:name="Set Variable" doc:id="5e516b20-a9b9-42da-96fc-6c80565ed43b" variableName="exceptionFlag"/>
+				
+</on-error-continue>
+			</error-handler>
+		</try>
+	</flow>
+	<flow name="OktaUpdateUserprofile" doc:id="dd60eb91-a190-4e7a-8f2b-226091521adf" >
+		<logger level="INFO" doc:name="Logger" doc:id="0731946a-232d-4abd-aa1e-dbe5af9584d6" message="Request UUID #[correlationId] Flow Name #[flow.name]::Okat Update User Profile Flow"/>
+		<try doc:name="Try" doc:id="2169bc53-f7c6-425e-b75b-931292b437aa" >
+			<!-- <ee:transform doc:name="Transform Message" doc:id="04189e89-12fc-4bcb-8e28-9a92bd45bf5f" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="oktaUserProfileRequest" ><![CDATA[%dw 2.0
+output application/json
+
+{	
+	profile: {
+     "firstName": vars.CustomerName.FirstName[0],
+    "lastName": vars.CustomerName.LastName[0],
+    "email": payload..EmailAddress[0],
+    "login": payload..EmailAddress[0],
+    "mobilePhone": vars.primaryContactNumber[0].Number ,
+    CIS_Number : if (null != vars.originalPayload.CustomerInformation.CISNumber and vars.originalPayload.CustomerInformation.CISNumber != "")
+    				vars.originalPayload.CustomerInformation.CISNumber
+    			else if (null != vars.FisResponse.data.CustomerNumber and "" != vars.FisResponse.data.CustomerNumber)
+    				vars.FisResponse.data.CustomerNumber
+    			else ""	
+  }
+  /* ,
+  credentials: {
+    password : {
+      value: "secure-password"
+     }
+  }*/
+}]]></ee:set-variable>
+					<ee:set-variable variableName="oktaUserId" ><![CDATA[%dw 2.0
+output application/json
+
+{
+	oktaUserId: payload..EmailAddress[0]
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>  -->
+			<logger level="INFO" doc:name="oktaUserProfileRequest" doc:id="3385d615-4610-46e9-9007-4dab3e391516" message="Request UUID #[correlationId] Flow Name #[flow.name]::Okat Update User Profile Flow Request #[vars.oktaUserProfileRequest]" />
+			<logger level="INFO" doc:name="okta User Id" doc:id="24185222-9eee-48f3-8c7d-f9817874ca24" message="Request UUID #[correlationId] Flow Name #[flow.name]::Okta User Id Extracted from Email: #[vars.oktaUserId]"/>
+			<json-logger:logger doc:name="Okta Update Profile Before Request" doc:id="f1280ea1-4d56-4f38-abd8-5b6903a05c44" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="POST:/${okta-process.endpoints.userProfile}" message="Okta Update Profile Before Request"/>
+			<http:request method="POST" doc:name="Okta Update Profile Request" doc:id="d94e2c82-dc98-49b7-bb06-0fae3e8af283" target="oktaUserProfileResponse" config-ref="HTTP_Request_okta_process" path="/${okta-process.endpoints.userProfile}" responseTimeout="${http.request.timeout}">
+			<http:body><![CDATA[#[vars.oktaUserProfileRequest]]]></http:body>
+				<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+				<http:uri-params ><![CDATA[#[output applicaton/java
+---
+{
+	"userId" : vars.oktaUserId.oktaUserId
+}]]]></http:uri-params>
+		</http:request>
+			<json-logger:logger doc:name="Okta Update Profile After Request" doc:id="955e71c2-797e-4269-8a53-ef764fbe0b00" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="POST:/${okta-process.endpoints.userProfile}" message="Okta Update Profile After Request" status="#[vars.'httpStatus']" />
+			<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="4a5f50ea-e145-458e-9663-40b49453f1ed" >
+				<flow-ref doc:name="api-exceptions-response-build" doc:id="d099c6fe-a5e4-4603-946f-132141a5d8bb" name="api-exceptions-response-build"/>
+                    <set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Variable" doc:id="4a9a1658-3513-4a88-80ad-84d32523f27d" variableName="oktaUserProfileUpdateException"/>
+                                  <set-variable value="#[vars.oktaUserProfileUpdateException]" doc:name="Set Variable" doc:id="1b449a55-bd52-4f42-86dd-269cad9aefa8" variableName="genricException"/>
+						<logger level="INFO" doc:name="Logger" doc:id="416cc3e7-7b57-4195-8374-ebb8527b03ac" message="Request UUID #[correlationId] Flow Name #[flow.name]::Exception Found in Okta #[vars.oktaUserProfileUpdateException]"/>
+					<!-- <set-variable value="Pending" doc:name="Set Variable" doc:id="ab884cd9-2fd3-44d8-8d91-0d58124e8f3b" variableName="caseStatus"/>  -->
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="oktaUserProfileResponse" doc:id="927d95fc-bfac-4ad3-9718-23914ab527e5" message="Request UUID #[correlationId] Flow Name #[flow.name]::Okta User Profile Response #[vars.oktaUserProfileResponse]"/>
+	</flow>
+
+</mule>

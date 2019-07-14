@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="caseCreationFlow" doc:id="28013e69-9307-49bf-81ec-4acb838a77a5">
+		<json-logger:logger doc:name="Logger" doc:id="47f665e5-0707-48f7-9ac0-8a4a1511499a" message='Inside Case Creation Flow' config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT">
+		</json-logger:logger>
+		<!-- <logger level="INFO" doc:name="Inside Case Creation Flow Request Body"
+			doc:id="b7938536-c6b7-4bdd-978f-d6a8b9a4ab25" message="Inside Case Creation Flow Request Body #[payload] Request UUID #[correlationId] Flow Name #[flow.name]" /> -->
+		<try doc:name="Try" doc:id="452a3ab6-2911-443a-a985-90054022fb83" >
+			<!-- <logger level="INFO" doc:name="Logger" doc:id="317a8e11-8b23-4f29-aa11-691a650f6edd" message="TruliooIDAuthTest #[vars.IdAuthenticationResponse] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+			<json-logger:logger doc:name="Logger" doc:id="8d8ce1fa-36e3-4bb6-9b9f-11498e67dd68" message="TruliooIDAuthTest" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT">
+				<json-logger:content ><![CDATA[#[output application/json ---
+{ 
+	IdAuthenticationResponse: vars.IdAuthenticationResponse
+}]]]></json-logger:content>
+			</json-logger:logger>
+			<ee:transform doc:name="Transform Message" doc:id="1941a8a1-a6de-4d97-a579-848676b83920">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="IdAuthenticationResponseVar"><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.ApplicantType == "NONNRA")
+{
+	IdAuthenticationResponse: payload.IdAuthenticationResponse map ( idAuthenticationResponse , indexOfIdAuthenticationResponse ) -> {
+		PassThroughs: idAuthenticationResponse.PassThroughs map ( passThrough , indexOfPassThrough ) -> {
+			Data: read(passThrough.Data, "application/json"), 
+			Type: passThrough.Type
+		},
+		Products: idAuthenticationResponse.Products map ( product , indexOfProduct ) -> {
+			ExecutedStepName: product.ExecutedStepName,
+			ProductConfigurationName: product.ProductConfigurationName,
+			ProductStatus: product.ProductStatus,
+			ProductType: product.ProductType
+		},
+		Status: idAuthenticationResponse.Status
+	}
+} else vars.IdAuthenticationResponse]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3ed8691c-fa69-4ad0-b23a-94c6d1475269" >
+					<set-variable value="Bad Request for IdAuthentication" doc:name="Set Variable" doc:id="a28636b0-bb56-429c-92e2-24355871c1c8" variableName="IdAuthenticationPassException"/>
+					<logger level="INFO" doc:name="Logger" doc:id="b6c45d57-2fed-483f-97be-1f4877a02814" message="#[error] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<!-- <logger level="INFO" doc:name="IdAuthenticationResponseVar" doc:id="733f7ba9-a873-4c4a-b74f-9ad3220efd4c" message=" IdAuthenticationResponseVar   #[vars.IdAuthenticationResponseVar] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+		<json-logger:logger doc:name="Logger" doc:id="a5fa0f48-fc4b-4749-998d-78d1c8f06f24" message=" IdAuthenticationResponseVar " tracePoint="PRINT" config-ref="JSON_Logger_Config" priority="DEBUG">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	IdAuthenticationResponseVar: vars.IdAuthenticationResponseVar
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<ee:transform doc:name="Transform Message" doc:id="e1228247-11a6-43a3-a333-0327df8667d1" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="InstantIdCVIInformation" ><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "Type": if (null != payload.InstantIdCVIInformation[0].Type)
+    			payload.InstantIdCVIInformation[0].Type
+    		else if (null != vars.instantIdResponse.PassThroughs[0].Type)
+    		 	vars.instantIdResponse.PassThroughs[0].Type 
+			else "",
+    "Data": if (null != payload.InstantIdCVIInformation[0].Data)
+    			read(payload.InstantIdCVIInformation[0].Data, "application/json")
+    		else if (null != vars.instantIdResponse.PassThroughs[0].Data)
+    			read(vars.instantIdResponse.PassThroughs[0].Data, "application/json")
+    		else ""	    		 
+	}
+]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="BuildPrimaryAndMailingAddressWebUI" doc:id="800954b0-f3f6-43a8-875d-5a631fa91962" name="BuildPrimaryAndMailingAddressWebUI"/>
+		<ee:transform doc:name="BuildNonResidentAccoountInformation" doc:id="793dcdd1-94e1-4bd4-8fb0-9ba7aaf33d46" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="NonResidentAccoountInformationObject" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.IsPartnerRequest and null != payload.CustomerInformation.NonResidentAccountInformation) {
+	"SourceOfWealth": payload.CustomerInformation.NonResidentAccountInformation.SourceOfWealth default "",
+	"PurposeOfAccount": payload.CustomerInformation.NonResidentAccountInformation.PurposeOfAccount default "",
+	"IntendInternationalWires": if(vars.intendInternationalWires) "Yes" else "No",
+	"IntendIncomingWires": if(vars.intendIncomingWires) "Yes" else "No",
+	"IncomingWiresLimit": payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit default "",
+	"IntendOutgoingWires": if(vars.intendOutgoingWires) "Yes" else "No",
+	"OutgoingWiresLimit": payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit default "",
+	"VisaType": payload.CustomerInformation.NonResidentAccountInformation.VisaType default "",
+	"ForeignTaxNumber": payload.CustomerInformation.NonResidentAccountInformation.ForeignTaxNumber default "",
+	"PreferredName": payload.CustomerInformation.NonResidentAccountInformation.PreferredName default ""	
+} else null]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="4d658889-116e-4eb1-8fe0-ef9075019dd7" message="NonResidentAccountInformation Object #[vars.ApplicationId] :::::::::::::::: #[vars.NonResidentAccoountInformationObject]"/>
+		<ee:transform doc:name="Transform Message" doc:id="baaf0363-3268-4937-ab01-6c69a10079ab" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="msdTmpReq" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"CaseType": {
+		"Queue": "KnowYourCustomer",
+		"Activity": "Onboarding"
+	  },
+	"CustomerInformation": {
+		"CISNumber": null,
+		"Names": vars.partnerPayload.Customer.Names,
+		"FirstName": payload.CustomerInformation.FirstName,
+		"MiddleName": null,
+		"LastName": payload.CustomerInformation.LastName,
+		"PreferredName": payload.CustomerInformation.PreferredName,
+		"PrimaryPhoneNumber": payload.CustomerInformation.PrimaryPhoneNumber,
+		"MobilePhoneNumber": payload.CustomerInformation.MobilePhoneNumber,
+		"DateOfBirth": if (null != payload.CustomerInformation.DateOfBirth )payload.CustomerInformation.DateOfBirth else "",
+		"Addresses": if(vars.IsPartnerRequest)
+						vars.partnerPayload.Customer.Addresses default null
+					else
+		 				vars.customerWebAddress default null,
+		"ContactInformation": vars.partnerPayload.Customer.ContactInformation default null,
+//		"AccountType": if (vars.partnerPayload.Account[0].AccountType != null) vars.partnerPayload.Account.AccountType else payload.AccountInformation.AccountType default "",
+		"AccountType": payload.AccountInformation.AccountType default "",
+		TaxNumber: payload.CustomerInformation.TaxNumber,
+		TaxIdType: payload.CustomerInformation.TaxIdType,
+		ForeignTaxID: payload.CustomerInformation.ForeignTaxID,
+		CitizenshipCode: payload.CustomerInformation.CitizenshipCode,
+		"W8CertificateType": payload.CustomerInformation.W8CertificateType default "",
+		"W8CertificateDate": payload.CustomerInformation.W8CertificateDate default "",
+		"PrimaryID": payload.CustomerInformation.PrimaryID default "",
+		"NationalID": payload.CustomerInformation.ForeignTaxNumber default null,
+		"MailCode": payload.CustomerInformation.MailCode default "",
+		"PrimaryLanguage": payload.CustomerInformation.PrimaryLanguage,
+		"EmailAddress": payload.CustomerInformation.EmailAddress,
+		"AlternateEmail": payload.CustomerInformation.AlternateEmail default "",
+		"Gender": payload.CustomerInformation.Gender,
+		"CountryofDualCitizenship": payload.CustomerInformation.CountryofDualCitizenship default "",
+		"EmploymentDate": payload.CustomerInformation.EmploymentDate default "",
+		"EmploymentOrSchool": payload.CustomerInformation.EmploymentStatus default "",
+		"EmploymentStatus": payload.CustomerInformation.EmploymentOrSchool default "",
+		"Ethnicity": payload.CustomerInformation.Ethnicity default "",
+		"MaritalStatus": payload.CustomerInformation.MaritalStatus default null,
+		"MothersMaidenName": payload.CustomerInformation.MothersMaidenName default null,
+		"Occupation":payload.CustomerInformation.Occupation,
+		"Position": payload.CustomerInformation.Position default null,
+		"YearsOfEmployment": payload.CustomerInformation.YearOfEmployment default null,
+		"AnnualIncome": payload.CustomerInformation.AnnualIncome default null,
+		"TotalNetWorth": payload.CustomerInformation.TotalNetWorth default null,
+		"PrimaryBanking": payload.CustomerInformation.PrimaryBanking default null,
+		"TenPercentShareHolder": payload.CustomerInformation.TenPercentShareHolder default null,
+		"IsPoliticallyExposedPerson": payload.CustomerInformation.PEP,
+		"Identification": {
+			"IsTINAppliedFor": ""
+		},
+		"NonResidentAccoountInformation" : vars.NonResidentAccoountInformationObject default null,
+		"Partner" : if(null != vars.partnerPayload.Partner) vars.partnerPayload.Partner else null
+	},
+	"CaseDetails": {
+		"CaseNumber": null,
+		"CaseManagement": {
+		  "ApplicationId": payload.ApplicationId,		  
+		  "ApplicationStatus": vars.caseStatus,		  
+		  "ActivityStatus": vars.caseStatus
+		}
+	},
+	"CaseAlerts": {
+		"PinPointResponse": [
+			if(payload.PinPointResponse != null)
+					payload.PinPointResponse		
+				else if (vars.pinpointResponse != null and vars.pinPointStatus == "ok")
+					vars.pinpointResponse.data[1]
+				else {}
+		  ],
+		"TrueIDResponse": if(vars.ApplicantType == "NONNRA"  and vars.isCaseApprovedFlow == "false" and vars.skipTrueIDResponse == "false") {
+		    //DocAuthResult: vars.IdAuthenticationResponseVar.IdAuthenticationResponse[0].PassThroughs[0].Data.IDAuthResultResponse.AuthenticationResult.DocAuthResult default null,
+		    DocAuthResult: if(null != vars.docAuthResultSkipped )
+		    					vars.docAuthResultSkipped 
+		    				else
+		    					vars.IdAuthenticationResponseVar.IdAuthenticationResponse[0].PassThroughs[0].Data.IDAuthResultResponse.AuthenticationResult.DocAuthResult default null,	
+			DocAuthResultRescan : vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1].PassThroughs[0].Data.IDAuthResultResponse.AuthenticationResult.DocAuthResult default null,
+			DocumentExpired : if(null!=vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1])
+								vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1]..DocumentExpired[0]
+								else vars.IdAuthenticationResponseVar.IdAuthenticationResponse[0]..DocumentExpired[0] default null,
+			DocumentType: if(null!=vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1])
+							vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1].PassThroughs[0].Data.IDAuthResultResponse.AuthenticationResult.DocClassName
+							else
+							vars.IdAuthenticationResponseVar.IdAuthenticationResponse[0].PassThroughs[0].Data.IDAuthResultResponse.AuthenticationResult.DocClassName default null
+							,
+			TransactionStatus: if(null!=vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1])
+								vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1].Status.TransactionStatus
+								else
+								vars.IdAuthenticationResponseVar.IdAuthenticationResponse[0].Status.TransactionStatus default null,
+			TrueIDDetails: (vars.IdAuthenticationResponseVar.IdAuthenticationResponse default []) map ( trueId , indexOfTrueId ) -> trueId
+		} else null,
+		"OFACResponse": vars.ofacResponse,
+		"PEPResponse": vars.pepResponse,
+		"InstantIDResponse": if(vars.ApplicantType == "NONNRA" and vars.isCaseApprovedFlow == "false" and vars.IsPartnerRequest == "false" and null == vars.instantIdException.errorDescription) 		
+		vars.instantIdCaseResponse 
+		else if (null != vars.PartnerInstantIDResponse and vars.IsPartnerRequest == true) 
+    		vars.PartnerInstantIDResponse
+    	else null,
+		"TruliooAuthenticationResponse": if(vars.ApplicantType == "NRA") vars.IdAuthenticationResponseVar else null,
+		"TruliooVerificationResponse": if(vars.ApplicantType == "NRA") vars.idVerificationResp else null,
+		"IdAuthentication": null
+	},
+	"Exceptions": ([
+        {
+	      "Source": "TrueIDResponse",
+	      "Error": vars.IdAuthenticationPassException default ""
+	    },
+	    {
+	      "Source": "OFACResponse",
+	      "Error": vars.ofacException.errorDescription default ""
+	    },
+            {
+	      "Source": "PEPResponse",
+	      "Error": vars.pepException.errorDescription default ""
+	    },
+	    {
+	      "Source": "PinpointResponse",
+	      "Error": 
+		      if(null != vars.pinPointSessionExpired)
+			      vars.pinPointSessionExpired
+			  else if (vars.pinpointSystemAPIException != null)    
+			      vars.pinpointSystemAPIException
+		      else
+			      vars.pinPointException.errorDescription  default ""
+	    },
+	    {
+	      "Source": "InstantIDResponse",
+	      "Error": //vars.instantIdException.errorDescription default ""
+	      if ("error" == vars.kbaResponse.Status.TransactionStatus) 
+	      	vars.kbaResponse.Status.TransactionReasonCode.Code default ""
+	      else if (vars.instantIdException.errorDescription != null) 
+	      	vars.instantIdException.errorDescription
+	      else if (vars.verifyKBAException.errorDescription != null)
+	      	vars.verifyKBAException.errorDescription
+	      else if (null != vars.instantIdFailedException)
+	      	"InstantID trasaction status returned :"++ vars.instantIdFailedException
+	      else
+    		vars.kbaTransactionException default ""
+	      
+	    }
+	    ,
+	    {
+	    	 "Source": "TruliooAuthenticationResponse",
+             "Error":  vars.truliooIdAuthenticationException.errorDescription default ""
+	    },
+	    {
+	    	 "Source": "TruliooVerificationResponse",
+             "Error": vars.truliooIdVerificationException.errorDescription default ""
+	    },
+	    {
+             "Source": "PromoCode",
+             "Error": vars.promoUpdateException.errorDescription default ""
+         },
+         {
+             "Source": "Synergy",
+             "Error": vars.synergyUpdateException.errorDescription default ""
+         },
+         {
+             "Source": "FIS",
+             "Error": if(null != vars.fisException.errorDescription)
+             			vars.fisException.errorDescription
+                      else
+                      	vars.fisSystemAPIException.errorLst joinBy " \r\n " default ""
+          },
+          {
+          	  "Source": "Okta",
+          	  "Error": vars.oktaException.errorDescription default ""
+          },
+          {
+             "Source": "Generic",
+             "Error": vars.genericException.errorDescription default ""
+           }]) ++ if(null != vars.cupCardFailure) [vars.cupCardFailure] else []
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="77e093a8-8991-4f0a-91f8-2d865c78a557" message="Case Creation request  #[vars.msdTmpReq] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+		<logger level="INFO" doc:name="Logger" doc:id="0fd53843-e85b-413b-acbf-db6886905e2b" message="Case Creation Request #[vars.ApplicationId] :::::::::::::::: #[vars.msdTmpReq]"/>
+		<json-logger:logger doc:name="Logger" doc:id="2a19dd07-903e-4323-ae45-f417c5b9c944" message="Case Creation request" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	caseRequestPayload:vars.msdTmpReq,
+	RequestuuidTmp: correlationId
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.msdTmpReq]" doc:name="Convert Json to String" doc:id="38b2f17e-3540-4328-94d6-393ec1d0399c" mimeType="text/plain"/>
+		<ee:transform doc:name="Transform Message" doc:id="cf22fbeb-d166-45d8-823c-9a01e5029aa3" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="msdReq" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  //"CustomerId": "aaf2b032-6a55-e811-a95a-000d3a37043b",
+  //"Title": "Case Creation - Title",
+  //"JsonResponse": payload replace "\n" with ""
+  "Request": payload replace "\n" with ""
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a9b60c80-1757-4e04-ac8b-91a8667b9505" message="Case Creation Request in string format #[vars.ApplicationId]::::::::::::::::#[vars.msdReq]"/>
+		<logger level="INFO" doc:name="Case Creation Payload" doc:id="f0ca92e8-4310-4da1-bc5f-1dd20cc65de0" message="ApplicationId #[vars.ApplicationId] Case Creation Payload #[vars.msdReq] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+		<try doc:name="Try" doc:id="ad6b4704-754e-4571-b609-70f00fcfa92b" >
+			<json-logger:logger doc:name="Case Create Before Request" doc:id="ffe8898a-d32f-47bc-ad56-601095443d8e" tracePoint="BEFORE_REQUEST" message="Case Create Before Request" config-ref="JSON_Logger_Config" endpoint="POST:/${case.submitCaseRequest.path}">
+			<json-logger:content><![CDATA[#[output application/json ---
+{
+	vars: vars.msdReq
+}]]]></json-logger:content>
+		</json-logger:logger>
+			<http:request method="POST" doc:name="Case Creation" doc:id="f8c8299d-9235-4e8d-9a12-ed19f16fad98" config-ref="HTTP_MDS_Case_Creation" path="/${case.submitCaseRequest.path}" target="mdsResponse" responseTimeout="${TIMEOUT.ONEHALFMINUTE}">
+			<http:body><![CDATA[#[vars.msdReq]]]></http:body>
+			<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+			<json-logger:logger doc:name="Case Create After Request" doc:id="d5670efa-8d97-4afe-afdd-99586370ff3a" tracePoint="AFTER_REQUEST" message="Case Create After Request" config-ref="JSON_Logger_Config" endpoint="POST:/${case.submitCaseRequest.path}" status="#[vars.'httpStatus']">
+			<json-logger:content><![CDATA[#[output application/json ---
+{
+	vars: vars.mdsResponse
+}]]]></json-logger:content>
+		</json-logger:logger>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b56b0771-421b-404f-a1d8-ab9f7a0ecedf" >
+					<set-variable value='#[error.description]' doc:name="Set Variable" doc:id="55c98a1f-76a3-4ac7-993a-080cb03525ad" variableName="retSuccMes"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="Case Response" doc:id="d319d001-9777-4567-a64d-234ffdc31d22" message="ApplicationId #[vars.ApplicationId]  Case Response #[vars.mdsResponse] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+		<ee:transform doc:name="Transform Message" doc:id="c3bccca6-875c-418a-9609-2b04f3456d28">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="caseCrtResponse"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"ApplicationId": vars.ApplicationId,
+	"ApplicationStatus": vars.caseStatus,
+	"CaseNumber": vars.mdsResponse.CaseNumber,
+	"Error": vars.mdsResponse.Error
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-payload value="#[vars.caseCrtResponse]" doc:name="Set Msd Response" doc:id="23f4f28a-dcbd-40b3-87c4-6a3d220f304f" mimeType="application/json"/>
+		<flow-ref doc:name="global-return-response-build" doc:id="03469ced-0e7d-4a98-8cf5-039e02fe141c" name="global-return-response-build"/>
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="f9297dda-2125-4ac1-b0a6-b0bd11bb14dd">
+				<flow-ref doc:name="generic-exception" doc:id="28debe6a-d310-449e-b385-63217c5a58a9" name="generic-exception"/>
+
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

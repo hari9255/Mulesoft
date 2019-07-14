@@ -1,0 +1,13 @@
+{
+  "RequestUUID" : "35650bbd-4947-45c4-9113-76a5ce901d5a",
+  "CaseNumber" : "CAS-03245-X8X6Q9",
+  "Message" : {
+    "ReasonCode" : "300",
+    "ReasonDescription" : "Fraud Detected"
+  },
+  "CISNumber" : "abeodeisnsd639dfkf",
+  "AccountInformation" : {
+    "Type" : "Saving",
+    "AccountNumber" : "a12997eisnsd639dfkf"
+  }
+}

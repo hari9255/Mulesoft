@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="partner-NRA-test-suite.xml" />
+	<munit:test name="partnerNONNRASuccess-post:\process\partner\account\create:velo-process-api-configTest" description="Test" doc:id="f9fcd6df-4ca0-4063-ba9c-94b218e368de" >
+		<munit:behavior >			
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="84fd4e59-787c-4b92-9235-a8e79a56b62b" name="TruliooIDVerificationMock"/>
+			<!-- <flow-ref doc:name="OFAC-Mock" doc:id="ed4da44e-7f82-4f2e-bb7d-62041e31f87c" name="OFAC-Mock"/>
+			<flow-ref doc:name="PepMock" doc:id="fc8bc910-0f54-405e-856c-fdcdbcddf1c4" name="PepMock"/> -->
+			<flow-ref doc:name="FISCheckingAccountMock" doc:id="a82c4bd2-2dea-4d51-856b-e79101577342" name="FISCheckingAccountMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="7b0e7837-d02a-4e4c-8ba0-38a67829b867" name="MSDCaseCreationResponseMock"/>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {"ApplicationId":"APP-M-01234","RequestUUID":"18a55b4a-e65b-476f-9f1d-2ebc8e9e3d0f","MID":"OV4EYoUZsDNj+y3EIrhrJPwqIPple6/woW+IobB/9Mc=","ApplicantType":"NRA-CHN","Partner":{"PartnerId":"31000112989176","PartnerName":"WEBULL","ApplicationIp":"106.38.103.226","Channel":"Mobile","VerificationResults":"Approved"},"Operation":"Create","Accounts":[{"AccountType":"CHK_I_VELO","AccountName":"Checking-USChecking","CardHolderName1":"srihkr","CardHolderName2":"","CustomerToAccountRelationship":[{"CustomerAccountRelationshipCode":"Individual","CustomerAccountAssociationType":"Primary","NumberOfStatementCopies":0}]}],"Customer":{"Names":[{"Type":"English","FirstName":"sri","LastName":"KR","MiddleInitial":"","Title":""},{"Type":"Chinese","FirstName":"婉君","LastName":"刘","MiddleInitial":"","Title":""}],"DateOfBirth":"1990-10-26","Addresses":[{"Type":"PrimaryAddress","IsForeignAddress":true,"StreetAddress1":"erdaojiangqudongtonghuajietong","StreetAddress2":"gangweijiuzutonghuashijilin","StreetAddress3":"sheng100000","City":"","State":"","Zip":"","CountryCode":"CHN","Country":"China"},{"Type":"MailingAddress","IsForeignAddress":true,"StreetAddress1":"HaidianqusuzhoujieweiyadashaBeijingshi","StreetAddress2":"beijingshi","StreetAddress3":"","City":"","State":"","Zip":"","CountryCode":"CHN","Country":"China"},{"Type":"PrimaryChineseAddress","IsForeignAddress":true,"StreetAddress1":"浦东新区机场镇陈胡","StreetAddress2":"浦东新区机场镇陈胡","StreetAddress3":"上海市100000","City":"","State":"","Zip":"","CountryCode":"CHN","Country":"中國"},{"Type":"MailingChineseAddress","IsForeignAddress":true,"StreetAddress1":"浦东新区机场镇陈胡","StreetAddress2":"浦东新区机场镇陈胡","StreetAddress3":"上海市100000","City":"","State":"","Zip":"","CountryCode":"CHN","Country":"中國"}],"ContactInformation":[{"Type":"Primary","CountryCode":"+86","Number":"17600590000"}],"TaxIdType":"NoNumber","CampaignId":"W","CitizenshipCode":"CHN","W8CertificateType":"W8BenNoCert","PrimaryLanguage":"Chinese","EmailAddress":"sriharsha.r@brillio.com","Gender":"Female","CountryOfDualCitizenship":"","EmploymentDate":"","EmploymentOrSchool":"Employed","MaritalStatus":"Single","MothersMaidenName":"","Occupation":"ScienceOrTechnology","TenPercentShareHolder":"No","CountryResidentCode":"CHN","Position":"ADMINISTRATOR","Employer":"北京趣拿","YearEmployed":"3","AnnualIncome":"UnderFiftyThousand","TotalNetWorth":"500001-1000000USD","PrimaryBanking":"CMBC","W8CertificateDate":"2018-12-14","EsignIsAccepted":"Yes","EsignDateAccepted":"2018-12-14","EsignTimeAccepted":"06:27:53-08:00","TermsIsAccepted":"Yes","TermsDateAccepted":"2018-12-14","TermsTimeAccepted":"06:27:53-08:00","IAccepted":"Yes","IAcceptedDate":"2018-12-14","IAcceptedTime":"06:27:53-08:00","IsPoliticallyExposedPerson":"No","NonResidentAccountInformation":{"SourceOfWealth":"Employment","PurposeOfAccount":"Investment","IntendInternationalWires":true,"IntendIncomingWires":true,"IncomingWiresLimit":"ZeroToThreeThousand","IntendOutgoingWires":true,"OutgoingWiresLimit":"ZeroToThreeThousand","VisaType":"None","ForeignTaxNumber":"220503199010260526","PreferredName":""}}}]' doc:name="Set Payload" doc:id="e6bda2de-8659-4ff8-a2c3-c766c65fd173" />
+			<ee:transform doc:name="Transform Message" doc:id="671c33da-f782-45fa-becc-312371964617">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="skipTrueIDResponse"><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_PASS_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_PASS_REASONS')]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_FAIL_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_FAIL_REASONS')]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\partner\account\create:velo-process-api-config" doc:id="a74af252-08c4-4bfc-8a24-103178b3faac" name="post:\process\partner\account\create:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="8f7c96bb-3022-49ad-a58f-3dcf8847f27f" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Approved")]' message="Partner request test case failed for success scenario"/>
+			<munit-tools:assert-that doc:name="Assert that okta Id is present" doc:id="2f99d561-a5a7-4b47-8dae-95af82126985" expression="#[payload.data.OktaId]" is='#[MunitTools::notNullValue()]' message="Partner request test case failed for success scenario" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="partnerNONNRATruliooExceptionTest" description="Test" doc:id="943edcd3-337c-4cbf-a409-273ba12c60f7" >
+		<munit:behavior >			
+			<flow-ref doc:name="TruliooIDVerificationExceptionMock" doc:id="8f074225-233b-4fdf-897d-6d6be17f2f4d" name="TruliooIDVerificationExceptionMock"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="1108a4db-611d-4116-b82e-81993f71bc82" name="OFAC-Mock"/>
+			<flow-ref doc:name="PepMock" doc:id="bb2adf8c-75ce-40c7-916f-7c8383ff46f3" name="PepMock"/>
+			<flow-ref doc:name="FISCheckingAccountMock" doc:id="4e2a32a7-988a-4846-bed1-9f3a59fdf088" name="FISCheckingAccountMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="3704de07-82f7-4212-aa3f-f37b87beece3" name="MSDCaseCreationResponseMock"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="527043c8-f097-4bb3-8d9b-4493fe0ed940" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "ApplicationId": "APP-M-01234",
+  "RequestUUID": "18a55b4a-e65b-476f-9f1d-2ebc8e9e3d0f",
+  "MID": "OV4EYoUZsDNj+y3EIrhrJPwqIPple6/woW+IobB/9Mc=",
+  "ApplicantType": "NRA-CHN",
+  "Partner": {
+    "PartnerId": "31000112989075",
+    "PartnerName": "BBAE",
+    "ApplicationIp": "106.38.103.226",
+    "Channel": "Mobile",
+    "VerificationResults": "Approved"
+  },
+  "Operation": "Create",
+  "Accounts": [
+    {
+      "AccountType": "CHK_I_VELO",
+      "AccountName": "Checking-USChecking",
+      "CardHolderName1": "srihkr",
+      "CardHolderName2": "",
+      "CustomerToAccountRelationship": [
+        {
+          "CustomerAccountRelationshipCode": "Individual",
+          "CustomerAccountAssociationType": "Primary",
+          "NumberOfStatementCopies": 0
+        }
+      ]
+    }
+  ],
+  "Customer": {
+    "Names": [
+      {
+        "Type": "English",
+        "FirstName": "sri",
+        "LastName": "KR",
+        "MiddleInitial": "",
+        "Title": ""
+      },
+      {
+        "Type": "Chinese",
+        "FirstName": "??",
+        "LastName": "?",
+        "MiddleInitial": "",
+        "Title": ""
+      }
+    ],
+    "DateOfBirth": "1990-10-26",
+    "Addresses": [
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "erdaojiangqudongtonghuajietong",
+        "StreetAddress2": "gangweijiuzutonghuashijilin",
+        "StreetAddress3": "sheng100000",
+        "City": "",
+        "State": "",
+        "Zip": "",
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "HaidianqusuzhoujieweiyadashaBeijingshi",
+        "StreetAddress2": "beijingshi",
+        "StreetAddress3": "",
+        "City": "",
+        "State": "",
+        "Zip": "",
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "PrimaryChineseAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "?????????",
+        "StreetAddress2": "?????????",
+        "StreetAddress3": "???100000",
+        "City": "",
+        "State": "",
+        "Zip": "",
+        "CountryCode": "CHN",
+        "Country": "??"
+      },
+      {
+        "Type": "MailingChineseAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "?????????",
+        "StreetAddress2": "?????????",
+        "StreetAddress3": "???100000",
+        "City": "",
+        "State": "",
+        "Zip": "",
+        "CountryCode": "CHN",
+        "Country": "??"
+      }
+    ],
+    "ContactInformation": [
+      {
+        "Type": "Primary",
+        "CountryCode": "+86",
+        "Number": "17600590000"
+      }
+    ],
+    "TaxIdType": "NoNumber",
+    "CampaignId": "W",
+    "CitizenshipCode": "CHN",
+    "W8CertificateType": "W8BenNoCert",
+    "PrimaryLanguage": "Chinese",
+    "EmailAddress": "sriharsha.r@brillio.com",
+    "Gender": "Female",
+    "CountryOfDualCitizenship": "",
+    "EmploymentDate": "",
+    "EmploymentOrSchool": "Employed",
+    "MaritalStatus": "Single",
+    "MothersMaidenName": "",
+    "Occupation": "ScienceOrTechnology",
+    "TenPercentShareHolder": "No",
+    "CountryResidentCode": "CHN",
+    "Position": "ADMINISTRATOR",
+    "Employer": "????",
+    "YearEmployed": "3",
+    "AnnualIncome": "UnderFiftyThousand",
+    "TotalNetWorth": "500001-1000000USD",
+    "PrimaryBanking": "CMBC",
+    "W8CertificateDate": "2018-12-14",
+    "EsignIsAccepted": "Yes",
+    "EsignDateAccepted": "2018-12-14",
+    "EsignTimeAccepted": "06:27:53-08:00",
+    "TermsIsAccepted": "Yes",
+    "TermsDateAccepted": "2018-12-14",
+    "TermsTimeAccepted": "06:27:53-08:00",
+    "IAccepted": "Yes",
+    "IAcceptedDate": "2018-12-14",
+    "IAcceptedTime": "06:27:53-08:00",
+    "IsPoliticallyExposedPerson": "No",
+    "NonResidentAccountInformation": {
+      "SourceOfWealth": "Employment",
+      "PurposeOfAccount": "Investment",
+      "IntendInternationalWires": true,
+      "IntendIncomingWires": true,
+      "IncomingWiresLimit": "ZeroToThreeThousand",
+      "IntendOutgoingWires": true,
+      "OutgoingWiresLimit": "ZeroToThreeThousand",
+      "VisaType": "None",
+      "ForeignTaxNumber": "220503199010260526",
+      "PreferredName": ""
+    }
+  }
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<ee:transform doc:name="Transform Message" doc:id="21648489-a95c-40eb-8aa6-0012433c8f15">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="skipTrueIDResponse"><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_PASS_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_PASS_REASONS')]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_FAIL_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_FAIL_REASONS')]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\partner\account\create:velo-process-api-config" doc:id="76019d2d-fd87-41f8-979a-a3466592252c" name="post:\process\partner\account\create:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="30ba22a0-4f90-444e-9f1b-a7aa32138e36" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Partner request test case failed for Trulioo ID Verification exception test"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

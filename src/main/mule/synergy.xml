@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	
+	<sub-flow name="synergySysAPICall" doc:id="4759b55f-07ed-43ae-81d7-40d749a6289b">
+		<json-logger:logger doc:name="Synergy Before Request" doc:id="f3ded674-6186-4d11-b7be-2ae51d2c17ef" config-ref="JSON_Logger_Config" message="Synergy Before Request" endpoint="POST:/${synergy.docsubmit.path}"/>
+		<http:request method="POST" doc:name="Synergy Call" doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" path="/${synergy.docsubmit.path}" target="synergy" targetValue="#[output application/json --- payload]" config-ref="HTTPS_System_API_Config" responseTimeout="${http.request.timeout}">
+			<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+		<json-logger:logger doc:name="Synergy After Request" doc:id="4e3671fb-018b-4a9f-a0a7-33d4461ec4b5" config-ref="JSON_Logger_Config" message="Synergy After Request" endpoint="POST:/${synergy.docsubmit.path}" status="#[vars.'httpStatus']"/>
+	</sub-flow>
+	<flow name="synergy-flow" doc:id="6325b976-c507-4800-b8e3-59ab002fc927">
+		<logger level="INFO" doc:name="Logger"
+			doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Request UUID #[correlationId] Flow Name #[flow.name]::Request Body #[payload]" />
+		<json-logger:logger doc:name="Synergy Request Payload" doc:id="473b7a32-4a1d-4f69-97b1-b1729a524565" config-ref="JSON_Logger_Config" message="Synergy Request Payload" tracePoint="PRINT" priority="DEBUG" endpoint="POST:/${synergy.docsubmit.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<flow-ref doc:name="synergySysAPICall" doc:id="65a2ce26-de02-491c-9a16-d0d85e2b7872" name="synergySysAPICall"/>
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Request UUID #[correlationId] Flow Name #[flow.name]:: Response : #[vars.synergy]" /> -->
+		<json-logger:logger doc:name="Synergy Response" doc:id="903c9e32-4b5c-4edd-b08d-c921f7229e8a" config-ref="JSON_Logger_Config" message="Synergy Response" tracePoint="PRINT" priority="DEBUG" endpoint="POST:/${synergy.docsubmit.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	synergy: vars.synergy
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.synergy]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<flow-ref doc:name="global-return-response-build" doc:id="464485ff-6096-4846-aaa8-be4b67cd4675"
+			name="global-return-response-build" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="8c6beeab-1a98-40e1-8a9b-df9d5991c4cb">
+				<flow-ref doc:name="generic-exception" doc:id="87c0af25-0aa5-4ecb-a70b-ecd38c4e2e35"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="synergySystemApiCall" doc:id="9eea7753-4f5f-432c-b9b1-e8a34db5c4cf" >
+		<try doc:name="Try" doc:id="c3aa7d43-6e0d-4973-a4e6-b75661c2bc44" >
+			<logger level="INFO" doc:name="Logger" doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Synergy Request  Document for Request UUID #[correlationId] Flow Name #[flow.name]  ::::::::::::::  #[payload]" />
+			<flow-ref doc:name="synergySysAPICall" doc:id="9b586ee3-c14f-41f2-9239-4ac00cdd0790" name="synergySysAPICall"/>
+			<logger level="INFO" doc:name="Logger" doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Response from Synergy ::::::::: #[vars.synergy]" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="faef2393-df93-4b4a-96d7-1df966b7ba0a" >
+					<logger level="INFO" doc:name="Logger" doc:id="beb92448-a964-4a66-a3f8-eca1d758e3fa" message="Error in processing the Document for Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<flow-ref doc:name="ExceptionResponseBuild" doc:id="6105c25d-7b8f-451b-9f63-ad40fd8adb7c" name="api-exceptions-response-build" />
+					<ee:transform doc:name="Transform Message" doc:id="890b5633-e563-4f66-b044-71d74f1e69a3">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="exceptionFlag"><![CDATA[%dw 2.0
+output application/json
+---
+"true"]]></ee:set-variable>
+							<ee:set-variable variableName="synergyRequestError" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.synergyRequestError as Array ++ [
+	{
+		"DocumentName": vars.currentDoc.DocumentName,
+		"DocumentSide": vars.documentSide default null,
+		"errorDescription" : vars.tempApiExceptionVar.errorDescription default null,
+		"errorType": vars.tempApiExceptionVar.errorType default null
+	}
+]]]></ee:set-variable>
+						
+</ee:variables>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</flow>
+</mule>

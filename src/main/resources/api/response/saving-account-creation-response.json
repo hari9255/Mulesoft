@@ -1,0 +1,17 @@
+{
+    "data": {
+        "CaseNumber": "CAS-01576-P6X6Y4",
+        "ApplicationId": "a04m000000BAcfJAAT",
+        "ApplicationStatus": "Approved",
+		"CustomerNumber": "00000060509", 
+        "AccountNumber": 178356940,        
+	    "Error": {
+            "Message": null
+        }
+    },
+    "result": {
+        "success": true,
+        "code": "200",
+        "message": "Success"
+    }
+}

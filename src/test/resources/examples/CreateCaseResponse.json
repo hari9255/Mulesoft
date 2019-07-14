@@ -1,0 +1,524 @@
+{
+  "Destination": "KnowYourCustomer",
+  "CustomerInformation": {
+    "Names": null,
+    "Addresses": null,
+    "ContactInformation": null,
+    "FirstName": "NAGESWARA RAO",
+    "LastName": "GUNTUPALLI",
+    "PreferredName": null,
+    "VisaType": null,
+    "ForeignTaxID": null,
+    "StreetAddress1": "39939 Stevenson Cmn Apt 2002",
+    "StreetAddress2": "",
+    "City": "Fremont",
+    "State": "CA",
+    "Zip": "94538-4722",
+    "Gender": "Male",
+    "CountryCode": "USA",
+    "PrimaryPhoneNumber": null,
+    "MobilePhoneNumber": "6508479693",
+    "Email": "s.n3@ewb.com",
+    "YearOfBirth": "1982",
+    "Occupation": "AgricultureOrFishing",
+    "CitizenshipCode": "ALA",
+    "TaxNumber": "331111112",
+    "TaxIdType": "SocialSecurityNumber",
+    "IsPoliticallyExposedPerson": "No",
+    "CISNumber": "",
+    "MaritalStatus": null,
+    "CountryOfBirth": null,
+    "Position": null,
+    "NationalID": null,
+    "YearOfEmployment": null,
+    "AnnualIncome": null,
+    "TotalNetWorth": null,
+    "PrimaryBanking": null,
+    "NonResidentAccoountInformation": null
+  },
+  "FraudAlertManagement": {
+    
+  },
+  "KnowYourCustomer": {
+    "Partner": null,
+    "OFACResponse": null,
+    "PEPResponse": null,
+    "TruliooAuthenticationResponse": null,
+    "TruliooVerificationResponse": null,
+    "TrueIDResponse": {
+      "DocAuthResult": "Attention",
+      "DocAuthResultRescan": null,
+      "DocumentExpired": null,
+      "DocumentType": "Drivers License",
+      "TransactionStatus": "passed",
+      "TrueIDDetails": [
+        {
+          "PassThroughs": [
+            {
+              "Data": {
+                "IDAuthResultResponse": {
+                  "Header": {
+                    "TransactionId": "2068421R32413"
+                  },
+                  "Success": true,
+                  "AuthenticationResult": {
+                    "DocumentName": "California (CA) Driver License",
+                    "DocAuthResult": "Attention",
+                    "DocIssuerCode": "CA",
+                    "DocIssuerName": "California",
+                    "DocClassCode": "DriversLicense",
+                    "DocClass": "DriversLicense",
+                    "DocClassName": "Drivers License",
+                    "DocIsGeneric": "false",
+                    "DocIssue": "2010",
+                    "DocIssueType": "Driver License",
+                    "DocSize": "ID1",
+                    "ClassificationMode": "Automatic",
+                    "OrientationChanged": "false",
+                    "PresentationChanged": "false",
+                    "FullName": "NAGESWARA RAO GUNTUPALLI",
+                    "Sex": "Male",
+                    "Age": "36",
+                    "DOB": {
+                      "Year": 1982,
+                      "Month": 6,
+                      "Day": 10
+                    },
+                    "ExpirationDate": {
+                      "Year": 2020,
+                      "Month": 5,
+                      "Day": 11
+                    },
+                    "Portrait": "",
+                    "Signature": "",
+                    "Alerts": {
+                      "IDAuthAlertData": [
+                        {
+                          "AlertID": "8458c4d1-5406-461a-a7ea-bd24e92346aa",
+                          "AlertName": "2D Barcode Read",
+                          "AlertKey": "2D Barcode Read",
+                          "AuthenticationResult": "Attention",
+                          "AlertDescription": "Verified that the two-dimensional barcode on the document was read successfully."
+                        },
+                        {
+                          "AlertID": "66fb3394-587d-4e13-8629-8b68c4323f2d",
+                          "AlertName": "Visible Pattern",
+                          "AlertKey": "Visible Pattern",
+                          "AuthenticationResult": "Failed",
+                          "AlertDescription": "Verified the presence of a pattern on the visible image.",
+                          "Regions": {
+                            "Region": [
+                              "Background Bear"
+                            ]
+                          }
+                        },
+                        {
+                          "AlertID": "36a3ac60-ab85-41b4-81ba-e3e468ce4e5b",
+                          "AlertName": "Birth Date Valid",
+                          "AlertKey": "Birth Date Valid",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified that the birth date is valid."
+                        },
+                        {
+                          "AlertID": "2eb33004-22aa-4d8b-961c-3e17a155b581",
+                          "AlertName": "Document Classification",
+                          "AlertKey": "Document Classification",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified that the type of document is supported and is able to be fully authenticated."
+                        },
+                        {
+                          "AlertID": "a630a55d-04eb-42d0-8703-329586455019",
+                          "AlertName": "Document Expired",
+                          "AlertKey": "Document Expired",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Checked if the document is expired."
+                        },
+                        {
+                          "AlertID": "8a3995c2-f16a-4cc1-994a-bb525cebdd1b",
+                          "AlertName": "Document Number Crosscheck",
+                          "AlertKey": "Document Number Crosscheck",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Compare the machine-readable document number field to the human-readable document number field."
+                        },
+                        {
+                          "AlertID": "4a71916a-8775-410a-994c-d4c0f4591f40",
+                          "AlertName": "Expiration Date Valid",
+                          "AlertKey": "Expiration Date Valid",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified that the expiration date is valid."
+                        },
+                        {
+                          "AlertID": "93e20619-c8b8-459d-afa0-2829559005af",
+                          "AlertName": "Issue Date Valid",
+                          "AlertKey": "Issue Date Valid",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified that the issue date is valid."
+                        },
+                        {
+                          "AlertID": "49292783-aff4-42fd-9c10-77f7b78c63bf",
+                          "AlertName": "Visible Pattern",
+                          "AlertKey": "Visible Pattern",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified the presence of a pattern on the visible image.",
+                          "Regions": {
+                            "Region": [
+                              "Background Mountain Right"
+                            ]
+                          }
+                        },
+                        {
+                          "AlertID": "2811508c-a3d3-435b-8425-c0a34e7b8ec1",
+                          "AlertName": "Visible Pattern",
+                          "AlertKey": "Visible Pattern",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified the presence of a pattern on the visible image.",
+                          "Regions": {
+                            "Region": [
+                              "Seal"
+                            ]
+                          }
+                        },
+                        {
+                          "AlertID": "4cecb2e2-e4aa-4596-8d85-d6550b724507",
+                          "AlertName": "Visible Pattern",
+                          "AlertKey": "Visible Pattern",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified the presence of a pattern on the visible image.",
+                          "Regions": {
+                            "Region": [
+                              "Background Tree"
+                            ]
+                          }
+                        },
+                        {
+                          "AlertID": "21fb3056-8905-40fd-88d2-8345ddf056e0",
+                          "AlertName": "Visible Pattern",
+                          "AlertKey": "Visible Pattern",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified the presence of a pattern on the visible image.",
+                          "Regions": {
+                            "Region": [
+                              "Background Waves"
+                            ]
+                          }
+                        },
+                        {
+                          "AlertID": "0b384801-981b-4428-8f6b-6ee086dbc8c0",
+                          "AlertName": "Visible Pattern",
+                          "AlertKey": "Visible Pattern",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified the presence of a pattern on the visible image.",
+                          "Regions": {
+                            "Region": [
+                              "Back Circles"
+                            ]
+                          }
+                        },
+                        {
+                          "AlertID": "c2dc760a-3d61-4076-ac5b-fad9b947e6d7",
+                          "AlertName": "Visible Pattern",
+                          "AlertKey": "Visible Pattern",
+                          "AuthenticationResult": "Passed",
+                          "AlertDescription": "Verified the presence of a pattern on the visible image.",
+                          "Regions": {
+                            "Region": [
+                              "Back Bridge Left"
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "Fields": {
+                      "IDAuthFieldData": [
+                        {
+                          "Address": "39939 STEVENSON CMN APT 2002 ?FREMONT, CA 94538"
+                        },
+                        {
+                          "City": "FREMONT"
+                        },
+                        {
+                          "AddressLine1": "39939 STEVENSON CMN APT 2002"
+                        },
+                        {
+                          "PostalCode": "94538"
+                        },
+                        {
+                          "State": "CA"
+                        },
+                        {
+                          "DOB": {
+                            "Year": 1982,
+                            "Month": 6,
+                            "Day": 10
+                          }
+                        },
+                        {
+                          "DocumentClassName": "Drivers License"
+                        },
+                        {
+                          "DocumentNumber": "Y8348343"
+                        },
+                        {
+                          "ExpirationDate": {
+                            "Year": 2020,
+                            "Month": 5,
+                            "Day": 11
+                          }
+                        },
+                        {
+                          "FirstName": "NAGESWARA"
+                        },
+                        {
+                          "FullName": "NAGESWARA RAO GUNTUPALLI"
+                        },
+                        {
+                          "GivenName": "NAGESWARA RAO"
+                        },
+                        {
+                          "IssueDate": {
+                            "Year": 2017,
+                            "Month": 7,
+                            "Day": 17
+                          }
+                        },
+                        {
+                          "IssuingStateCode": "CA"
+                        },
+                        {
+                          "IssuingStateName": "California"
+                        },
+                        {
+                          "MiddleName": "RAO"
+                        },
+                        {
+                          "Sex": "M"
+                        },
+                        {
+                          "Surname": "GUNTUPALLI"
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "Type": "true.id"
+            }
+          ],
+          "Products": [
+            {
+              "ExecutedStepName": "True_ID_Step",
+              "ProductConfigurationName": "TrueID_Flow",
+              "ProductStatus": "pass",
+              "ProductType": "TrueID"
+            }
+          ],
+          "Status": {
+            "Reference": "payload.RequestUUID",
+            "TransactionStatus": "passed",
+            "RequestId": "352103175",
+            "ConversationId": "31000142784705"
+          }
+        }
+      ]
+    },
+    "InstantIDResponse": {
+      "Status": {
+        "ConversationId": "31000146942785",
+        "RequestId": "357703665",
+        "TransactionStatus": "passed",
+        "Reference": "Reference1",
+        "KBA": null
+      },
+      "Products": null,
+      "PassThroughs": [
+        {
+          "Type": "INSTANT_ID",
+          "Data": {
+            "InstantIDResponseEx": {
+              "response": {
+                "Header": {
+                  "Status": 0
+                },
+                "Result": {
+                  "InputEcho": {
+                    "Name": {
+                      "First": "NAGESWARA RAO",
+                      "Last": "GUNTUPALLI"
+                    },
+                    "Address": {
+                      "StreetAddress1": "39939 Stevenson Cmn Apt 2002",
+                      "City": "Fremont",
+                      "State": "CA",
+                      "Zip5": "94538-4722"
+                    },
+                    "DOB": {
+                      "Year": 1982,
+                      "Month": 6,
+                      "Day": 10
+                    },
+                    "SSN": "331111111",
+                    "HomePhone": "6508479693",
+                    "UseDOBFilter": false,
+                    "DOBRadius": 2,
+                    "Passport": {
+                      "Number": "",
+                      "ExpirationDate": {
+                        
+                      },
+                      "Country": "",
+                      "MachineReadableLine1": "",
+                      "MachineReadableLine2": ""
+                    },
+                    "Channel": "",
+                    "OwnOrRent": ""
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "CaseManagement": {
+      "ApplicationId": "APP-M-16670",
+      "ApplicationStatus": "Pending"
+    },
+    "IdAuthentication": true,
+    "Exceptions": [
+      {
+        "Source": "TrueIDResponse",
+        "Error": ""
+      },
+      {
+        "Source": "OFACResponse",
+        "Error": ""
+      },
+      {
+        "Source": "PinpointResponse",
+        "Error": ""
+      },
+      {
+        "Source": "InstantIDResponse",
+        "Error": ""
+      },
+      {
+        "Source": "TruliooAuthenticationResponse",
+        "Error": ""
+      },
+      {
+        "Source": "TruliooVerificationResponse",
+        "Error": ""
+      },
+      {
+        "Source": "PromoCode",
+        "Error": ""
+      },
+      {
+        "Source": "Synergy",
+        "Error": ""
+      },
+      {
+        "Source": "FIS",
+        "Error": "00228 - CI00228 - WARNING, TAXPAYER NUMBER ALREADY EXISTS \r\n 09044 - Function not processed due to previous function error. \r\n 09044 - Function not processed due to previous function error. \r\n 09044 - Function not processed due to previous function error. \r\n 09044 - Function not processed due to previous function error. \r\n 09044 - Function not processed due to previous function error. \r\n 09044 - Function not processed due to previous function error. \r\n HTTP POST on resource 'https://openapiservices.eastwestbank.com:443/DepositOnboardingServiceDev/api/depositonboarding/checkingaccount' failed: bad request (400)."
+      },
+      {
+        "Source": "Okta",
+        "Error": ""
+      },
+      {
+        "Source": "Generic",
+        "Error": ""
+      }
+    ]
+  },
+  "InformationSecurity": {
+    
+  },
+  "TransactionRequest": {
+    
+  },
+  "PinPointResponse": [
+    {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "risk_score": 0,
+            "error": "partial_process"
+          }
+        },
+        "device_data": {
+          "device_key": "N/A",
+          "is_new": true,
+          "v3": {
+            "screen_width": 0,
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "N/A",
+            "continent_code": "N/A",
+            "remote_addr": "N/A",
+            "city": "N/A",
+            "plugins": 0,
+            "country_code": "N/A",
+            "counter": 0,
+            "last_access": "N/A",
+            "screen_touch": 0,
+            "agent_key": "N/A",
+            "accept": "N/A",
+            "screen_dpi": 0,
+            "client_language": "N/A",
+            "post_code": "N/A",
+            "screen_height": 0,
+            "mimes": 0,
+            "longitude": 0,
+            "latitude": 0,
+            "first_time": "N/A",
+            "cpu": "N/A",
+            "browser": "N/A",
+            "machine_id": "N/A",
+            "digest": "N/A",
+            "js": 0,
+            "country_name": "N/A",
+            "file_upload_indicator": 0,
+            "platform": "N/A",
+            "history_length": 0,
+            "file_upload": 0,
+            "client_time_zone": 0,
+            "navigator_props": 0,
+            "doc_location": "N/A",
+            "browser_version": "N/A",
+            "client_charset": "N/A",
+            "isp": "N/A",
+            "x_forwarded_for": "N/A",
+            "accept_language": "N/A",
+            "user_agent": "N/A",
+            "org": "N/A",
+            "region": "N/A",
+            "first_access": "N/A",
+            "charset": 0,
+            "country": "N/A",
+            "id": 0,
+            "pinpoint_session": "N/A",
+            "cookie": "N/A",
+            "hashed_user_id": "N/A",
+            "application": "N/A",
+            "os": "N/A",
+            "business": "N/A",
+            "fonts": "N/A",
+            "area_code": 0,
+            "ip_time_zone": "N/A",
+            "accept_encoding": "N/A",
+            "country_code3": "N/A"
+          }
+        },
+        "recommendation": {
+          "risk_score": 0,
+          "reason_id": 0,
+          "recommendation": "allow",
+          "reason": ""
+        },
+        "customer_session_id": "KZIqB5GwsVqGKcdpTXdasBGCG"
+      }
+    }
+  ]
+}

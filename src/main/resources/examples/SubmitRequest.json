@@ -1,0 +1,639 @@
+{
+	"Settings": {
+		"AccountNumber": "45065",
+		"Workflow": "public.testing.redherrings.open",
+		"Mode": "testing",
+		"Reference": "Reference1",
+		"Locale": "en_US",
+		"ConversationId": "31000095253376",
+		"Venue": "online"
+	},
+	"CustomerInformation": {
+		"DateOfBirth": "1980-05-16T16:55:15.467Z",
+		"FirstName": "John",
+		"LastName": "Doe",
+		"MiddleInitial": "M",
+		"Title": "Sr Dev",
+		"EntityType": "Unknown",
+		"SearchName": "WatchList",
+		"PEP": "true",
+		"CountryOfBirth": "USA",
+		"Address": {
+			"StreetAddress1": "9300 Flair Dr",
+			"StreetAddress2": "300",
+			"City": "El Monte",
+			"State": "CA",
+			"Zip": "91731",
+			"CountryCode": "US",
+			"TimeAtAddress": {
+				"Years": 2,
+				"Month": 1
+			},
+			"IsForeignAddress": false
+		},
+		"PrimaryPhoneNumber": "6662367234",
+		"FaxPhoneNumber": "6662367234",
+		"SecondaryPhoneNumber": "6662367234",
+		"MobilePhoneNumber": "6662367234",
+		"TaxNumber": "734561234",
+		"TaxIdType": "SocialSecurityNumber",
+		"CitizenshipCode": "US",
+		"W8CertificateType": "Blank",
+		"PrimaryID": "DL",
+		"BranchNumber": "8034",
+		"CostCenterNumber": 1145,
+		"MailCode": "NoSpecialAction",
+		"PrimaryLanguage": "Chinese",
+		"PrimaryOfficerNumber": 30744,
+		"SecondaryOfficerNumber": 30744,
+		"Gender": "Female",
+		"EmploymentDate": "2015-05-16T16:55:15.467Z",
+		"EmploymentOrSchool": "EWB",
+		"Ethnicity": "AfricanAmerican",
+		"MaritalStatus": "Married",
+		"MothersMaidenName": "Name",
+		"Occupation": "AdminManagerial",
+		"W8CertificateDate": "2018-05-16T16:55:15.467Z",
+		"SSN": "213527485",
+		"SSN_Type": "ssn9",
+		"Identification": {
+			"Status": "VerifiedByBanker",
+			"IsTINAppliedFor": true,
+			"IdentificationInformation1": {
+				"Type": "DL",
+				"Number": "F4567",
+				"IssuingEntity": "DMV",
+				"IssuingLocation": "Pasadena",
+				"IssueDate": "2010-05-16T16:55:15.468Z",
+				"ExpirationDate": "2020-05-16T16:55:15.468Z"
+			},
+			"IdentificationInformation2": {
+				"Type": "Passport",
+				"Number": "R4567",
+				"IssuingEntity": "US",
+				"IssuingLocation": "Pasadena",
+				"IssueDate": "2008-05-16T16:55:15.468Z",
+				"ExpirationDate": "2028-05-16T16:55:15.468Z"
+			}
+		},
+		"EmailAddress": "name@email.com"
+	},
+	"Promotions": {
+		"Status": "New",
+		"PromoCode": "2KD0AKSA",
+		"OnboardingInvitation": {
+			"EmailAddress": "email.address@gmail.com",
+			"PhoneNumber": "893-929-9391"
+		}
+	},
+	"Documents": [
+		{
+			"DocumentExtension": "JPG",
+			"DocumentSource": "Deposit",
+			"DocumentService": "IDAuthentication",
+			"DocumentContent": "",
+			"Front": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA",
+			"Back": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA",
+			"DocumentType": "W9",
+			"SourceIdentifierId": "tererwerwere",
+			"AccountNumber": "1234",
+			"CustomerNumber": "5678",
+			"DocumentDate": "2018-02-28T16:41:41.090Z",
+			"OfficerCode": "Jonh Doe"
+		},
+		{
+			"DocumentExtension": "JPG",
+			"DocumentSource": "Deposit",
+			"DocumentService": "Terifina",
+			"DocumentContent": "111000000000000000000000000000000000000",
+			"Front": "",
+			"Back": "",
+			"DocumentType": "DriversLicense",
+			"SourceIdentifierId": "tererwerwere",
+			"AccountNumber": "1234",
+			"CustomerNumber": "5678",
+			"DocumentDate": "2018-02-28T16:41:41.090Z",
+			"OfficerCode": "Jonh Doe"
+		}
+	],
+	"CheckingAccount": {
+		"AccountType": "CHK_I_PERS_PREMIER",
+		"DepositAccount": {
+			"WithholdingIndicator": "ExemptAssumed"
+		},
+		"CustomerToAccountRelationship": {
+			"Customer1AccountRelationshipCode": "000",
+			"Customer1AccountAssociationType": "Primary",
+			"Customer2AccountAssociationType": "Primary",
+			"NumberOfStatementCopies": 1,
+			"AddressLineOfTINOwner": 1
+		}
+	},
+	"IdvKbaResponse": {
+		"Status": {
+			"ConversationId": "31000096769935",
+			"RequestId": "287757295",
+			"TransactionStatus": "failed",
+			"TransactionReasonCode": {
+				"Code": "failed_iauth_questions"
+			},
+			"Reference": "Reference1"
+		},
+		"Products": [
+			{
+				"ProductType": "InstantVerify",
+				"ExecutedStepName": "verification",
+				"ProductConfigurationName": "public.testing.redherrings_verification_open",
+				"ProductStatus": "pass",
+				"Items": [
+					{
+						"ItemName": "TaskAgeUnder18WillNotBeFoundCheck",
+						"ItemStatus": "pass"
+					},
+					{
+						"ItemName": "LexIDDeathMatch",
+						"ItemStatus": "pass"
+					}
+				]
+			},
+			{
+				"ProductType": "IIDQA",
+				"ExecutedStepName": "authentication",
+				"ProductConfigurationName": "public.testing.redherrings_authentication_open",
+				"ProductStatus": "fail",
+				"ProductReason": {
+					"Code": "failed_iauth_questions"
+				}
+			}
+		]
+	},
+	"RequestUUID": "1535052706",
+	"CaseId": "12345",
+	"CaseStatus": "Approved",
+	"ApplicationId": "1868683kfnd879",
+	"PinPointResponse": [
+		{
+			"status": "ok",
+			"message": {
+				"infection_data": {
+					"malware": {
+						"customer_session_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+						"info": {
+							
+						},
+						"malware": [
+							{
+								"risk_score": 950,
+								"name": "Simba-brcl",
+								"key": "simba",
+								"id": "53",
+								"signature": "Simba",
+								"targeted": "maybe",
+								"collector": "active_detection",
+								"pattern": "912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18"
+							},
+							{
+								"risk_score": 1000,
+								"name": "Pumba-brcl",
+								"key": "pumba",
+								"id": "50",
+								"signature": "Pumba",
+								"targeted": "maybe",
+								"collector": "passive_detection",
+								"pattern": "912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898"
+							}
+						],
+						"malware_ids": {
+							"50": {
+								"risk_score": 1000,
+								"targeted": "maybe"
+							},
+							"53": {
+								"risk_score": 950,
+								"targeted": "maybe"
+							}
+						},
+						"risk_score": 1000,
+						"timestamp": "2015-07-08 12:29:33",
+						"encrypted_user_id": "<encrypted_user_ID>",
+						"encryption_key_id": "company.1.20170724"
+					}
+				},
+				"device_data": {
+					"device_key": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+					"is_new": true,
+					"is_new_device_confidence_level": 0.75,
+					"v3": {
+						"screen_width": 1920,
+						"doc_location": "",
+						"activeX": 0,
+						"dma_code": 0,
+						"ip_class": "A",
+						"client_time_zone": -180,
+						"remote_addr": "123.123.123.123",
+						"history_length": 7,
+						"js": 1,
+						"accept_encoding": "gzip, deflate",
+						"counter": 3,
+						"machine_id": "",
+						"region": "05",
+						"screen_dpi": 24,
+						"client_language": "en-US",
+						"isp": "ISP",
+						"screen_height": 1080,
+						"first_time": "2017-02-08 09:27:40",
+						"agent_key": "",
+						"platform": "Win32",
+						"cpu": "Win32",
+						"ip_time_zone": 120,
+						"digest": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+						"screen_touch": 0,
+						"fonts": "800648E87FC13E00BBAA18547FEC9690",
+						"file_upload_indicator": 0,
+						"mimes": 4118237596,
+						"file_upload": 1,
+						"longitude": 34.764701843262,
+						"navigator_props": 3695045678,
+						"browser_version": "41.0.2228",
+						"client_charset": "UTF-8",
+						"last_access": "2017-02-08 09:27:40",
+						"browser": "Chrome",
+						"charset": 1,
+						"accept_language": "en-US,en;q=0.5",
+						"latitude": 32.067798614502,
+						"org": "ISP",
+						"city": "Tel Aviv-yafo",
+						"first_access": "2017-02-08 09:27:40",
+						"country": "ISR",
+						"continent_code": "AS",
+						"country_name": "",
+						"country_code": "IL",
+						"country_code3": "ISR",
+						"post_code": "",
+						"x_forwarded_for": "123.123.123.123",
+						"id": 876137,
+						"pinpoint_session": "00009576042079220976",
+						"hashed_user_id": "N/A",
+						"os": "Windows 7",
+						"user_agent": "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36",
+						"application": "66640095",
+						"cookie": "0.2157162984033204",
+						"plugins": 2075505175,
+						"area_code": 0,
+						"accept": "image/png,image/*;q=0.8,*/*;q=0.5",
+						"business": "trusteerqa"
+					}
+				},
+				"recommendation": {
+					"recommendation": "allow_login_restrict",
+					"resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+					"reason_id": -1,
+					"reason": "reason text",
+					"risk_score": 0
+				},
+				"risk_engine_recommendation": {
+					"risk_score": 1,
+					"reason_id": 1,
+					"recommendation": "allow_login_restrict",
+					"reason": "reason text"
+				},
+				"customer_session_id": "<CSID>"
+			}
+		}
+	],
+	"TrueId": [
+		{
+			"Status": {
+				"ConversationId": "31000100486965",
+				"RequestId": "293264255",
+				"TransactionStatus": "passed",
+				"Reference": "payload.RequestUUID"
+			},
+			"Products": [
+				{
+					"ProductType": "TrueID",
+					"ExecutedStepName": "True_ID_Step",
+					"ProductConfigurationName": "TrueID_Flow",
+					"ProductStatus": "pass"
+				}
+			],
+			"PassThroughs": [
+				{
+					"Type": "true.id",
+					"Data": {
+						"IDAuthResultResponse": {
+							"Header": {
+								"TransactionId": "2049101R274531"
+							},
+							"Success": true,
+							"AuthenticationResult": {
+								"DocumentName": "Connecticut (CT) Driver License",
+								"DocAuthResult": "Failed",
+								"DocIssuerCode": "CT",
+								"DocIssuerName": "Connecticut",
+								"DocClassCode": "DriversLicense",
+								"DocClass": "DriversLicense",
+								"DocClassName": "Drivers License",
+								"DocIsGeneric": "false",
+								"DocIssue": "2009",
+								"DocIssueType": "Driver License",
+								"DocSize": "ID1",
+								"ClassificationMode": "Automatic",
+								"OrientationChanged": "false",
+								"PresentationChanged": "false",
+								"FullName": "EVAN M MOZINGO",
+								"Sex": "Male",
+								"Age": "28",
+								"DOB": {
+									"Year": 1989,
+									"Month": 9,
+									"Day": 11
+								},
+								"ExpirationDate": {
+									"Year": 2017,
+									"Month": 9,
+									"Day": 11
+								},
+								"Portrait": "",
+								"Signature": "",
+								"Alerts": {
+									"IDAuthAlertData": [
+										{
+											"AlertID": "7f61f39f-7a5f-4b8b-958a-be32d9c9d20b",
+											"AlertName": "Visible Pattern",
+											"AlertKey": "Visible Pattern",
+											"AuthenticationResult": "Failed",
+											"AlertDescription": "Verified the presence of a pattern on the visible image.",
+											"Regions": {
+												"Region": [
+													"Stylized DOB Label"
+												]
+											}
+										},
+										{
+											"AlertID": "26e34e11-e479-409a-93af-f09164bded35",
+											"AlertName": "Visible Pattern",
+											"AlertKey": "Visible Pattern",
+											"AuthenticationResult": "Failed",
+											"AlertDescription": "Verified the presence of a pattern on the visible image.",
+											"Regions": {
+												"Region": [
+													"Inches"
+												]
+											}
+										},
+										{
+											"AlertID": "6665e84d-6ee1-4d50-8dc5-dc5a541ade6c",
+											"AlertName": "Visible Pattern",
+											"AlertKey": "Visible Pattern",
+											"AuthenticationResult": "Failed",
+											"AlertDescription": "Verified the presence of a pattern on the visible image.",
+											"Regions": {
+												"Region": [
+													"Expires Label"
+												]
+											}
+										},
+										{
+											"AlertID": "31725c47-d8f1-47ef-88ca-37bea1b27b74",
+											"AlertName": "Visible Pattern",
+											"AlertKey": "Visible Pattern",
+											"AuthenticationResult": "Failed",
+											"AlertDescription": "Verified the presence of a pattern on the visible image.",
+											"Regions": {
+												"Region": [
+													"Background Center"
+												]
+											}
+										},
+										{
+											"AlertID": "e72d4812-117d-4e15-bd98-a2f03ef40939",
+											"AlertName": "1D Control Number Valid",
+											"AlertKey": "1D Control Number Valid",
+											"AuthenticationResult": "Failed",
+											"AlertDescription": "Checks whether the 1D barcode is indicative of known-fake documents."
+										},
+										{
+											"AlertID": "dd04c339-4957-424f-a529-37d2c4b8afe8",
+											"AlertName": "2D Barcode Content",
+											"AlertKey": "2D Barcode Content",
+											"AuthenticationResult": "Failed",
+											"AlertDescription": "Checked the contents of the two-dimensional barcode on the document."
+										},
+										{
+											"AlertID": "5a7e7486-f08c-4903-9a14-16447d2a8b97",
+											"AlertName": "Control Number Crosscheck",
+											"AlertKey": "Control Number Crosscheck",
+											"AuthenticationResult": "Caution",
+											"AlertDescription": "Compare the machine-readable control number field to the human-readable document number field."
+										},
+										{
+											"AlertID": "a411418d-839b-474c-8ef6-6b4d65fe66e1",
+											"AlertName": "Document Expired",
+											"AlertKey": "Document Expired",
+											"AuthenticationResult": "Attention",
+											"AlertDescription": "Checked if the document is expired."
+										},
+										{
+											"AlertID": "7234cc64-e21d-42b4-8f0d-f625cb7b71a2",
+											"AlertName": "2D Barcode Read",
+											"AlertKey": "2D Barcode Read",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Verified that the two-dimensional barcode on the document was read successfully."
+										},
+										{
+											"AlertID": "b89e4f08-e4f2-4a93-ae91-7a140cb1c15c",
+											"AlertName": "Birth Date Crosscheck",
+											"AlertKey": "Birth Date Crosscheck",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Compare the machine-readable birth date field to the human-readable birth date field."
+										},
+										{
+											"AlertID": "7e085ee6-a7e3-43d0-a239-2ac3c328fc80",
+											"AlertName": "Birth Date Valid",
+											"AlertKey": "Birth Date Valid",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Verified that the birth date is valid."
+										},
+										{
+											"AlertID": "b222e1af-22b2-444a-a771-1e783773a43d",
+											"AlertName": "Document Classification",
+											"AlertKey": "Document Classification",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Verified that the type of document is supported and is able to be fully authenticated."
+										},
+										{
+											"AlertID": "a502f45c-7f65-4bdb-b91e-3231035bf8cb",
+											"AlertName": "Document Crosscheck Aggregation",
+											"AlertKey": "Document Crosscheck Aggregation",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Compared the machine-readable fields to the human-readable fields."
+										},
+										{
+											"AlertID": "30012325-e722-46ea-92f3-79f6e56bbd13",
+											"AlertName": "Document Number Crosscheck",
+											"AlertKey": "Document Number Crosscheck",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Compare the machine-readable document number field to the human-readable document number field."
+										},
+										{
+											"AlertID": "8ea470d6-7317-47f6-ae13-30b516b08697",
+											"AlertName": "Expiration Date Crosscheck",
+											"AlertKey": "Expiration Date Crosscheck",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Compare the machine-readable expiration date field to the human-readable expiration date field."
+										},
+										{
+											"AlertID": "990beb5d-3126-41b5-9a46-6c6f609e35d8",
+											"AlertName": "Expiration Date Valid",
+											"AlertKey": "Expiration Date Valid",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Verified that the expiration date is valid."
+										},
+										{
+											"AlertID": "3481b0d1-ed7d-4d0a-a5f0-623bd8120f33",
+											"AlertName": "Full Name Crosscheck",
+											"AlertKey": "Full Name Crosscheck",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Compare the machine-readable full name field to the human-readable full name field."
+										},
+										{
+											"AlertID": "7577ba74-3910-49a1-b567-d84235f09c77",
+											"AlertName": "Issue Date Valid",
+											"AlertKey": "Issue Date Valid",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Verified that the issue date is valid."
+										},
+										{
+											"AlertID": "8a5f9d65-e3fb-47c1-bcbe-d0033d289b61",
+											"AlertName": "Layout Valid",
+											"AlertKey": "Layout Valid",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Verified that the layout of the document is correct.",
+											"Regions": {
+												"Region": [
+													"2D Barcode Bottom Left",
+													"2D Barcode Top Left"
+												]
+											}
+										},
+										{
+											"AlertID": "e742c56b-79cb-4352-b99e-06e6bb51c85a",
+											"AlertName": "Sex Crosscheck",
+											"AlertKey": "Sex Crosscheck",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Compare the machine-readable sex field to the human-readable sex field."
+										},
+										{
+											"AlertID": "1396841c-a798-4b2a-8a61-f8922e31f8c6",
+											"AlertName": "Visible Color Response",
+											"AlertKey": "Visible Color Response",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Verified the color response of an element on the visible image.",
+											"Regions": {
+												"Region": [
+													"Background Salmon"
+												]
+											}
+										},
+										{
+											"AlertID": "9a1880c7-3286-42e9-9e79-74c3496ad315",
+											"AlertName": "Visible Pattern",
+											"AlertKey": "Visible Pattern",
+											"AuthenticationResult": "Passed",
+											"AlertDescription": "Verified the presence of a pattern on the visible image.",
+											"Regions": {
+												"Region": [
+													"Background Boat"
+												]
+											}
+										}
+									]
+								},
+								"Fields": {
+									"IDAuthFieldData": [
+										{
+											"Address": "1 MUDRY FARM RBRISTOL, CT 02809-2366"
+										},
+										{
+											"City": "BRISTOL"
+										},
+										{
+											"AddressLine1": "1 MUDRY FARM RD"
+										},
+										{
+											"PostalCode": "02809-2366"
+										},
+										{
+											"State": "CT"
+										},
+										{
+											"DOB": {
+												"Year": 1989,
+												"Month": 9,
+												"Day": 11
+											}
+										},
+										{
+											"ControlNumber": "demo a11230009"
+										},
+										{
+											"DocumentClassName": "Drivers License"
+										},
+										{
+											"DocumentNumber": "096760377"
+										},
+										{
+											"ExpirationDate": {
+												"Year": 2017,
+												"Month": 9,
+												"Day": 11
+											}
+										},
+										{
+											"FirstName": "EVAN"
+										},
+										{
+											"FullName": "EVAN M MOZINGO"
+										},
+										{
+											"GivenName": "EVAN M"
+										},
+										{
+											"Height": "5' 9\""
+										},
+										{
+											"IssueDate": {
+												"Year": 2010,
+												"Month": 10,
+												"Day": 12
+											}
+										},
+										{
+											"IssuingStateCode": "CT"
+										},
+										{
+											"IssuingStateName": "Connecticut"
+										},
+										{
+											"LicenseClass": "D"
+										},
+										{
+											"MiddleName": "M"
+										},
+										{
+											"Sex": "M"
+										},
+										{
+											"Surname": "MOZINGO"
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			]
+		}
+	]
+}

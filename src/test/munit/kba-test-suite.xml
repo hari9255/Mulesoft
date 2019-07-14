@@ -1,0 +1,2392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="kba-test-suite.xml" />
+	<munit:test name="kba-test-suite-NonNRASubmissionTest-VerifyKBAAttention" description="Test" doc:id="0f1e86fd-7b7c-4deb-8b0f-7f1520284e92" >
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="mock-kba-attention" doc:id="07a04b6f-4d12-4daa-9f32-2da1fbaedc23" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="kbaResponse" value='#[output application/json --- { "Status": {
+        "ConversationId": "31000157946785",
+        "RequestId": "375789725",
+        "TransactionStatus": "pending",
+        "ActionType": "answers",
+        "Reference": "Reference1"
+    }}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<flow-ref doc:name="flow-ref-to-PepMock" doc:id="ae4c169e-5b45-4e9f-8007-bd26ffdeb08b" name="PepMock"/>
+			<flow-ref doc:name="flow-ref-to-OFAC-Mock" doc:id="054e1ead-4ebc-4c53-a424-023db333c0fb" name="OFAC-Mock"/>
+			<flow-ref doc:name="flow-ref-to-CaseCreationMockSub_Flow" doc:id="d1305dad-6aa9-45f4-9c6a-86f728fed6dc" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="create-request-body" doc:id="0b3fb2cb-1ce5-4450-b265-def1ba7c8f0d" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[
+  {
+  	"Pass": true,
+    "Answers": {
+      "QuestionSetId": 93978945,
+      "Questions": [
+        {
+          "QuestionId": 322596195,
+          "Choices": [
+            {
+              "Choice": "1586587275"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596205,
+          "Choices": [
+            {
+              "Choice": "1586587325"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596215,
+          "Choices": [
+            {
+              "Choice": "1586587385"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ApplicationId": "a04m000000BAcfJAAT",
+    "ApplicantType": "NRA/NONNRA/USCitizen",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "AccountInformation": {
+      "AccountType": "CHK_I_PERS_PREMIER",
+      "CustomerToAccountRelationship": {
+        "AddressLineOfTINOwner": 1,
+        "Customer1AccountAssociationType": "Primary",
+        "Customer1AccountRelationshipCode": "000",
+        "Customer2AccountAssociationType": "Primary",
+        "NumberOfStatementCopies": 1
+      },
+      "CardAccount": {
+        "CardNameLine1": "Vamsi  Sakhineti"
+      },
+      "DepositAccount": {
+        "WithholdingIndicator": "ExemptAssumed",
+        "UserCode": "D",
+        "StatusCodes": [
+          "NeverClose"
+        ],
+        "BulkFileType": "ImageFile"
+      }
+    },
+    "CustomerInformation": {
+      "Address": {
+        "City": "San Francisco",
+        "CountryCode": "US",
+        "IsForeignAddress": false,
+        "State": "CA",
+        "StreetAddress1": "1100 Market St",
+        "StreetAddress2": "null",
+        "Zip": "94102-3804"
+      },
+      "MailingAddress": {
+        "StreetAddress1": "9301 Flair Dr",
+        "StreetAddress2": "300",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "CountryCode": "USA"
+      },
+      "SourceofFunds": {
+        "Source": "FundfromEMP",
+        "MiscDemographic": 2,
+        "CustomerIntentforIntWireTransfer": {
+          "TransferServices": "Yes/No",
+          "ForeignInActivity": {
+            "ForeignIncomingActivity": "Yes/No",
+            "IncomingWires": 3,
+            "IncomingWiresAmount": 233445.34
+          },
+          "ForeignOutActivity": {
+            "ForeignOutgoingActivity": "Yes/No",
+            "OutgoingWires": 3,
+            "OutgoingWiresAmount": 233445.34
+          }
+        }
+      },
+      "BranchNumber": "8034",
+      "CitizenshipCode": "USA",
+      "CostCenterNumber": 1145,
+      "CountryOfBirth": "India",
+      "DateOfBirth": "1989-03-04",
+      "EmailAddress": "dds@dds.com",
+      "EmploymentDate": "2015-05-16T16:55:15.467Z",
+      "EmploymentOrSchool": "EWB",
+      "EntityType": "Unknown",
+      "Ethnicity": "AfricanAmerican",
+      "FirstName": "VAMSI",
+      "Gender": "Female",
+      "CategoryCode1": "903",
+      "CountryofDualCitizenship": "USA",
+      "Identification": {
+        "IdentificationInformation1": {
+          "ExpirationDate": "2020-05-16T16:55:15.468Z",
+          "IssueDate": "2010-05-16T16:55:15.468Z",
+          "IssuingEntity": "DMV",
+          "IssuingLocation": "Pasadena",
+          "Number": "F4567",
+          "Type": "DL"
+        },
+        "IdentificationInformation2": {
+          "ExpirationDate": "2028-05-16T16:55:15.468Z",
+          "IssueDate": "2008-05-16T16:55:15.468Z",
+          "IssuingEntity": "US",
+          "IssuingLocation": "Pasadena",
+          "Number": "R4567",
+          "Type": "Passport"
+        },
+        "IsTINAppliedFor": true,
+        "Status": "VerifiedByBanker",
+        "NonDocumentaryIdentificationInformation": "VLN"
+      },
+      "LastName": "SAKHINETI",
+      "MailCode": "NoSpecialAction",
+      "MaritalStatus": "Married",
+      "MothersMaidenName": "Name",
+      "Occupation": "Architecture / Engineering",
+      "PEP": "No",
+      "CISNumber": "00000061099",
+      "PrimaryID": "DL",
+      "PrimaryLanguage": "Chinese",
+      "PrimaryOfficerNumber": 30744,
+      "PrimaryPhoneNumber": "7656065125",
+      "RequestUUID": "a04m000000BAcfJAAT",
+      "SSN": "991666666",
+      "SSN_Type": "ssn9",
+      "SearchName": "WatchList",
+      "SecondaryOfficerNumber": 30744,
+      "TaxIdType": "SocialSecurityNumber",
+      "TaxNumber": "666176172",
+      "Title": "",
+      "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+      "W8CertificateType": "Blank"
+    },
+    "Documents": [],
+    "IdAuthenticationResponse": [
+      {
+        "PassThroughs": [
+          {
+            "Data": "{\"IDAuthResultResponse\":{\"Header\":{\"TransactionId\":\"2050861R41753\"},\"Success\":true,\"AuthenticationResult\":{\"DocumentName\":\"California (CA) Driver License\",\"DocAuthResult\":\"Attention\",\"DocIssuerCode\":\"CA\",\"DocIssuerName\":\"California\",\"DocClassCode\":\"DriversLicense\",\"DocClass\":\"DriversLicense\",\"DocClassName\":\"Drivers License\",\"DocIsGeneric\":\"false\",\"DocIssue\":\"2010\",\"DocIssueType\":\"Driver License\",\"DocSize\":\"ID1\",\"ClassificationMode\":\"Automatic\",\"OrientationChanged\":\"false\",\"PresentationChanged\":\"false\",\"FullName\":\"VAMSI SAKHINETI\",\"Sex\":\"Male\",\"Age\":\"29\",\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4},\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4},\"Portrait\":\"\",\"Signature\":\"\",\"Alerts\":{\"IDAuthAlertData\":[{\"AlertID\":\"97aaa371-16b5-404e-8922-116b8afe5932\",\"AlertName\":\"2D Barcode Read\",\"AlertKey\":\"2D Barcode Read\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the two-dimensional barcode on the document was read successfully.\"},{\"AlertID\":\"113de986-ab10-497f-bc8b-6f1f2e105509\",\"AlertName\":\"Document Classification\",\"AlertKey\":\"Document Classification\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the type of document is supported and is able to be fully authenticated.\"},{\"AlertID\":\"9b53da13-250c-4c15-80b0-1fef73ff5b67\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Waves\"]}},{\"AlertID\":\"2cbe67a7-87a8-4927-be78-ab77499e14d7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Bear\"]}},{\"AlertID\":\"025c450f-a358-47c9-81d5-97e3443bcaed\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Seal\"]}},{\"AlertID\":\"7400df02-127d-4efa-8503-2ea977e0c100\",\"AlertName\":\"Birth Date Valid\",\"AlertKey\":\"Birth Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the birth date is valid.\"},{\"AlertID\":\"08d4b99c-c147-4596-8d85-a2a52bcd862f\",\"AlertName\":\"Document Expired\",\"AlertKey\":\"Document Expired\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Checked if the document is expired.\"},{\"AlertID\":\"2da1438f-f5d0-40c2-be2c-9ebe7cda3ec4\",\"AlertName\":\"Expiration Date Valid\",\"AlertKey\":\"Expiration Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the expiration date is valid.\"},{\"AlertID\":\"3f925e9a-6a2c-4fdc-bfdb-3cadcf470ede\",\"AlertName\":\"Issue Date Valid\",\"AlertKey\":\"Issue Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the issue date is valid.\"},{\"AlertID\":\"2969372f-acbf-4055-9f8d-b81d0e494b44\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Mountain Right\"]}},{\"AlertID\":\"42a570ad-b136-4722-8651-c6c683f7e5f7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Tree\"]}}]},\"Fields\":{\"IDAuthFieldData\":[{\"Address\":\" IOO FLURRY DR , .LIVERMORE. CA 94550\"},{\"City\":\"LIVERMORE\"},{\"PostalCode\":\"94550\"},{\"State\":\"CA\"},{\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4}},{\"DocumentClassName\":\"Drivers License\"},{\"DocumentNumber\":\"F7217708\"},{\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4}},{\"FirstName\":\"VAMSI\"},{\"FullName\":\"VAMSI SAKHINETI\"},{\"GivenName\":\"VAMSI\"},{\"IssueDate\":{\"Year\":2017,\"Month\":7,\"Day\":26}},{\"IssuingStateCode\":\"CA\"},{\"IssuingStateName\":\"California\"},{\"Sex\":\"M\"},{\"Surname\":\"SAKHINETI\"}]}}}}",
+            "Type": "true.id"
+          }
+        ],
+        "Products": [
+          {
+            "ExecutedStepName": "True_ID_Step",
+            "ProductConfigurationName": "TrueID_Flow",
+            "ProductStatus": "pass",
+            "ProductType": "TrueID"
+          }
+        ],
+        "Status": {
+          "ConversationId": "31000101592685",
+          "Reference": "payload.RequestUUID",
+          "RequestId": "294443635",
+          "TransactionStatus": "passed"
+        }
+      }
+    ],
+    "IdVerificationRequest": {
+      "Person": {
+        "Addresses": [
+          {
+            "City": "San Francisco",
+            "Context": "primary",
+            "Country": "US",
+            "State": "CA",
+            "StreetAddress1": "1100 Market St",
+            "Zip5": "94102-3804"
+          }
+        ],
+        "DateOfBirth": {
+          "Day": "3",
+          "Month": "4",
+          "Year": "1989"
+        },
+        "Name": {
+          "FirstName": "VAMSI",
+          "LastName": "SAKHINETI"
+        },
+        "Phones": [
+          {
+            "Context": "mobile",
+            "Number": "7656065125"
+          }
+        ],
+        "SSN": {
+          "Number": "991666666",
+          "Type": "ssn9"
+        }
+      }
+    },
+    "InstantIdCVIInformation": [
+      {
+        "Type": "INSTANT_ID",
+        "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41904\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetAddress1\":\"4400 HORNER St unit 4\",\"City\":\"Union City\",\"State\":\"CA\",\"Zip5\":\"94587\"},\"DOB\":{\"Year\":1986,\"Month\":4,\"Day\":24},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133856\",\"VerifiedInput\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"County\":\"STAFFORD\"},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"DOB\":{\"Year\":\"1986\",\"Month\":\"04\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":0,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":30,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"B\",\"Description\":\"Verify name with Social (via SSN card  DL if applicable  paycheck stub  or other Government Issued I\"},{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\"}},\"PhoneOfNameAddress\":\"2404168099\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"DISTRICT OF COLUMBIA\",\"IssuedStartDate\":{\"Year\":1977,\"Month\":1},\"IssuedEndDate\":{\"Year\":1979,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"LOCUST GROVE\",\"State\":\"VA\",\"Zip5\":\"22508\",\"Zip4\":\"2186\"},\"DateFirstSeen\":{\"Year\":2007,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":7},\"IsBestAddress\":true},{\"Address\":{\"StreetAddress1\":\"PO BOX 44851\",\"City\":\"FORT WASHINGTON\",\"State\":\"MD\",\"Zip5\":\"20749\",\"Zip4\":\"4851\"},\"Phone\":\"3018431388\",\"DateFirstSeen\":{\"Year\":1999,\"Month\":2},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}},{\"Address\":{\"StreetAddress1\":\"606 ENGLAND POINTE DR\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"22406\",\"Zip4\":\"6495\"},\"Phone\":\"2404168099\",\"DateFirstSeen\":{\"Year\":2000,\"Month\":5},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":true,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"Latitude\":\"38.355439\",\"Longitude\":\"-77.495279\"}}}}}"
+      }
+    ],
+    "PinPointResponse": {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "customer_session_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+            "info": {},
+            "malware": [
+              {
+                "risk_score": 950,
+                "name": "Simba-brcl",
+                "key": "simba",
+                "id": "53",
+                "signature": "Simba",
+                "targeted": "maybe",
+                "collector": "active_detection",
+                "pattern": "912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18"
+              },
+              {
+                "risk_score": 1000,
+                "name": "Pumba-brcl",
+                "key": "pumba",
+                "id": "50",
+                "signature": "Pumba",
+                "targeted": "maybe",
+                "collector": "passive_detection",
+                "pattern": "912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898"
+              }
+            ],
+            "malware_ids": {
+              "50": {
+                "risk_score": 1000,
+                "targeted": "maybe"
+              },
+              "53": {
+                "risk_score": 950,
+                "targeted": "maybe"
+              }
+            },
+            "risk_score": 1000,
+            "timestamp": "2015-07-08 12:29:33",
+            "encrypted_user_id": "encrypted_user_ID",
+            "encryption_key_id": "company.1.20170724"
+          }
+        },
+        "device_data": {
+          "device_key": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+          "gd_id": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234-12345678",
+          "is_new": true,
+          "is_new_device_confidence_level": 0.75,
+          "is_new_global_device": true,
+          "v3": {
+            "screen_width": 1920,
+            "doc_location": "",
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "client_time_zone": -180,
+            "remote_addr": "123.123.123.123",
+            "history_length": 7,
+            "js": 1,
+            "accept_encoding": "gzip, deflate",
+            "counter": 3,
+            "machine_id": "",
+            "region": "05",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "isp": "ISP",
+            "screen_height": 1080,
+            "first_time": "2017-02-08 09:27:40",
+            "agent_key": "",
+            "platform": "Win32",
+            "cpu": "Win32",
+            "ip_time_zone": 120,
+            "digest": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+            "screen_touch": 0,
+            "fonts": "800648E87FC13E00BBAA18547FEC9690",
+            "global_cookie": "jgqlqlz28xaqegfzamk",
+            "file_upload_indicator": 0,
+            "mimes": "4118237596",
+            "file_upload": 1,
+            "longitude": 34.764701843262,
+            "navigator_props": 3695045678,
+            "browser_version": "41.0.2228",
+            "client_charset": "UTF-8",
+            "last_access": "2017-02-08 09:27:40",
+            "browser": "Chrome",
+            "charset": 1,
+            "accept_language": "en-US,en;q=0.5",
+            "latitude": 32.067798614502,
+            "org": "ISP",
+            "city": "Tel Aviv-yafo",
+            "first_access": "2017-02-08 09:27:40",
+            "country": "ISR",
+            "continent_code": "AS",
+            "country_name": "",
+            "country_code": "IL",
+            "country_code3": "ISR",
+            "post_code": "",
+            "x_forwarded_for": "123.123.123.123",
+            "id": 876137,
+            "pinpoint_session": "00009576042079220976",
+            "hashed_user_id": "N/A",
+            "os": "Windows 7",
+            "user_agent": "Mozilla",
+            "application": "66640095",
+            "cookie": "0.2157162984033204",
+            "plugins": "2075505175",
+            "area_code": 0,
+            "accept": "image/png,image/*;q=0.8,*/*;q=0.5",
+            "business": "trusteerqa"
+          }
+        },
+        "recommendation": {
+          "recommendation": "allow",
+          "resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+          "reason_id": -1,
+          "reason": "reason text",
+          "risk_score": 0
+        },
+        "risk_engine_recommendation": {
+          "risk_score": 1,
+          "reason_id": 1,
+          "recommendation": "allow_login_restrict",
+          "reason": "reason text"
+        },
+        "customer_session_id": "<CSID>"
+      }
+    },
+    "Promotions": {
+      "OnboardingInvitation": {
+        "EmailAddress": "dds@dds.com",
+        "PhoneNumber": "7656065125"
+      },
+      "PromoCode": "Y834KCUH",
+      "Status": "New"
+    }
+  }
+]]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="flow-ref-to-NonNRASubmission" doc:id="a339baaf-3816-44b9-aa50-297e1aab8c71" name="NonNRASubmission"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Success" doc:id="9d512a6b-ecd6-488a-88d7-6e242793cfd9" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Create Operation was not a Success"/>
+			<!-- <munit-tools:assert-that doc:name="Assert for Application Status" doc:id="0d6e4852-7c51-49de-b804-5554c4636812" expression="#[payload.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Create Operation was not a Success"/> -->
+		</munit:validation>
+	</munit:test>
+	<munit:test name="kba-test-suite-NonNRASubmissionTest-VerifyKBAAttention_when_pending" description="Test" doc:id="06fbfc60-7452-4e25-b595-69c9aafb1d06" ignore="true">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="mock-kba-attention" doc:id="ab68a0ea-c478-469e-afe2-3608003ced66" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="kbaResponse" value='#[output application/json --- { "Status": {
+        "ConversationId": "31000157946785",
+        "RequestId": "375789725",
+        "TransactionStatus": "pending",
+        "ActionType": "answers",
+        "Reference": "Reference1"
+    }}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<flow-ref doc:name="flow-ref-to-PepMock" doc:id="87670264-e5d5-4da4-916b-fb2b02b6d05b" name="PepMock"/>
+			<flow-ref doc:name="flow-ref-to-OFAC-Mock" doc:id="1290572b-6cad-4195-bb66-028aa78bb895" name="OFAC-Mock"/>
+			<flow-ref doc:name="flow-ref-to-CaseCreationMockSub_Flow" doc:id="6a534ec7-c843-4aab-a353-f29e065f40ee" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="create-request-body" doc:id="e2b68239-3bea-49c4-91c2-a7700e89b2a3" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[
+  {
+  	"Pass": true,
+    "Answers": {
+      "QuestionSetId": 93978945,
+      "Questions": [
+        {
+          "QuestionId": 322596195,
+          "Choices": [
+            {
+              "Choice": "1586587275"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596205,
+          "Choices": [
+            {
+              "Choice": "1586587325"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596215,
+          "Choices": [
+            {
+              "Choice": "1586587385"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ApplicationId": "a04m000000BAcfJAAT",
+    "ApplicantType": "NRA/NONNRA/USCitizen",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "AccountInformation": {
+      "AccountType": "CHK_I_PERS_PREMIER",
+      "CustomerToAccountRelationship": {
+        "AddressLineOfTINOwner": 1,
+        "Customer1AccountAssociationType": "Primary",
+        "Customer1AccountRelationshipCode": "000",
+        "Customer2AccountAssociationType": "Primary",
+        "NumberOfStatementCopies": 1
+      },
+      "CardAccount": {
+        "CardNameLine1": "Vamsi  Sakhineti"
+      },
+      "DepositAccount": {
+        "WithholdingIndicator": "ExemptAssumed",
+        "UserCode": "D",
+        "StatusCodes": [
+          "NeverClose"
+        ],
+        "BulkFileType": "ImageFile"
+      }
+    },
+    "CustomerInformation": {
+      "Address": {
+        "City": "San Francisco",
+        "CountryCode": "US",
+        "IsForeignAddress": false,
+        "State": "CA",
+        "StreetAddress1": "1100 Market St",
+        "StreetAddress2": "null",
+        "Zip": "94102-3804"
+      },
+      "MailingAddress": {
+        "StreetAddress1": "9301 Flair Dr",
+        "StreetAddress2": "300",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "CountryCode": "USA"
+      },
+      "SourceofFunds": {
+        "Source": "FundfromEMP",
+        "MiscDemographic": 2,
+        "CustomerIntentforIntWireTransfer": {
+          "TransferServices": "Yes/No",
+          "ForeignInActivity": {
+            "ForeignIncomingActivity": "Yes/No",
+            "IncomingWires": 3,
+            "IncomingWiresAmount": 233445.34
+          },
+          "ForeignOutActivity": {
+            "ForeignOutgoingActivity": "Yes/No",
+            "OutgoingWires": 3,
+            "OutgoingWiresAmount": 233445.34
+          }
+        }
+      },
+      "BranchNumber": "8034",
+      "CitizenshipCode": "USA",
+      "CostCenterNumber": 1145,
+      "CountryOfBirth": "India",
+      "DateOfBirth": "1989-03-04",
+      "EmailAddress": "dds@dds.com",
+      "EmploymentDate": "2015-05-16T16:55:15.467Z",
+      "EmploymentOrSchool": "EWB",
+      "EntityType": "Unknown",
+      "Ethnicity": "AfricanAmerican",
+      "FirstName": "VAMSI",
+      "Gender": "Female",
+      "CategoryCode1": "903",
+      "CountryofDualCitizenship": "USA",
+      "Identification": {
+        "IdentificationInformation1": {
+          "ExpirationDate": "2020-05-16T16:55:15.468Z",
+          "IssueDate": "2010-05-16T16:55:15.468Z",
+          "IssuingEntity": "DMV",
+          "IssuingLocation": "Pasadena",
+          "Number": "F4567",
+          "Type": "DL"
+        },
+        "IdentificationInformation2": {
+          "ExpirationDate": "2028-05-16T16:55:15.468Z",
+          "IssueDate": "2008-05-16T16:55:15.468Z",
+          "IssuingEntity": "US",
+          "IssuingLocation": "Pasadena",
+          "Number": "R4567",
+          "Type": "Passport"
+        },
+        "IsTINAppliedFor": true,
+        "Status": "VerifiedByBanker",
+        "NonDocumentaryIdentificationInformation": "VLN"
+      },
+      "LastName": "SAKHINETI",
+      "MailCode": "NoSpecialAction",
+      "MaritalStatus": "Married",
+      "MothersMaidenName": "Name",
+      "Occupation": "Architecture / Engineering",
+      "PEP": "No",
+      "CISNumber": "00000061099",
+      "PrimaryID": "DL",
+      "PrimaryLanguage": "Chinese",
+      "PrimaryOfficerNumber": 30744,
+      "PrimaryPhoneNumber": "7656065125",
+      "RequestUUID": "a04m000000BAcfJAAT",
+      "SSN": "991666666",
+      "SSN_Type": "ssn9",
+      "SearchName": "WatchList",
+      "SecondaryOfficerNumber": 30744,
+      "TaxIdType": "SocialSecurityNumber",
+      "TaxNumber": "666176172",
+      "Title": "",
+      "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+      "W8CertificateType": "Blank"
+    },
+    "Documents": [],
+    "IdAuthenticationResponse": [
+      {
+        "PassThroughs": [
+          {
+            "Data": "{\"IDAuthResultResponse\":{\"Header\":{\"TransactionId\":\"2050861R41753\"},\"Success\":true,\"AuthenticationResult\":{\"DocumentName\":\"California (CA) Driver License\",\"DocAuthResult\":\"Passed\",\"DocIssuerCode\":\"CA\",\"DocIssuerName\":\"California\",\"DocClassCode\":\"DriversLicense\",\"DocClass\":\"DriversLicense\",\"DocClassName\":\"Drivers License\",\"DocIsGeneric\":\"false\",\"DocIssue\":\"2010\",\"DocIssueType\":\"Driver License\",\"DocSize\":\"ID1\",\"ClassificationMode\":\"Automatic\",\"OrientationChanged\":\"false\",\"PresentationChanged\":\"false\",\"FullName\":\"VAMSI SAKHINETI\",\"Sex\":\"Male\",\"Age\":\"29\",\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4},\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4},\"Portrait\":\"\",\"Signature\":\"\",\"Alerts\":{\"IDAuthAlertData\":[{\"AlertID\":\"97aaa371-16b5-404e-8922-116b8afe5932\",\"AlertName\":\"2D Barcode Read\",\"AlertKey\":\"2D Barcode Read\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the two-dimensional barcode on the document was read successfully.\"},{\"AlertID\":\"113de986-ab10-497f-bc8b-6f1f2e105509\",\"AlertName\":\"Document Classification\",\"AlertKey\":\"Document Classification\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the type of document is supported and is able to be fully authenticated.\"},{\"AlertID\":\"9b53da13-250c-4c15-80b0-1fef73ff5b67\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Waves\"]}},{\"AlertID\":\"2cbe67a7-87a8-4927-be78-ab77499e14d7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Bear\"]}},{\"AlertID\":\"025c450f-a358-47c9-81d5-97e3443bcaed\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Seal\"]}},{\"AlertID\":\"7400df02-127d-4efa-8503-2ea977e0c100\",\"AlertName\":\"Birth Date Valid\",\"AlertKey\":\"Birth Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the birth date is valid.\"},{\"AlertID\":\"08d4b99c-c147-4596-8d85-a2a52bcd862f\",\"AlertName\":\"Document Expired\",\"AlertKey\":\"Document Expired\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Checked if the document is expired.\"},{\"AlertID\":\"2da1438f-f5d0-40c2-be2c-9ebe7cda3ec4\",\"AlertName\":\"Expiration Date Valid\",\"AlertKey\":\"Expiration Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the expiration date is valid.\"},{\"AlertID\":\"3f925e9a-6a2c-4fdc-bfdb-3cadcf470ede\",\"AlertName\":\"Issue Date Valid\",\"AlertKey\":\"Issue Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the issue date is valid.\"},{\"AlertID\":\"2969372f-acbf-4055-9f8d-b81d0e494b44\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Mountain Right\"]}},{\"AlertID\":\"42a570ad-b136-4722-8651-c6c683f7e5f7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Tree\"]}}]},\"Fields\":{\"IDAuthFieldData\":[{\"Address\":\" IOO FLURRY DR , .LIVERMORE. CA 94550\"},{\"City\":\"LIVERMORE\"},{\"PostalCode\":\"94550\"},{\"State\":\"CA\"},{\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4}},{\"DocumentClassName\":\"Drivers License\"},{\"DocumentNumber\":\"F7217708\"},{\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4}},{\"FirstName\":\"VAMSI\"},{\"FullName\":\"VAMSI SAKHINETI\"},{\"GivenName\":\"VAMSI\"},{\"IssueDate\":{\"Year\":2017,\"Month\":7,\"Day\":26}},{\"IssuingStateCode\":\"CA\"},{\"IssuingStateName\":\"California\"},{\"Sex\":\"M\"},{\"Surname\":\"SAKHINETI\"}]}}}}",
+            "Type": "true.id"
+          }
+        ],
+        "Products": [
+          {
+            "ExecutedStepName": "True_ID_Step",
+            "ProductConfigurationName": "TrueID_Flow",
+            "ProductStatus": "pass",
+            "ProductType": "TrueID"
+          }
+        ],
+        "Status": {
+          "ConversationId": "31000101592685",
+          "Reference": "payload.RequestUUID",
+          "RequestId": "294443635",
+          "TransactionStatus": "passed"
+        }
+      }
+    ],
+    "IdVerificationRequest": {
+      "Person": {
+        "Addresses": [
+          {
+            "City": "San Francisco",
+            "Context": "primary",
+            "Country": "US",
+            "State": "CA",
+            "StreetAddress1": "1100 Market St",
+            "Zip5": "94102-3804"
+          }
+        ],
+        "DateOfBirth": {
+          "Day": "3",
+          "Month": "4",
+          "Year": "1989"
+        },
+        "Name": {
+          "FirstName": "VAMSI",
+          "LastName": "SAKHINETI"
+        },
+        "Phones": [
+          {
+            "Context": "mobile",
+            "Number": "7656065125"
+          }
+        ],
+        "SSN": {
+          "Number": "991666666",
+          "Type": "ssn9"
+        }
+      }
+    },
+    "InstantIdCVIInformation": [
+      {
+        "Type": "INSTANT_ID",
+        "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41904\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetAddress1\":\"4400 HORNER St unit 4\",\"City\":\"Union City\",\"State\":\"CA\",\"Zip5\":\"94587\"},\"DOB\":{\"Year\":1986,\"Month\":4,\"Day\":24},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133856\",\"VerifiedInput\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"County\":\"STAFFORD\"},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"DOB\":{\"Year\":\"1986\",\"Month\":\"04\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":0,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":30,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"B\",\"Description\":\"Verify name with Social (via SSN card  DL if applicable  paycheck stub  or other Government Issued I\"},{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\"}},\"PhoneOfNameAddress\":\"2404168099\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"DISTRICT OF COLUMBIA\",\"IssuedStartDate\":{\"Year\":1977,\"Month\":1},\"IssuedEndDate\":{\"Year\":1979,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"LOCUST GROVE\",\"State\":\"VA\",\"Zip5\":\"22508\",\"Zip4\":\"2186\"},\"DateFirstSeen\":{\"Year\":2007,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":7},\"IsBestAddress\":true},{\"Address\":{\"StreetAddress1\":\"PO BOX 44851\",\"City\":\"FORT WASHINGTON\",\"State\":\"MD\",\"Zip5\":\"20749\",\"Zip4\":\"4851\"},\"Phone\":\"3018431388\",\"DateFirstSeen\":{\"Year\":1999,\"Month\":2},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}},{\"Address\":{\"StreetAddress1\":\"606 ENGLAND POINTE DR\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"22406\",\"Zip4\":\"6495\"},\"Phone\":\"2404168099\",\"DateFirstSeen\":{\"Year\":2000,\"Month\":5},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":true,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"Latitude\":\"38.355439\",\"Longitude\":\"-77.495279\"}}}}}"
+      }
+    ],
+    "PinPointResponse": {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "customer_session_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+            "info": {},
+            "malware": [
+              {
+                "risk_score": 950,
+                "name": "Simba-brcl",
+                "key": "simba",
+                "id": "53",
+                "signature": "Simba",
+                "targeted": "maybe",
+                "collector": "active_detection",
+                "pattern": "912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18"
+              },
+              {
+                "risk_score": 1000,
+                "name": "Pumba-brcl",
+                "key": "pumba",
+                "id": "50",
+                "signature": "Pumba",
+                "targeted": "maybe",
+                "collector": "passive_detection",
+                "pattern": "912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898"
+              }
+            ],
+            "malware_ids": {
+              "50": {
+                "risk_score": 1000,
+                "targeted": "maybe"
+              },
+              "53": {
+                "risk_score": 950,
+                "targeted": "maybe"
+              }
+            },
+            "risk_score": 1000,
+            "timestamp": "2015-07-08 12:29:33",
+            "encrypted_user_id": "encrypted_user_ID",
+            "encryption_key_id": "company.1.20170724"
+          }
+        },
+        "device_data": {
+          "device_key": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+          "gd_id": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234-12345678",
+          "is_new": true,
+          "is_new_device_confidence_level": 0.75,
+          "is_new_global_device": true,
+          "v3": {
+            "screen_width": 1920,
+            "doc_location": "",
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "client_time_zone": -180,
+            "remote_addr": "123.123.123.123",
+            "history_length": 7,
+            "js": 1,
+            "accept_encoding": "gzip, deflate",
+            "counter": 3,
+            "machine_id": "",
+            "region": "05",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "isp": "ISP",
+            "screen_height": 1080,
+            "first_time": "2017-02-08 09:27:40",
+            "agent_key": "",
+            "platform": "Win32",
+            "cpu": "Win32",
+            "ip_time_zone": 120,
+            "digest": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+            "screen_touch": 0,
+            "fonts": "800648E87FC13E00BBAA18547FEC9690",
+            "global_cookie": "jgqlqlz28xaqegfzamk",
+            "file_upload_indicator": 0,
+            "mimes": "4118237596",
+            "file_upload": 1,
+            "longitude": 34.764701843262,
+            "navigator_props": 3695045678,
+            "browser_version": "41.0.2228",
+            "client_charset": "UTF-8",
+            "last_access": "2017-02-08 09:27:40",
+            "browser": "Chrome",
+            "charset": 1,
+            "accept_language": "en-US,en;q=0.5",
+            "latitude": 32.067798614502,
+            "org": "ISP",
+            "city": "Tel Aviv-yafo",
+            "first_access": "2017-02-08 09:27:40",
+            "country": "ISR",
+            "continent_code": "AS",
+            "country_name": "",
+            "country_code": "IL",
+            "country_code3": "ISR",
+            "post_code": "",
+            "x_forwarded_for": "123.123.123.123",
+            "id": 876137,
+            "pinpoint_session": "00009576042079220976",
+            "hashed_user_id": "N/A",
+            "os": "Windows 7",
+            "user_agent": "Mozilla",
+            "application": "66640095",
+            "cookie": "0.2157162984033204",
+            "plugins": "2075505175",
+            "area_code": 0,
+            "accept": "image/png,image/*;q=0.8,*/*;q=0.5",
+            "business": "trusteerqa"
+          }
+        },
+        "recommendation": {
+          "recommendation": "allow",
+          "resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+          "reason_id": -1,
+          "reason": "reason text",
+          "risk_score": 0
+        },
+        "risk_engine_recommendation": {
+          "risk_score": 1,
+          "reason_id": 1,
+          "recommendation": "allow_login_restrict",
+          "reason": "reason text"
+        },
+        "customer_session_id": "<CSID>"
+      }
+    },
+    "Promotions": {
+      "OnboardingInvitation": {
+        "EmailAddress": "dds@dds.com",
+        "PhoneNumber": "7656065125"
+      },
+      "PromoCode": "Y834KCUH",
+      "Status": "New"
+    }
+  }
+]]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="selEnv" ><![CDATA[%dw 2.0
+output application/java
+---
+"prd"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="flow-ref-to-NonNRASubmission" doc:id="fe030a96-68ce-41d5-a5bb-9cf364cf81b7" name="NonNRASubmission"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Success" doc:id="b0cfd52a-3338-4bdf-a4ca-43355a67dff2" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Create Operation was not a Success"/>
+			<!-- <munit-tools:assert-that doc:name="Assert for Application Status" doc:id="fe8d251e-3cd5-460e-9749-14ed59c14738" expression="#[payload.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Create Operation was not a Success"/> -->
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="kba-test-suite-NonNRASubmissionTest-VerifyKBAPassed" description="Test" doc:id="2472f8a4-9e4c-4f26-aeb7-712622f3841d">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="mock-kba-passed" doc:id="ec16713e-4292-43be-94ec-56f204cdfc79" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="kbaResponse" value='#[output application/json --- { "Status": {
+        "ConversationId": "31000157946785",
+        "RequestId": "375789725",
+        "TransactionStatus": "passed",
+        "ActionType": "answers",
+        "Reference": "Reference1"
+    }}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<flow-ref doc:name="flow-ref-to-PepMock" doc:id="5a89849f-43f6-4a78-99d7-246e402694ce" name="PepMock"/>
+			<flow-ref doc:name="flow-ref-to-OFAC-Mock" doc:id="d3655ae2-4876-4f3e-885d-51041c58d233" name="OFAC-Mock"/>
+			<flow-ref doc:name="flow-ref-to-CaseCreationMockSub_Flow" doc:id="25dc0150-2865-4821-8faf-78a1f88cc5ec" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="create-request-body" doc:id="47cf55bc-a1f0-4864-9279-dac913dbce49" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[
+  {
+  	"Pass": true,
+    "Answers": {
+      "QuestionSetId": 93978945,
+      "Questions": [
+        {
+          "QuestionId": 322596195,
+          "Choices": [
+            {
+              "Choice": "1586587275"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596205,
+          "Choices": [
+            {
+              "Choice": "1586587325"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596215,
+          "Choices": [
+            {
+              "Choice": "1586587385"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ApplicationId": "a04m000000BAcfJAAT",
+    "ApplicantType": "NRA/NONNRA/USCitizen",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "AccountInformation": {
+      "AccountType": "CHK_I_PERS_PREMIER",
+      "CustomerToAccountRelationship": {
+        "AddressLineOfTINOwner": 1,
+        "Customer1AccountAssociationType": "Primary",
+        "Customer1AccountRelationshipCode": "000",
+        "Customer2AccountAssociationType": "Primary",
+        "NumberOfStatementCopies": 1
+      },
+      "CardAccount": {
+        "CardNameLine1": "Vamsi  Sakhineti"
+      },
+      "DepositAccount": {
+        "WithholdingIndicator": "ExemptAssumed",
+        "UserCode": "D",
+        "StatusCodes": [
+          "NeverClose"
+        ],
+        "BulkFileType": "ImageFile"
+      }
+    },
+    "CustomerInformation": {
+      "Address": {
+        "City": "San Francisco",
+        "CountryCode": "US",
+        "IsForeignAddress": false,
+        "State": "CA",
+        "StreetAddress1": "1100 Market St",
+        "StreetAddress2": "null",
+        "Zip": "94102-3804"
+      },
+      "MailingAddress": {
+        "StreetAddress1": "9301 Flair Dr",
+        "StreetAddress2": "300",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "CountryCode": "USA"
+      },
+      "SourceofFunds": {
+        "Source": "FundfromEMP",
+        "MiscDemographic": 2,
+        "CustomerIntentforIntWireTransfer": {
+          "TransferServices": "Yes/No",
+          "ForeignInActivity": {
+            "ForeignIncomingActivity": "Yes/No",
+            "IncomingWires": 3,
+            "IncomingWiresAmount": 233445.34
+          },
+          "ForeignOutActivity": {
+            "ForeignOutgoingActivity": "Yes/No",
+            "OutgoingWires": 3,
+            "OutgoingWiresAmount": 233445.34
+          }
+        }
+      },
+      "BranchNumber": "8034",
+      "CitizenshipCode": "USA",
+      "CostCenterNumber": 1145,
+      "CountryOfBirth": "India",
+      "DateOfBirth": "1989-03-04",
+      "EmailAddress": "dds@dds.com",
+      "EmploymentDate": "2015-05-16T16:55:15.467Z",
+      "EmploymentOrSchool": "EWB",
+      "EntityType": "Unknown",
+      "Ethnicity": "AfricanAmerican",
+      "FirstName": "VAMSI",
+      "Gender": "Female",
+      "CategoryCode1": "903",
+      "CountryofDualCitizenship": "USA",
+      "Identification": {
+        "IdentificationInformation1": {
+          "ExpirationDate": "2020-05-16T16:55:15.468Z",
+          "IssueDate": "2010-05-16T16:55:15.468Z",
+          "IssuingEntity": "DMV",
+          "IssuingLocation": "Pasadena",
+          "Number": "F4567",
+          "Type": "DL"
+        },
+        "IdentificationInformation2": {
+          "ExpirationDate": "2028-05-16T16:55:15.468Z",
+          "IssueDate": "2008-05-16T16:55:15.468Z",
+          "IssuingEntity": "US",
+          "IssuingLocation": "Pasadena",
+          "Number": "R4567",
+          "Type": "Passport"
+        },
+        "IsTINAppliedFor": true,
+        "Status": "VerifiedByBanker",
+        "NonDocumentaryIdentificationInformation": "VLN"
+      },
+      "LastName": "SAKHINETI",
+      "MailCode": "NoSpecialAction",
+      "MaritalStatus": "Married",
+      "MothersMaidenName": "Name",
+      "Occupation": "Architecture / Engineering",
+      "PEP": "No",
+      "CISNumber": "00000061099",
+      "PrimaryID": "DL",
+      "PrimaryLanguage": "Chinese",
+      "PrimaryOfficerNumber": 30744,
+      "PrimaryPhoneNumber": "7656065125",
+      "RequestUUID": "a04m000000BAcfJAAT",
+      "SSN": "991666666",
+      "SSN_Type": "ssn9",
+      "SearchName": "WatchList",
+      "SecondaryOfficerNumber": 30744,
+      "TaxIdType": "SocialSecurityNumber",
+      "TaxNumber": "666176172",
+      "Title": "",
+      "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+      "W8CertificateType": "Blank"
+    },
+    "Documents": [],
+    "IdAuthenticationResponse": [
+      {
+        "PassThroughs": [
+          {
+            "Data": "{\"IDAuthResultResponse\":{\"Header\":{\"TransactionId\":\"2050861R41753\"},\"Success\":true,\"AuthenticationResult\":{\"DocumentName\":\"California (CA) Driver License\",\"DocAuthResult\":\"Passed\",\"DocIssuerCode\":\"CA\",\"DocIssuerName\":\"California\",\"DocClassCode\":\"DriversLicense\",\"DocClass\":\"DriversLicense\",\"DocClassName\":\"Drivers License\",\"DocIsGeneric\":\"false\",\"DocIssue\":\"2010\",\"DocIssueType\":\"Driver License\",\"DocSize\":\"ID1\",\"ClassificationMode\":\"Automatic\",\"OrientationChanged\":\"false\",\"PresentationChanged\":\"false\",\"FullName\":\"VAMSI SAKHINETI\",\"Sex\":\"Male\",\"Age\":\"29\",\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4},\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4},\"Portrait\":\"\",\"Signature\":\"\",\"Alerts\":{\"IDAuthAlertData\":[{\"AlertID\":\"97aaa371-16b5-404e-8922-116b8afe5932\",\"AlertName\":\"2D Barcode Read\",\"AlertKey\":\"2D Barcode Read\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the two-dimensional barcode on the document was read successfully.\"},{\"AlertID\":\"113de986-ab10-497f-bc8b-6f1f2e105509\",\"AlertName\":\"Document Classification\",\"AlertKey\":\"Document Classification\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the type of document is supported and is able to be fully authenticated.\"},{\"AlertID\":\"9b53da13-250c-4c15-80b0-1fef73ff5b67\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Waves\"]}},{\"AlertID\":\"2cbe67a7-87a8-4927-be78-ab77499e14d7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Bear\"]}},{\"AlertID\":\"025c450f-a358-47c9-81d5-97e3443bcaed\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Seal\"]}},{\"AlertID\":\"7400df02-127d-4efa-8503-2ea977e0c100\",\"AlertName\":\"Birth Date Valid\",\"AlertKey\":\"Birth Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the birth date is valid.\"},{\"AlertID\":\"08d4b99c-c147-4596-8d85-a2a52bcd862f\",\"AlertName\":\"Document Expired\",\"AlertKey\":\"Document Expired\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Checked if the document is expired.\"},{\"AlertID\":\"2da1438f-f5d0-40c2-be2c-9ebe7cda3ec4\",\"AlertName\":\"Expiration Date Valid\",\"AlertKey\":\"Expiration Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the expiration date is valid.\"},{\"AlertID\":\"3f925e9a-6a2c-4fdc-bfdb-3cadcf470ede\",\"AlertName\":\"Issue Date Valid\",\"AlertKey\":\"Issue Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the issue date is valid.\"},{\"AlertID\":\"2969372f-acbf-4055-9f8d-b81d0e494b44\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Mountain Right\"]}},{\"AlertID\":\"42a570ad-b136-4722-8651-c6c683f7e5f7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Tree\"]}}]},\"Fields\":{\"IDAuthFieldData\":[{\"Address\":\" IOO FLURRY DR , .LIVERMORE. CA 94550\"},{\"City\":\"LIVERMORE\"},{\"PostalCode\":\"94550\"},{\"State\":\"CA\"},{\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4}},{\"DocumentClassName\":\"Drivers License\"},{\"DocumentNumber\":\"F7217708\"},{\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4}},{\"FirstName\":\"VAMSI\"},{\"FullName\":\"VAMSI SAKHINETI\"},{\"GivenName\":\"VAMSI\"},{\"IssueDate\":{\"Year\":2017,\"Month\":7,\"Day\":26}},{\"IssuingStateCode\":\"CA\"},{\"IssuingStateName\":\"California\"},{\"Sex\":\"M\"},{\"Surname\":\"SAKHINETI\"}]}}}}",
+            "Type": "true.id"
+          }
+        ],
+        "Products": [
+          {
+            "ExecutedStepName": "True_ID_Step",
+            "ProductConfigurationName": "TrueID_Flow",
+            "ProductStatus": "pass",
+            "ProductType": "TrueID"
+          }
+        ],
+        "Status": {
+          "ConversationId": "31000101592685",
+          "Reference": "payload.RequestUUID",
+          "RequestId": "294443635",
+          "TransactionStatus": "passed"
+        }
+      }
+    ],
+    "IdVerificationRequest": {
+      "Person": {
+        "Addresses": [
+          {
+            "City": "San Francisco",
+            "Context": "primary",
+            "Country": "US",
+            "State": "CA",
+            "StreetAddress1": "1100 Market St",
+            "Zip5": "94102-3804"
+          }
+        ],
+        "DateOfBirth": {
+          "Day": "3",
+          "Month": "4",
+          "Year": "1989"
+        },
+        "Name": {
+          "FirstName": "VAMSI",
+          "LastName": "SAKHINETI"
+        },
+        "Phones": [
+          {
+            "Context": "mobile",
+            "Number": "7656065125"
+          }
+        ],
+        "SSN": {
+          "Number": "991666666",
+          "Type": "ssn9"
+        }
+      }
+    },
+    "InstantIdCVIInformation": [
+      {
+        "Type": "INSTANT_ID",
+        "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41904\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetAddress1\":\"4400 HORNER St unit 4\",\"City\":\"Union City\",\"State\":\"CA\",\"Zip5\":\"94587\"},\"DOB\":{\"Year\":1986,\"Month\":4,\"Day\":24},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133856\",\"VerifiedInput\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"County\":\"STAFFORD\"},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"DOB\":{\"Year\":\"1986\",\"Month\":\"04\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":0,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":30,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"B\",\"Description\":\"Verify name with Social (via SSN card  DL if applicable  paycheck stub  or other Government Issued I\"},{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\"}},\"PhoneOfNameAddress\":\"2404168099\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"DISTRICT OF COLUMBIA\",\"IssuedStartDate\":{\"Year\":1977,\"Month\":1},\"IssuedEndDate\":{\"Year\":1979,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"LOCUST GROVE\",\"State\":\"VA\",\"Zip5\":\"22508\",\"Zip4\":\"2186\"},\"DateFirstSeen\":{\"Year\":2007,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":7},\"IsBestAddress\":true},{\"Address\":{\"StreetAddress1\":\"PO BOX 44851\",\"City\":\"FORT WASHINGTON\",\"State\":\"MD\",\"Zip5\":\"20749\",\"Zip4\":\"4851\"},\"Phone\":\"3018431388\",\"DateFirstSeen\":{\"Year\":1999,\"Month\":2},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}},{\"Address\":{\"StreetAddress1\":\"606 ENGLAND POINTE DR\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"22406\",\"Zip4\":\"6495\"},\"Phone\":\"2404168099\",\"DateFirstSeen\":{\"Year\":2000,\"Month\":5},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":true,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"Latitude\":\"38.355439\",\"Longitude\":\"-77.495279\"}}}}}"
+      }
+    ],
+    "PinPointResponse": {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "customer_session_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+            "info": {},
+            "malware": [
+              {
+                "risk_score": 950,
+                "name": "Simba-brcl",
+                "key": "simba",
+                "id": "53",
+                "signature": "Simba",
+                "targeted": "maybe",
+                "collector": "active_detection",
+                "pattern": "912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18"
+              },
+              {
+                "risk_score": 1000,
+                "name": "Pumba-brcl",
+                "key": "pumba",
+                "id": "50",
+                "signature": "Pumba",
+                "targeted": "maybe",
+                "collector": "passive_detection",
+                "pattern": "912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898"
+              }
+            ],
+            "malware_ids": {
+              "50": {
+                "risk_score": 1000,
+                "targeted": "maybe"
+              },
+              "53": {
+                "risk_score": 950,
+                "targeted": "maybe"
+              }
+            },
+            "risk_score": 1000,
+            "timestamp": "2015-07-08 12:29:33",
+            "encrypted_user_id": "encrypted_user_ID",
+            "encryption_key_id": "company.1.20170724"
+          }
+        },
+        "device_data": {
+          "device_key": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+          "gd_id": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234-12345678",
+          "is_new": true,
+          "is_new_device_confidence_level": 0.75,
+          "is_new_global_device": true,
+          "v3": {
+            "screen_width": 1920,
+            "doc_location": "",
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "client_time_zone": -180,
+            "remote_addr": "123.123.123.123",
+            "history_length": 7,
+            "js": 1,
+            "accept_encoding": "gzip, deflate",
+            "counter": 3,
+            "machine_id": "",
+            "region": "05",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "isp": "ISP",
+            "screen_height": 1080,
+            "first_time": "2017-02-08 09:27:40",
+            "agent_key": "",
+            "platform": "Win32",
+            "cpu": "Win32",
+            "ip_time_zone": 120,
+            "digest": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+            "screen_touch": 0,
+            "fonts": "800648E87FC13E00BBAA18547FEC9690",
+            "global_cookie": "jgqlqlz28xaqegfzamk",
+            "file_upload_indicator": 0,
+            "mimes": "4118237596",
+            "file_upload": 1,
+            "longitude": 34.764701843262,
+            "navigator_props": 3695045678,
+            "browser_version": "41.0.2228",
+            "client_charset": "UTF-8",
+            "last_access": "2017-02-08 09:27:40",
+            "browser": "Chrome",
+            "charset": 1,
+            "accept_language": "en-US,en;q=0.5",
+            "latitude": 32.067798614502,
+            "org": "ISP",
+            "city": "Tel Aviv-yafo",
+            "first_access": "2017-02-08 09:27:40",
+            "country": "ISR",
+            "continent_code": "AS",
+            "country_name": "",
+            "country_code": "IL",
+            "country_code3": "ISR",
+            "post_code": "",
+            "x_forwarded_for": "123.123.123.123",
+            "id": 876137,
+            "pinpoint_session": "00009576042079220976",
+            "hashed_user_id": "N/A",
+            "os": "Windows 7",
+            "user_agent": "Mozilla",
+            "application": "66640095",
+            "cookie": "0.2157162984033204",
+            "plugins": "2075505175",
+            "area_code": 0,
+            "accept": "image/png,image/*;q=0.8,*/*;q=0.5",
+            "business": "trusteerqa"
+          }
+        },
+        "recommendation": {
+          "recommendation": "allow",
+          "resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+          "reason_id": -1,
+          "reason": "reason text",
+          "risk_score": 0
+        },
+        "risk_engine_recommendation": {
+          "risk_score": 1,
+          "reason_id": 1,
+          "recommendation": "allow_login_restrict",
+          "reason": "reason text"
+        },
+        "customer_session_id": "<CSID>"
+      }
+    },
+    "Promotions": {
+      "OnboardingInvitation": {
+        "EmailAddress": "dds@dds.com",
+        "PhoneNumber": "7656065125"
+      },
+      "PromoCode": "Y834KCUH",
+      "Status": "New"
+    }
+  }
+]]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="flow-ref-to-NonNRASubmission" doc:id="db8ea81c-c2f4-43a4-a84c-6f312af83adb" name="NonNRASubmission"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Success" doc:id="2ab8591e-cbeb-4660-9184-34e46d8734d4" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Create Operation was not a Success"/>
+			<!-- <munit-tools:assert-that doc:name="Assert for Application Status" doc:id="66dd2063-7065-42c0-be53-ab12ec07a8f3" expression="#[payload.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Create Operation was not a Success"/> -->
+		</munit:validation>
+	</munit:test>
+			<munit:test name="kba-test-suite-NonNRASubmissionTest-VerifyKBAAttention_when_pepFlag" description="Test" doc:id="14ecaf31-572f-482a-9259-d53394ad9603">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="mock-kba-attention" doc:id="9d99c1b2-32cb-4ea9-84aa-3d3e00d1ae2f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="kbaResponse" value='#[output application/json --- { "Status": {
+        "ConversationId": "31000157946785",
+        "RequestId": "375789725",
+        "TransactionStatus": "pending",
+        "ActionType": "answers",
+        "Reference": "Reference1"
+    }}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<flow-ref doc:name="flow-ref-to-PepMock" doc:id="c79633ab-237a-441e-b4b8-070c79a3fc54" name="PepMock"/>
+			<flow-ref doc:name="flow-ref-to-OFAC-Mock" doc:id="940b7d8c-e8fc-47df-a3cd-dcdc4ca92feb" name="OFAC-Mock"/>
+			<flow-ref doc:name="flow-ref-to-CaseCreationMockSub_Flow" doc:id="b2560f5d-3579-4095-a59b-70d628d3f36b" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="create-request-body" doc:id="0bd94407-60b0-48ce-a8a5-006834ea30d6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[
+  {
+  	"Pass": true,
+    "Answers": {
+      "QuestionSetId": 93978945,
+      "Questions": [
+        {
+          "QuestionId": 322596195,
+          "Choices": [
+            {
+              "Choice": "1586587275"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596205,
+          "Choices": [
+            {
+              "Choice": "1586587325"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596215,
+          "Choices": [
+            {
+              "Choice": "1586587385"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ApplicationId": "a04m000000BAcfJAAT",
+    "ApplicantType": "NRA/NONNRA/USCitizen",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "AccountInformation": {
+      "AccountType": "CHK_I_PERS_PREMIER",
+      "CustomerToAccountRelationship": {
+        "AddressLineOfTINOwner": 1,
+        "Customer1AccountAssociationType": "Primary",
+        "Customer1AccountRelationshipCode": "000",
+        "Customer2AccountAssociationType": "Primary",
+        "NumberOfStatementCopies": 1
+      },
+      "CardAccount": {
+        "CardNameLine1": "Vamsi  Sakhineti"
+      },
+      "DepositAccount": {
+        "WithholdingIndicator": "ExemptAssumed",
+        "UserCode": "D",
+        "StatusCodes": [
+          "NeverClose"
+        ],
+        "BulkFileType": "ImageFile"
+      }
+    },
+    "CustomerInformation": {
+      "Address": {
+        "City": "San Francisco",
+        "CountryCode": "US",
+        "IsForeignAddress": false,
+        "State": "CA",
+        "StreetAddress1": "1100 Market St",
+        "StreetAddress2": "null",
+        "Zip": "94102-3804"
+      },
+      "MailingAddress": {
+        "StreetAddress1": "9301 Flair Dr",
+        "StreetAddress2": "300",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "CountryCode": "USA"
+      },
+      "SourceofFunds": {
+        "Source": "FundfromEMP",
+        "MiscDemographic": 2,
+        "CustomerIntentforIntWireTransfer": {
+          "TransferServices": "Yes/No",
+          "ForeignInActivity": {
+            "ForeignIncomingActivity": "Yes/No",
+            "IncomingWires": 3,
+            "IncomingWiresAmount": 233445.34
+          },
+          "ForeignOutActivity": {
+            "ForeignOutgoingActivity": "Yes/No",
+            "OutgoingWires": 3,
+            "OutgoingWiresAmount": 233445.34
+          }
+        }
+      },
+      "BranchNumber": "8034",
+      "CitizenshipCode": "USA",
+      "CostCenterNumber": 1145,
+      "CountryOfBirth": "India",
+      "DateOfBirth": "1989-03-04",
+      "EmailAddress": "dds@dds.com",
+      "EmploymentDate": "2015-05-16T16:55:15.467Z",
+      "EmploymentOrSchool": "EWB",
+      "EntityType": "Unknown",
+      "Ethnicity": "AfricanAmerican",
+      "FirstName": "VAMSI",
+      "Gender": "Female",
+      "CategoryCode1": "903",
+      "CountryofDualCitizenship": "USA",
+      "Identification": {
+        "IdentificationInformation1": {
+          "ExpirationDate": "2020-05-16T16:55:15.468Z",
+          "IssueDate": "2010-05-16T16:55:15.468Z",
+          "IssuingEntity": "DMV",
+          "IssuingLocation": "Pasadena",
+          "Number": "F4567",
+          "Type": "DL"
+        },
+        "IdentificationInformation2": {
+          "ExpirationDate": "2028-05-16T16:55:15.468Z",
+          "IssueDate": "2008-05-16T16:55:15.468Z",
+          "IssuingEntity": "US",
+          "IssuingLocation": "Pasadena",
+          "Number": "R4567",
+          "Type": "Passport"
+        },
+        "IsTINAppliedFor": true,
+        "Status": "VerifiedByBanker",
+        "NonDocumentaryIdentificationInformation": "VLN"
+      },
+      "LastName": "SAKHINETI",
+      "MailCode": "NoSpecialAction",
+      "MaritalStatus": "Married",
+      "MothersMaidenName": "Name",
+      "Occupation": "Architecture / Engineering",
+      "PEP": "No",
+      "CISNumber": "00000061099",
+      "PrimaryID": "DL",
+      "PrimaryLanguage": "Chinese",
+      "PrimaryOfficerNumber": 30744,
+      "PrimaryPhoneNumber": "7656065125",
+      "RequestUUID": "a04m000000BAcfJAAT",
+      "SSN": "991666666",
+      "SSN_Type": "ssn9",
+      "SearchName": "WatchList",
+      "SecondaryOfficerNumber": 30744,
+      "TaxIdType": "SocialSecurityNumber",
+      "TaxNumber": "666176172",
+      "Title": "",
+      "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+      "W8CertificateType": "Blank"
+    },
+    "Documents": [],
+    "IdAuthenticationResponse": [
+      {
+        "PassThroughs": [
+          {
+            "Data": "{\"IDAuthResultResponse\":{\"Header\":{\"TransactionId\":\"2050861R41753\"},\"Success\":true,\"AuthenticationResult\":{\"DocumentName\":\"California (CA) Driver License\",\"DocAuthResult\":\"Attention\",\"DocIssuerCode\":\"CA\",\"DocIssuerName\":\"California\",\"DocClassCode\":\"DriversLicense\",\"DocClass\":\"DriversLicense\",\"DocClassName\":\"Drivers License\",\"DocIsGeneric\":\"false\",\"DocIssue\":\"2010\",\"DocIssueType\":\"Driver License\",\"DocSize\":\"ID1\",\"ClassificationMode\":\"Automatic\",\"OrientationChanged\":\"false\",\"PresentationChanged\":\"false\",\"FullName\":\"VAMSI SAKHINETI\",\"Sex\":\"Male\",\"Age\":\"29\",\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4},\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4},\"Portrait\":\"\",\"Signature\":\"\",\"Alerts\":{\"IDAuthAlertData\":[{\"AlertID\":\"97aaa371-16b5-404e-8922-116b8afe5932\",\"AlertName\":\"2D Barcode Read\",\"AlertKey\":\"2D Barcode Read\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the two-dimensional barcode on the document was read successfully.\"},{\"AlertID\":\"113de986-ab10-497f-bc8b-6f1f2e105509\",\"AlertName\":\"Document Classification\",\"AlertKey\":\"Document Classification\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the type of document is supported and is able to be fully authenticated.\"},{\"AlertID\":\"9b53da13-250c-4c15-80b0-1fef73ff5b67\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Waves\"]}},{\"AlertID\":\"2cbe67a7-87a8-4927-be78-ab77499e14d7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Bear\"]}},{\"AlertID\":\"025c450f-a358-47c9-81d5-97e3443bcaed\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Seal\"]}},{\"AlertID\":\"7400df02-127d-4efa-8503-2ea977e0c100\",\"AlertName\":\"Birth Date Valid\",\"AlertKey\":\"Birth Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the birth date is valid.\"},{\"AlertID\":\"08d4b99c-c147-4596-8d85-a2a52bcd862f\",\"AlertName\":\"Document Expired\",\"AlertKey\":\"Document Expired\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Checked if the document is expired.\"},{\"AlertID\":\"2da1438f-f5d0-40c2-be2c-9ebe7cda3ec4\",\"AlertName\":\"Expiration Date Valid\",\"AlertKey\":\"Expiration Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the expiration date is valid.\"},{\"AlertID\":\"3f925e9a-6a2c-4fdc-bfdb-3cadcf470ede\",\"AlertName\":\"Issue Date Valid\",\"AlertKey\":\"Issue Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the issue date is valid.\"},{\"AlertID\":\"2969372f-acbf-4055-9f8d-b81d0e494b44\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Mountain Right\"]}},{\"AlertID\":\"42a570ad-b136-4722-8651-c6c683f7e5f7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Tree\"]}}]},\"Fields\":{\"IDAuthFieldData\":[{\"Address\":\" IOO FLURRY DR , .LIVERMORE. CA 94550\"},{\"City\":\"LIVERMORE\"},{\"PostalCode\":\"94550\"},{\"State\":\"CA\"},{\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4}},{\"DocumentClassName\":\"Drivers License\"},{\"DocumentNumber\":\"F7217708\"},{\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4}},{\"FirstName\":\"VAMSI\"},{\"FullName\":\"VAMSI SAKHINETI\"},{\"GivenName\":\"VAMSI\"},{\"IssueDate\":{\"Year\":2017,\"Month\":7,\"Day\":26}},{\"IssuingStateCode\":\"CA\"},{\"IssuingStateName\":\"California\"},{\"Sex\":\"M\"},{\"Surname\":\"SAKHINETI\"}]}}}}",
+            "Type": "true.id"
+          }
+        ],
+        "Products": [
+          {
+            "ExecutedStepName": "True_ID_Step",
+            "ProductConfigurationName": "TrueID_Flow",
+            "ProductStatus": "pass",
+            "ProductType": "TrueID"
+          }
+        ],
+        "Status": {
+          "ConversationId": "31000101592685",
+          "Reference": "payload.RequestUUID",
+          "RequestId": "294443635",
+          "TransactionStatus": "passed"
+        }
+      }
+    ],
+    "IdVerificationRequest": {
+      "Person": {
+        "Addresses": [
+          {
+            "City": "San Francisco",
+            "Context": "primary",
+            "Country": "US",
+            "State": "CA",
+            "StreetAddress1": "1100 Market St",
+            "Zip5": "94102-3804"
+          }
+        ],
+        "DateOfBirth": {
+          "Day": "3",
+          "Month": "4",
+          "Year": "1989"
+        },
+        "Name": {
+          "FirstName": "VAMSI",
+          "LastName": "SAKHINETI"
+        },
+        "Phones": [
+          {
+            "Context": "mobile",
+            "Number": "7656065125"
+          }
+        ],
+        "SSN": {
+          "Number": "991666666",
+          "Type": "ssn9"
+        }
+      }
+    },
+    "InstantIdCVIInformation": [
+      {
+        "Type": "INSTANT_ID",
+        "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41904\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetAddress1\":\"4400 HORNER St unit 4\",\"City\":\"Union City\",\"State\":\"CA\",\"Zip5\":\"94587\"},\"DOB\":{\"Year\":1986,\"Month\":4,\"Day\":24},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133856\",\"VerifiedInput\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"County\":\"STAFFORD\"},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"DOB\":{\"Year\":\"1986\",\"Month\":\"04\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":0,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":30,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"B\",\"Description\":\"Verify name with Social (via SSN card  DL if applicable  paycheck stub  or other Government Issued I\"},{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\"}},\"PhoneOfNameAddress\":\"2404168099\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"DISTRICT OF COLUMBIA\",\"IssuedStartDate\":{\"Year\":1977,\"Month\":1},\"IssuedEndDate\":{\"Year\":1979,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"LOCUST GROVE\",\"State\":\"VA\",\"Zip5\":\"22508\",\"Zip4\":\"2186\"},\"DateFirstSeen\":{\"Year\":2007,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":7},\"IsBestAddress\":true},{\"Address\":{\"StreetAddress1\":\"PO BOX 44851\",\"City\":\"FORT WASHINGTON\",\"State\":\"MD\",\"Zip5\":\"20749\",\"Zip4\":\"4851\"},\"Phone\":\"3018431388\",\"DateFirstSeen\":{\"Year\":1999,\"Month\":2},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}},{\"Address\":{\"StreetAddress1\":\"606 ENGLAND POINTE DR\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"22406\",\"Zip4\":\"6495\"},\"Phone\":\"2404168099\",\"DateFirstSeen\":{\"Year\":2000,\"Month\":5},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":true,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"Latitude\":\"38.355439\",\"Longitude\":\"-77.495279\"}}}}}"
+      }
+    ],
+    "PinPointResponse": {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "customer_session_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+            "info": {},
+            "malware": [
+              {
+                "risk_score": 950,
+                "name": "Simba-brcl",
+                "key": "simba",
+                "id": "53",
+                "signature": "Simba",
+                "targeted": "maybe",
+                "collector": "active_detection",
+                "pattern": "912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18"
+              },
+              {
+                "risk_score": 1000,
+                "name": "Pumba-brcl",
+                "key": "pumba",
+                "id": "50",
+                "signature": "Pumba",
+                "targeted": "maybe",
+                "collector": "passive_detection",
+                "pattern": "912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898"
+              }
+            ],
+            "malware_ids": {
+              "50": {
+                "risk_score": 1000,
+                "targeted": "maybe"
+              },
+              "53": {
+                "risk_score": 950,
+                "targeted": "maybe"
+              }
+            },
+            "risk_score": 1000,
+            "timestamp": "2015-07-08 12:29:33",
+            "encrypted_user_id": "encrypted_user_ID",
+            "encryption_key_id": "company.1.20170724"
+          }
+        },
+        "device_data": {
+          "device_key": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+          "gd_id": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234-12345678",
+          "is_new": true,
+          "is_new_device_confidence_level": 0.75,
+          "is_new_global_device": true,
+          "v3": {
+            "screen_width": 1920,
+            "doc_location": "",
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "client_time_zone": -180,
+            "remote_addr": "123.123.123.123",
+            "history_length": 7,
+            "js": 1,
+            "accept_encoding": "gzip, deflate",
+            "counter": 3,
+            "machine_id": "",
+            "region": "05",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "isp": "ISP",
+            "screen_height": 1080,
+            "first_time": "2017-02-08 09:27:40",
+            "agent_key": "",
+            "platform": "Win32",
+            "cpu": "Win32",
+            "ip_time_zone": 120,
+            "digest": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+            "screen_touch": 0,
+            "fonts": "800648E87FC13E00BBAA18547FEC9690",
+            "global_cookie": "jgqlqlz28xaqegfzamk",
+            "file_upload_indicator": 0,
+            "mimes": "4118237596",
+            "file_upload": 1,
+            "longitude": 34.764701843262,
+            "navigator_props": 3695045678,
+            "browser_version": "41.0.2228",
+            "client_charset": "UTF-8",
+            "last_access": "2017-02-08 09:27:40",
+            "browser": "Chrome",
+            "charset": 1,
+            "accept_language": "en-US,en;q=0.5",
+            "latitude": 32.067798614502,
+            "org": "ISP",
+            "city": "Tel Aviv-yafo",
+            "first_access": "2017-02-08 09:27:40",
+            "country": "ISR",
+            "continent_code": "AS",
+            "country_name": "",
+            "country_code": "IL",
+            "country_code3": "ISR",
+            "post_code": "",
+            "x_forwarded_for": "123.123.123.123",
+            "id": 876137,
+            "pinpoint_session": "00009576042079220976",
+            "hashed_user_id": "N/A",
+            "os": "Windows 7",
+            "user_agent": "Mozilla",
+            "application": "66640095",
+            "cookie": "0.2157162984033204",
+            "plugins": "2075505175",
+            "area_code": 0,
+            "accept": "image/png,image/*;q=0.8,*/*;q=0.5",
+            "business": "trusteerqa"
+          }
+        },
+        "recommendation": {
+          "recommendation": "allow",
+          "resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+          "reason_id": -1,
+          "reason": "reason text",
+          "risk_score": 0
+        },
+        "risk_engine_recommendation": {
+          "risk_score": 1,
+          "reason_id": 1,
+          "recommendation": "allow_login_restrict",
+          "reason": "reason text"
+        },
+        "customer_session_id": "<CSID>"
+      }
+    },
+    "Promotions": {
+      "OnboardingInvitation": {
+        "EmailAddress": "dds@dds.com",
+        "PhoneNumber": "7656065125"
+      },
+      "PromoCode": "Y834KCUH",
+      "Status": "New"
+    }
+  }
+]]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="pepFlag" ><![CDATA[%dw 2.0
+output application/java
+---
+"Yes"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="flow-ref-to-NonNRASubmission" doc:id="4687cec5-32a3-4572-96b0-5203a5379f49" name="NonNRASubmission"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Success" doc:id="9914b660-b193-45b2-b28b-a93865196105" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Create Operation was not a Success"/>
+			<!-- <munit-tools:assert-that doc:name="Assert for Application Status" doc:id="39e0495e-7535-4991-a063-f0b96785a4d7" expression="#[payload.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Create Operation was not a Success"/> -->
+		</munit:validation>
+	</munit:test>
+		<munit:test name="kba-test-suite-NonNRASubmissionTest-VerifyKBAAttention_when_docauthFailed" description="Test" doc:id="c69be951-9ec0-4ac6-a02d-2b71992f9ad1" ignore="true">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="mock-kba-attention" doc:id="71b5c443-51c3-4ab6-8344-9f4c4b59efc2" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="kbaResponse" value='#[output application/json --- { "Status": {
+        "ConversationId": "31000157946785",
+        "RequestId": "375789725",
+        "TransactionStatus": "pending",
+        "ActionType": "answers",
+        "Reference": "Reference1"
+    }}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<flow-ref doc:name="flow-ref-to-PepMock" doc:id="a2ca1e25-5976-49e6-9dc5-a647ded9d156" name="PepMock"/>
+			<flow-ref doc:name="flow-ref-to-OFAC-Mock" doc:id="84523e25-88e1-4d9b-b677-9e46d0739c2b" name="OFAC-Mock"/>
+			<flow-ref doc:name="flow-ref-to-CaseCreationMockSub_Flow" doc:id="19f6b52a-bd81-4abb-87e5-0113e661f9ad" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="create-request-body" doc:id="2886c090-3f82-495b-867b-c7691c344515" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[
+  {
+  	"Pass": true,
+    "Answers": {
+      "QuestionSetId": 93978945,
+      "Questions": [
+        {
+          "QuestionId": 322596195,
+          "Choices": [
+            {
+              "Choice": "1586587275"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596205,
+          "Choices": [
+            {
+              "Choice": "1586587325"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596215,
+          "Choices": [
+            {
+              "Choice": "1586587385"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ApplicationId": "a04m000000BAcfJAAT",
+    "ApplicantType": "NRA/NONNRA/USCitizen",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "AccountInformation": {
+      "AccountType": "CHK_I_PERS_PREMIER",
+      "CustomerToAccountRelationship": {
+        "AddressLineOfTINOwner": 1,
+        "Customer1AccountAssociationType": "Primary",
+        "Customer1AccountRelationshipCode": "000",
+        "Customer2AccountAssociationType": "Primary",
+        "NumberOfStatementCopies": 1
+      },
+      "CardAccount": {
+        "CardNameLine1": "Vamsi  Sakhineti"
+      },
+      "DepositAccount": {
+        "WithholdingIndicator": "ExemptAssumed",
+        "UserCode": "D",
+        "StatusCodes": [
+          "NeverClose"
+        ],
+        "BulkFileType": "ImageFile"
+      }
+    },
+    "CustomerInformation": {
+      "Address": {
+        "City": "San Francisco",
+        "CountryCode": "US",
+        "IsForeignAddress": false,
+        "State": "CA",
+        "StreetAddress1": "1100 Market St",
+        "StreetAddress2": "null",
+        "Zip": "94102-3804"
+      },
+      "MailingAddress": {
+        "StreetAddress1": "9301 Flair Dr",
+        "StreetAddress2": "300",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "CountryCode": "USA"
+      },
+      "SourceofFunds": {
+        "Source": "FundfromEMP",
+        "MiscDemographic": 2,
+        "CustomerIntentforIntWireTransfer": {
+          "TransferServices": "Yes/No",
+          "ForeignInActivity": {
+            "ForeignIncomingActivity": "Yes/No",
+            "IncomingWires": 3,
+            "IncomingWiresAmount": 233445.34
+          },
+          "ForeignOutActivity": {
+            "ForeignOutgoingActivity": "Yes/No",
+            "OutgoingWires": 3,
+            "OutgoingWiresAmount": 233445.34
+          }
+        }
+      },
+      "BranchNumber": "8034",
+      "CitizenshipCode": "USA",
+      "CostCenterNumber": 1145,
+      "CountryOfBirth": "India",
+      "DateOfBirth": "1989-03-04",
+      "EmailAddress": "dds@dds.com",
+      "EmploymentDate": "2015-05-16T16:55:15.467Z",
+      "EmploymentOrSchool": "EWB",
+      "EntityType": "Unknown",
+      "Ethnicity": "AfricanAmerican",
+      "FirstName": "VAMSI",
+      "Gender": "Female",
+      "CategoryCode1": "903",
+      "CountryofDualCitizenship": "USA",
+      "Identification": {
+        "IdentificationInformation1": {
+          "ExpirationDate": "2020-05-16T16:55:15.468Z",
+          "IssueDate": "2010-05-16T16:55:15.468Z",
+          "IssuingEntity": "DMV",
+          "IssuingLocation": "Pasadena",
+          "Number": "F4567",
+          "Type": "DL"
+        },
+        "IdentificationInformation2": {
+          "ExpirationDate": "2028-05-16T16:55:15.468Z",
+          "IssueDate": "2008-05-16T16:55:15.468Z",
+          "IssuingEntity": "US",
+          "IssuingLocation": "Pasadena",
+          "Number": "R4567",
+          "Type": "Passport"
+        },
+        "IsTINAppliedFor": true,
+        "Status": "VerifiedByBanker",
+        "NonDocumentaryIdentificationInformation": "VLN"
+      },
+      "LastName": "SAKHINETI",
+      "MailCode": "NoSpecialAction",
+      "MaritalStatus": "Married",
+      "MothersMaidenName": "Name",
+      "Occupation": "Architecture / Engineering",
+      "PEP": "No",
+      "CISNumber": "00000061099",
+      "PrimaryID": "DL",
+      "PrimaryLanguage": "Chinese",
+      "PrimaryOfficerNumber": 30744,
+      "PrimaryPhoneNumber": "7656065125",
+      "RequestUUID": "a04m000000BAcfJAAT",
+      "SSN": "991666666",
+      "SSN_Type": "ssn9",
+      "SearchName": "WatchList",
+      "SecondaryOfficerNumber": 30744,
+      "TaxIdType": "SocialSecurityNumber",
+      "TaxNumber": "666176172",
+      "Title": "",
+      "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+      "W8CertificateType": "Blank"
+    },
+    "Documents": [],
+    "IdAuthenticationResponse": [
+      {
+        "PassThroughs": [
+          {
+            "Data": "{\"IDAuthResultResponse\":{\"Header\":{\"TransactionId\":\"2050861R41753\"},\"Success\":true,\"AuthenticationResult\":{\"DocumentName\":\"California (CA) Driver License\",\"DocAuthResult\":\"Failed\",\"DocIssuerCode\":\"CA\",\"DocIssuerName\":\"California\",\"DocClassCode\":\"DriversLicense\",\"DocClass\":\"DriversLicense\",\"DocClassName\":\"Drivers License\",\"DocIsGeneric\":\"false\",\"DocIssue\":\"2010\",\"DocIssueType\":\"Driver License\",\"DocSize\":\"ID1\",\"ClassificationMode\":\"Automatic\",\"OrientationChanged\":\"false\",\"PresentationChanged\":\"false\",\"FullName\":\"VAMSI SAKHINETI\",\"Sex\":\"Male\",\"Age\":\"29\",\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4},\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4},\"Portrait\":\"\",\"Signature\":\"\",\"Alerts\":{\"IDAuthAlertData\":[{\"AlertID\":\"97aaa371-16b5-404e-8922-116b8afe5932\",\"AlertName\":\"2D Barcode Read\",\"AlertKey\":\"2D Barcode Read\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the two-dimensional barcode on the document was read successfully.\"},{\"AlertID\":\"113de986-ab10-497f-bc8b-6f1f2e105509\",\"AlertName\":\"Document Classification\",\"AlertKey\":\"Document Classification\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the type of document is supported and is able to be fully authenticated.\"},{\"AlertID\":\"9b53da13-250c-4c15-80b0-1fef73ff5b67\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Waves\"]}},{\"AlertID\":\"2cbe67a7-87a8-4927-be78-ab77499e14d7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Bear\"]}},{\"AlertID\":\"025c450f-a358-47c9-81d5-97e3443bcaed\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Seal\"]}},{\"AlertID\":\"7400df02-127d-4efa-8503-2ea977e0c100\",\"AlertName\":\"Birth Date Valid\",\"AlertKey\":\"Birth Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the birth date is valid.\"},{\"AlertID\":\"08d4b99c-c147-4596-8d85-a2a52bcd862f\",\"AlertName\":\"Document Expired\",\"AlertKey\":\"Document Expired\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Checked if the document is expired.\"},{\"AlertID\":\"2da1438f-f5d0-40c2-be2c-9ebe7cda3ec4\",\"AlertName\":\"Expiration Date Valid\",\"AlertKey\":\"Expiration Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the expiration date is valid.\"},{\"AlertID\":\"3f925e9a-6a2c-4fdc-bfdb-3cadcf470ede\",\"AlertName\":\"Issue Date Valid\",\"AlertKey\":\"Issue Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the issue date is valid.\"},{\"AlertID\":\"2969372f-acbf-4055-9f8d-b81d0e494b44\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Mountain Right\"]}},{\"AlertID\":\"42a570ad-b136-4722-8651-c6c683f7e5f7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Tree\"]}}]},\"Fields\":{\"IDAuthFieldData\":[{\"Address\":\" IOO FLURRY DR , .LIVERMORE. CA 94550\"},{\"City\":\"LIVERMORE\"},{\"PostalCode\":\"94550\"},{\"State\":\"CA\"},{\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4}},{\"DocumentClassName\":\"Drivers License\"},{\"DocumentNumber\":\"F7217708\"},{\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4}},{\"FirstName\":\"VAMSI\"},{\"FullName\":\"VAMSI SAKHINETI\"},{\"GivenName\":\"VAMSI\"},{\"IssueDate\":{\"Year\":2017,\"Month\":7,\"Day\":26}},{\"IssuingStateCode\":\"CA\"},{\"IssuingStateName\":\"California\"},{\"Sex\":\"M\"},{\"Surname\":\"SAKHINETI\"}]}}}}",
+            "Type": "true.id"
+          }
+        ],
+        "Products": [
+          {
+            "ExecutedStepName": "True_ID_Step",
+            "ProductConfigurationName": "TrueID_Flow",
+            "ProductStatus": "pass",
+            "ProductType": "TrueID"
+          }
+        ],
+        "Status": {
+          "ConversationId": "31000101592685",
+          "Reference": "payload.RequestUUID",
+          "RequestId": "294443635",
+          "TransactionStatus": "passed"
+        }
+      }
+    ],
+    "IdVerificationRequest": {
+      "Person": {
+        "Addresses": [
+          {
+            "City": "San Francisco",
+            "Context": "primary",
+            "Country": "US",
+            "State": "CA",
+            "StreetAddress1": "1100 Market St",
+            "Zip5": "94102-3804"
+          }
+        ],
+        "DateOfBirth": {
+          "Day": "3",
+          "Month": "4",
+          "Year": "1989"
+        },
+        "Name": {
+          "FirstName": "VAMSI",
+          "LastName": "SAKHINETI"
+        },
+        "Phones": [
+          {
+            "Context": "mobile",
+            "Number": "7656065125"
+          }
+        ],
+        "SSN": {
+          "Number": "991666666",
+          "Type": "ssn9"
+        }
+      }
+    },
+    "InstantIdCVIInformation": [
+      {
+        "Type": "INSTANT_ID",
+        "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41904\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetAddress1\":\"4400 HORNER St unit 4\",\"City\":\"Union City\",\"State\":\"CA\",\"Zip5\":\"94587\"},\"DOB\":{\"Year\":1986,\"Month\":4,\"Day\":24},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133856\",\"VerifiedInput\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"County\":\"STAFFORD\"},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"DOB\":{\"Year\":\"1986\",\"Month\":\"04\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":0,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":30,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"B\",\"Description\":\"Verify name with Social (via SSN card  DL if applicable  paycheck stub  or other Government Issued I\"},{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\"}},\"PhoneOfNameAddress\":\"2404168099\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"DISTRICT OF COLUMBIA\",\"IssuedStartDate\":{\"Year\":1977,\"Month\":1},\"IssuedEndDate\":{\"Year\":1979,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"LOCUST GROVE\",\"State\":\"VA\",\"Zip5\":\"22508\",\"Zip4\":\"2186\"},\"DateFirstSeen\":{\"Year\":2007,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":7},\"IsBestAddress\":true},{\"Address\":{\"StreetAddress1\":\"PO BOX 44851\",\"City\":\"FORT WASHINGTON\",\"State\":\"MD\",\"Zip5\":\"20749\",\"Zip4\":\"4851\"},\"Phone\":\"3018431388\",\"DateFirstSeen\":{\"Year\":1999,\"Month\":2},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}},{\"Address\":{\"StreetAddress1\":\"606 ENGLAND POINTE DR\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"22406\",\"Zip4\":\"6495\"},\"Phone\":\"2404168099\",\"DateFirstSeen\":{\"Year\":2000,\"Month\":5},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":true,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"Latitude\":\"38.355439\",\"Longitude\":\"-77.495279\"}}}}}"
+      }
+    ],
+    "PinPointResponse": {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "customer_session_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+            "info": {},
+            "malware": [
+              {
+                "risk_score": 950,
+                "name": "Simba-brcl",
+                "key": "simba",
+                "id": "53",
+                "signature": "Simba",
+                "targeted": "maybe",
+                "collector": "active_detection",
+                "pattern": "912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18"
+              },
+              {
+                "risk_score": 1000,
+                "name": "Pumba-brcl",
+                "key": "pumba",
+                "id": "50",
+                "signature": "Pumba",
+                "targeted": "maybe",
+                "collector": "passive_detection",
+                "pattern": "912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898"
+              }
+            ],
+            "malware_ids": {
+              "50": {
+                "risk_score": 1000,
+                "targeted": "maybe"
+              },
+              "53": {
+                "risk_score": 950,
+                "targeted": "maybe"
+              }
+            },
+            "risk_score": 1000,
+            "timestamp": "2015-07-08 12:29:33",
+            "encrypted_user_id": "encrypted_user_ID",
+            "encryption_key_id": "company.1.20170724"
+          }
+        },
+        "device_data": {
+          "device_key": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+          "gd_id": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234-12345678",
+          "is_new": true,
+          "is_new_device_confidence_level": 0.75,
+          "is_new_global_device": true,
+          "v3": {
+            "screen_width": 1920,
+            "doc_location": "",
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "client_time_zone": -180,
+            "remote_addr": "123.123.123.123",
+            "history_length": 7,
+            "js": 1,
+            "accept_encoding": "gzip, deflate",
+            "counter": 3,
+            "machine_id": "",
+            "region": "05",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "isp": "ISP",
+            "screen_height": 1080,
+            "first_time": "2017-02-08 09:27:40",
+            "agent_key": "",
+            "platform": "Win32",
+            "cpu": "Win32",
+            "ip_time_zone": 120,
+            "digest": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+            "screen_touch": 0,
+            "fonts": "800648E87FC13E00BBAA18547FEC9690",
+            "global_cookie": "jgqlqlz28xaqegfzamk",
+            "file_upload_indicator": 0,
+            "mimes": "4118237596",
+            "file_upload": 1,
+            "longitude": 34.764701843262,
+            "navigator_props": 3695045678,
+            "browser_version": "41.0.2228",
+            "client_charset": "UTF-8",
+            "last_access": "2017-02-08 09:27:40",
+            "browser": "Chrome",
+            "charset": 1,
+            "accept_language": "en-US,en;q=0.5",
+            "latitude": 32.067798614502,
+            "org": "ISP",
+            "city": "Tel Aviv-yafo",
+            "first_access": "2017-02-08 09:27:40",
+            "country": "ISR",
+            "continent_code": "AS",
+            "country_name": "",
+            "country_code": "IL",
+            "country_code3": "ISR",
+            "post_code": "",
+            "x_forwarded_for": "123.123.123.123",
+            "id": 876137,
+            "pinpoint_session": "00009576042079220976",
+            "hashed_user_id": "N/A",
+            "os": "Windows 7",
+            "user_agent": "Mozilla",
+            "application": "66640095",
+            "cookie": "0.2157162984033204",
+            "plugins": "2075505175",
+            "area_code": 0,
+            "accept": "image/png,image/*;q=0.8,*/*;q=0.5",
+            "business": "trusteerqa"
+          }
+        },
+        "recommendation": {
+          "recommendation": "allow",
+          "resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+          "reason_id": -1,
+          "reason": "reason text",
+          "risk_score": 0
+        },
+        "risk_engine_recommendation": {
+          "risk_score": 1,
+          "reason_id": 1,
+          "recommendation": "allow_login_restrict",
+          "reason": "reason text"
+        },
+        "customer_session_id": "<CSID>"
+      }
+    },
+    "Promotions": {
+      "OnboardingInvitation": {
+        "EmailAddress": "dds@dds.com",
+        "PhoneNumber": "7656065125"
+      },
+      "PromoCode": "Y834KCUH",
+      "Status": "New"
+    }
+  }
+]]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="docAuthResultFlag" ><![CDATA[%dw 2.0
+output application/java
+---
+"Failed"]]></ee:set-variable>
+					<ee:set-variable variableName="selEnv" ><![CDATA[%dw 2.0
+output application/java
+---
+"prd"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="flow-ref-to-NonNRASubmission" doc:id="34c17075-0a26-446e-be75-c79ba9a9902b" name="NonNRASubmission"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Success" doc:id="e0ae1913-412a-46b8-8b7f-47c7ea804003" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Create Operation was not a Success"/>
+			<!-- <munit-tools:assert-that doc:name="Assert for Application Status" doc:id="c7169eec-4eea-4e05-a935-7765c8dd1382" expression="#[payload.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Create Operation was not a Success"/> -->
+		</munit:validation>
+	</munit:test>
+			<munit:test name="kba-test-suite-NonNRASubmissionTest-VerifyKBAFailed" description="Test" doc:id="b38fd083-8983-48a8-9f0d-40a78910ac70">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="mock-kba-failed" doc:id="4680306a-2ec0-4d04-93fe-c89adc4b9bf6" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="kbaResponse" value='#[output application/json --- { "Status": {
+        "ConversationId": "31000157946785",
+        "RequestId": "375789725",
+        "TransactionStatus": "failed",
+        "TransactionReasonCode": {
+        	"Description": "FAIL"
+        },
+        "ActionType": "answers",
+        "Reference": "Reference1"
+    }}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<flow-ref doc:name="flow-ref-to-PepMock" doc:id="f2be6148-ca94-4028-9964-787a220381a7" name="PepMock"/>
+			<flow-ref doc:name="flow-ref-to-OFAC-Mock" doc:id="dadf0b7c-06a8-4902-a93c-84457e7dae22" name="OFAC-Mock"/>
+			<flow-ref doc:name="flow-ref-to-CaseCreationMockSub_Flow" doc:id="ef1681dd-7892-403f-aae9-ad784de16f6a" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="create-request-body" doc:id="d388e042-616b-40ae-a30e-121504046fb5" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+[
+  {
+  	"Pass": true,
+    "Answers": {
+      "QuestionSetId": 93978945,
+      "Questions": [
+        {
+          "QuestionId": 322596195,
+          "Choices": [
+            {
+              "Choice": "1586587275"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596205,
+          "Choices": [
+            {
+              "Choice": "1586587325"
+            }
+          ]
+        },
+        {
+          "QuestionId": 322596215,
+          "Choices": [
+            {
+              "Choice": "1586587385"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "ApplicationId": "a04m000000BAcfJAAT",
+    "ApplicantType": "NRA/NONNRA/USCitizen",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "AccountInformation": {
+      "AccountType": "CHK_I_PERS_PREMIER",
+      "CustomerToAccountRelationship": {
+        "AddressLineOfTINOwner": 1,
+        "Customer1AccountAssociationType": "Primary",
+        "Customer1AccountRelationshipCode": "000",
+        "Customer2AccountAssociationType": "Primary",
+        "NumberOfStatementCopies": 1
+      },
+      "CardAccount": {
+        "CardNameLine1": "Vamsi  Sakhineti"
+      },
+      "DepositAccount": {
+        "WithholdingIndicator": "ExemptAssumed",
+        "UserCode": "D",
+        "StatusCodes": [
+          "NeverClose"
+        ],
+        "BulkFileType": "ImageFile"
+      }
+    },
+    "CustomerInformation": {
+      "Address": {
+        "City": "San Francisco",
+        "CountryCode": "US",
+        "IsForeignAddress": false,
+        "State": "CA",
+        "StreetAddress1": "1100 Market St",
+        "StreetAddress2": "null",
+        "Zip": "94102-3804"
+      },
+      "MailingAddress": {
+        "StreetAddress1": "9301 Flair Dr",
+        "StreetAddress2": "300",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "CountryCode": "USA"
+      },
+      "SourceofFunds": {
+        "Source": "FundfromEMP",
+        "MiscDemographic": 2,
+        "CustomerIntentforIntWireTransfer": {
+          "TransferServices": "Yes/No",
+          "ForeignInActivity": {
+            "ForeignIncomingActivity": "Yes/No",
+            "IncomingWires": 3,
+            "IncomingWiresAmount": 233445.34
+          },
+          "ForeignOutActivity": {
+            "ForeignOutgoingActivity": "Yes/No",
+            "OutgoingWires": 3,
+            "OutgoingWiresAmount": 233445.34
+          }
+        }
+      },
+      "BranchNumber": "8034",
+      "CitizenshipCode": "USA",
+      "CostCenterNumber": 1145,
+      "CountryOfBirth": "India",
+      "DateOfBirth": "1989-03-04",
+      "EmailAddress": "dds@dds.com",
+      "EmploymentDate": "2015-05-16T16:55:15.467Z",
+      "EmploymentOrSchool": "EWB",
+      "EntityType": "Unknown",
+      "Ethnicity": "AfricanAmerican",
+      "FirstName": "VAMSI",
+      "Gender": "Female",
+      "CategoryCode1": "903",
+      "CountryofDualCitizenship": "USA",
+      "Identification": {
+        "IdentificationInformation1": {
+          "ExpirationDate": "2020-05-16T16:55:15.468Z",
+          "IssueDate": "2010-05-16T16:55:15.468Z",
+          "IssuingEntity": "DMV",
+          "IssuingLocation": "Pasadena",
+          "Number": "F4567",
+          "Type": "DL"
+        },
+        "IdentificationInformation2": {
+          "ExpirationDate": "2028-05-16T16:55:15.468Z",
+          "IssueDate": "2008-05-16T16:55:15.468Z",
+          "IssuingEntity": "US",
+          "IssuingLocation": "Pasadena",
+          "Number": "R4567",
+          "Type": "Passport"
+        },
+        "IsTINAppliedFor": true,
+        "Status": "VerifiedByBanker",
+        "NonDocumentaryIdentificationInformation": "VLN"
+      },
+      "LastName": "SAKHINETI",
+      "MailCode": "NoSpecialAction",
+      "MaritalStatus": "Married",
+      "MothersMaidenName": "Name",
+      "Occupation": "Architecture / Engineering",
+      "PEP": "No",
+      "CISNumber": "00000061099",
+      "PrimaryID": "DL",
+      "PrimaryLanguage": "Chinese",
+      "PrimaryOfficerNumber": 30744,
+      "PrimaryPhoneNumber": "7656065125",
+      "RequestUUID": "a04m000000BAcfJAAT",
+      "SSN": "991666666",
+      "SSN_Type": "ssn9",
+      "SearchName": "WatchList",
+      "SecondaryOfficerNumber": 30744,
+      "TaxIdType": "SocialSecurityNumber",
+      "TaxNumber": "666176172",
+      "Title": "",
+      "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+      "W8CertificateType": "Blank"
+    },
+    "Documents": [],
+    "IdAuthenticationResponse": [
+      {
+        "PassThroughs": [
+          {
+            "Data": "{\"IDAuthResultResponse\":{\"Header\":{\"TransactionId\":\"2050861R41753\"},\"Success\":true,\"AuthenticationResult\":{\"DocumentName\":\"California (CA) Driver License\",\"DocAuthResult\":\"Attention\",\"DocIssuerCode\":\"CA\",\"DocIssuerName\":\"California\",\"DocClassCode\":\"DriversLicense\",\"DocClass\":\"DriversLicense\",\"DocClassName\":\"Drivers License\",\"DocIsGeneric\":\"false\",\"DocIssue\":\"2010\",\"DocIssueType\":\"Driver License\",\"DocSize\":\"ID1\",\"ClassificationMode\":\"Automatic\",\"OrientationChanged\":\"false\",\"PresentationChanged\":\"false\",\"FullName\":\"VAMSI SAKHINETI\",\"Sex\":\"Male\",\"Age\":\"29\",\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4},\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4},\"Portrait\":\"\",\"Signature\":\"\",\"Alerts\":{\"IDAuthAlertData\":[{\"AlertID\":\"97aaa371-16b5-404e-8922-116b8afe5932\",\"AlertName\":\"2D Barcode Read\",\"AlertKey\":\"2D Barcode Read\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the two-dimensional barcode on the document was read successfully.\"},{\"AlertID\":\"113de986-ab10-497f-bc8b-6f1f2e105509\",\"AlertName\":\"Document Classification\",\"AlertKey\":\"Document Classification\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the type of document is supported and is able to be fully authenticated.\"},{\"AlertID\":\"9b53da13-250c-4c15-80b0-1fef73ff5b67\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Waves\"]}},{\"AlertID\":\"2cbe67a7-87a8-4927-be78-ab77499e14d7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Bear\"]}},{\"AlertID\":\"025c450f-a358-47c9-81d5-97e3443bcaed\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Seal\"]}},{\"AlertID\":\"7400df02-127d-4efa-8503-2ea977e0c100\",\"AlertName\":\"Birth Date Valid\",\"AlertKey\":\"Birth Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the birth date is valid.\"},{\"AlertID\":\"08d4b99c-c147-4596-8d85-a2a52bcd862f\",\"AlertName\":\"Document Expired\",\"AlertKey\":\"Document Expired\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Checked if the document is expired.\"},{\"AlertID\":\"2da1438f-f5d0-40c2-be2c-9ebe7cda3ec4\",\"AlertName\":\"Expiration Date Valid\",\"AlertKey\":\"Expiration Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the expiration date is valid.\"},{\"AlertID\":\"3f925e9a-6a2c-4fdc-bfdb-3cadcf470ede\",\"AlertName\":\"Issue Date Valid\",\"AlertKey\":\"Issue Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the issue date is valid.\"},{\"AlertID\":\"2969372f-acbf-4055-9f8d-b81d0e494b44\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Mountain Right\"]}},{\"AlertID\":\"42a570ad-b136-4722-8651-c6c683f7e5f7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Tree\"]}}]},\"Fields\":{\"IDAuthFieldData\":[{\"Address\":\" IOO FLURRY DR , .LIVERMORE. CA 94550\"},{\"City\":\"LIVERMORE\"},{\"PostalCode\":\"94550\"},{\"State\":\"CA\"},{\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4}},{\"DocumentClassName\":\"Drivers License\"},{\"DocumentNumber\":\"F7217708\"},{\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4}},{\"FirstName\":\"VAMSI\"},{\"FullName\":\"VAMSI SAKHINETI\"},{\"GivenName\":\"VAMSI\"},{\"IssueDate\":{\"Year\":2017,\"Month\":7,\"Day\":26}},{\"IssuingStateCode\":\"CA\"},{\"IssuingStateName\":\"California\"},{\"Sex\":\"M\"},{\"Surname\":\"SAKHINETI\"}]}}}}",
+            "Type": "true.id"
+          }
+        ],
+        "Products": [
+          {
+            "ExecutedStepName": "True_ID_Step",
+            "ProductConfigurationName": "TrueID_Flow",
+            "ProductStatus": "pass",
+            "ProductType": "TrueID"
+          }
+        ],
+        "Status": {
+          "ConversationId": "31000101592685",
+          "Reference": "payload.RequestUUID",
+          "RequestId": "294443635",
+          "TransactionStatus": "passed"
+        }
+      }
+    ],
+    "IdVerificationRequest": {
+      "Person": {
+        "Addresses": [
+          {
+            "City": "San Francisco",
+            "Context": "primary",
+            "Country": "US",
+            "State": "CA",
+            "StreetAddress1": "1100 Market St",
+            "Zip5": "94102-3804"
+          }
+        ],
+        "DateOfBirth": {
+          "Day": "3",
+          "Month": "4",
+          "Year": "1989"
+        },
+        "Name": {
+          "FirstName": "VAMSI",
+          "LastName": "SAKHINETI"
+        },
+        "Phones": [
+          {
+            "Context": "mobile",
+            "Number": "7656065125"
+          }
+        ],
+        "SSN": {
+          "Number": "991666666",
+          "Type": "ssn9"
+        }
+      }
+    },
+    "InstantIdCVIInformation": [
+      {
+        "Type": "INSTANT_ID",
+        "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41904\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetAddress1\":\"4400 HORNER St unit 4\",\"City\":\"Union City\",\"State\":\"CA\",\"Zip5\":\"94587\"},\"DOB\":{\"Year\":1986,\"Month\":4,\"Day\":24},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133856\",\"VerifiedInput\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"County\":\"STAFFORD\"},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"DOB\":{\"Year\":\"1986\",\"Month\":\"04\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":0,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":30,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"B\",\"Description\":\"Verify name with Social (via SSN card  DL if applicable  paycheck stub  or other Government Issued I\"},{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\"}},\"PhoneOfNameAddress\":\"2404168099\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"DISTRICT OF COLUMBIA\",\"IssuedStartDate\":{\"Year\":1977,\"Month\":1},\"IssuedEndDate\":{\"Year\":1979,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"LOCUST GROVE\",\"State\":\"VA\",\"Zip5\":\"22508\",\"Zip4\":\"2186\"},\"DateFirstSeen\":{\"Year\":2007,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":7},\"IsBestAddress\":true},{\"Address\":{\"StreetAddress1\":\"PO BOX 44851\",\"City\":\"FORT WASHINGTON\",\"State\":\"MD\",\"Zip5\":\"20749\",\"Zip4\":\"4851\"},\"Phone\":\"3018431388\",\"DateFirstSeen\":{\"Year\":1999,\"Month\":2},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}},{\"Address\":{\"StreetAddress1\":\"606 ENGLAND POINTE DR\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"22406\",\"Zip4\":\"6495\"},\"Phone\":\"2404168099\",\"DateFirstSeen\":{\"Year\":2000,\"Month\":5},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":true,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"Latitude\":\"38.355439\",\"Longitude\":\"-77.495279\"}}}}}"
+      }
+    ],
+    "PinPointResponse": {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "customer_session_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+            "info": {},
+            "malware": [
+              {
+                "risk_score": 950,
+                "name": "Simba-brcl",
+                "key": "simba",
+                "id": "53",
+                "signature": "Simba",
+                "targeted": "maybe",
+                "collector": "active_detection",
+                "pattern": "912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18"
+              },
+              {
+                "risk_score": 1000,
+                "name": "Pumba-brcl",
+                "key": "pumba",
+                "id": "50",
+                "signature": "Pumba",
+                "targeted": "maybe",
+                "collector": "passive_detection",
+                "pattern": "912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898"
+              }
+            ],
+            "malware_ids": {
+              "50": {
+                "risk_score": 1000,
+                "targeted": "maybe"
+              },
+              "53": {
+                "risk_score": 950,
+                "targeted": "maybe"
+              }
+            },
+            "risk_score": 1000,
+            "timestamp": "2015-07-08 12:29:33",
+            "encrypted_user_id": "encrypted_user_ID",
+            "encryption_key_id": "company.1.20170724"
+          }
+        },
+        "device_data": {
+          "device_key": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+          "gd_id": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234-12345678",
+          "is_new": true,
+          "is_new_device_confidence_level": 0.75,
+          "is_new_global_device": true,
+          "v3": {
+            "screen_width": 1920,
+            "doc_location": "",
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "client_time_zone": -180,
+            "remote_addr": "123.123.123.123",
+            "history_length": 7,
+            "js": 1,
+            "accept_encoding": "gzip, deflate",
+            "counter": 3,
+            "machine_id": "",
+            "region": "05",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "isp": "ISP",
+            "screen_height": 1080,
+            "first_time": "2017-02-08 09:27:40",
+            "agent_key": "",
+            "platform": "Win32",
+            "cpu": "Win32",
+            "ip_time_zone": 120,
+            "digest": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+            "screen_touch": 0,
+            "fonts": "800648E87FC13E00BBAA18547FEC9690",
+            "global_cookie": "jgqlqlz28xaqegfzamk",
+            "file_upload_indicator": 0,
+            "mimes": "4118237596",
+            "file_upload": 1,
+            "longitude": 34.764701843262,
+            "navigator_props": 3695045678,
+            "browser_version": "41.0.2228",
+            "client_charset": "UTF-8",
+            "last_access": "2017-02-08 09:27:40",
+            "browser": "Chrome",
+            "charset": 1,
+            "accept_language": "en-US,en;q=0.5",
+            "latitude": 32.067798614502,
+            "org": "ISP",
+            "city": "Tel Aviv-yafo",
+            "first_access": "2017-02-08 09:27:40",
+            "country": "ISR",
+            "continent_code": "AS",
+            "country_name": "",
+            "country_code": "IL",
+            "country_code3": "ISR",
+            "post_code": "",
+            "x_forwarded_for": "123.123.123.123",
+            "id": 876137,
+            "pinpoint_session": "00009576042079220976",
+            "hashed_user_id": "N/A",
+            "os": "Windows 7",
+            "user_agent": "Mozilla",
+            "application": "66640095",
+            "cookie": "0.2157162984033204",
+            "plugins": "2075505175",
+            "area_code": 0,
+            "accept": "image/png,image/*;q=0.8,*/*;q=0.5",
+            "business": "trusteerqa"
+          }
+        },
+        "recommendation": {
+          "recommendation": "allow",
+          "resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+          "reason_id": -1,
+          "reason": "reason text",
+          "risk_score": 0
+        },
+        "risk_engine_recommendation": {
+          "risk_score": 1,
+          "reason_id": 1,
+          "recommendation": "allow_login_restrict",
+          "reason": "reason text"
+        },
+        "customer_session_id": "<CSID>"
+      }
+    },
+    "Promotions": {
+      "OnboardingInvitation": {
+        "EmailAddress": "dds@dds.com",
+        "PhoneNumber": "7656065125"
+      },
+      "PromoCode": "Y834KCUH",
+      "Status": "New"
+    }
+  }
+]]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="kbaTransactionStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+"failed"]]></ee:set-variable>
+<ee:set-variable variableName="transactionReasonCodeDesc" ><![CDATA[%dw 2.0
+output application/java
+---
+"FAIL"]]></ee:set-variable>
+					<ee:set-variable variableName="selEnv" ><![CDATA[%dw 2.0
+output application/java
+---
+"prd"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="flow-ref-to-NonNRASubmission" doc:id="65274185-12a4-44e3-aadb-10411d790dbf" name="NonNRASubmission"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Success" doc:id="97f5ad65-05a8-4074-bd22-86330db1ddea" expression="#[payload.result.success]" is="#[MunitTools::equalTo(false)]" message="Create Operation was not a Success"/>
+	 <!-- <munit-tools:assert-that doc:name="Assert for Application Status" doc:id="576bb403-152b-4699-8d6d-0a7003609762" expression="#[payload.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Create Operation was not a Success"/> --> 
+		</munit:validation>
+	</munit:test>	
+</mule>

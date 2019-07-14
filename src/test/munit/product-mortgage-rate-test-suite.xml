@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="product-mortgage-rate-test-suite.xml" />
+	<sub-flow name="product-mortgage-rate-mock-sub_Flow" doc:id="8e232036-bc99-45c1-97f2-8510a59ba634" >
+		<munit-tools:mock-when doc:name="Mock Products Response" doc:id="49c98814-0f8a-4b3b-b596-dec61f0d5a8e" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="productList" value='#[output application/json --- {"Products":[{"Code":"001","Name":"Personal Checking (ELIM)                ","Description":"Personal Checking (ELIM)                ","ProductType":"Checking","InterestPlans":null},{"Code":"002","Name":"Employee Checking                       ","Description":"Employee Checking                       ","ProductType":"Checking","InterestPlans":null},{"Code":"003","Name":"Employee Savings                        ","Description":"Employee Savings                        ","ProductType":"Savings","InterestPlans":null},{"Code":"004","Name":"Special Industry Personal Checking      ","Description":"Special Industry Personal Checking      ","ProductType":"Checking","InterestPlans":null},{"Code":"005","Name":"Analyzed Interest Bearing Checking      ","Description":"Analyzed Interest Bearing Checking      ","ProductType":"Checking","InterestPlans":null},{"Code":"006","Name":"East West Value Checking (NY)           ","Description":"East West Value Checking (NY)           ","ProductType":"Checking","InterestPlans":null},{"Code":"008","Name":"Relationship Plus Value Checking        ","Description":"Relationship Plus Value Checking        ","ProductType":"Checking","InterestPlans":null},{"Code":"009","Name":"Relationship Plus Savings               ","Description":"Relationship Plus Savings               ","ProductType":"Savings","InterestPlans":null},{"Code":"010","Name":"Student Plus Value Checking             ","Description":"Student Plus Value Checking             ","ProductType":"Checking","InterestPlans":null},{"Code":null,"Name":"HR30 HB FNMA LPMI ","Description":"HR30 HB FNMA LPMI ","ProductType":"Mortgage","InterestPlans":[{"Code":null,"Name":null,"Description":null,"Rate":4.75,"AnnualPercentage":0,"TierRates":null}]}],"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<munit:test name="velo-process-api-test-suite-get:\process\products:velo-process-api-configTest" description="Test" doc:id="78d678a0-7c6b-4392-8646-2fb8764feae8" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to product-mortgage-rate-mock-sub_Flow" doc:id="6f3269c2-4068-4117-9461-8bc73635c980" name="product-mortgage-rate-mock-sub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\process\products:velo-process-api-config" doc:id="746d58a4-8f2d-414c-8f87-a746545e3606" name="get:\process\products:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Prodcuts retrieval" doc:id="c3a85bec-05ad-4c4d-94b6-a3181ea81e00" expression="#[payload.data.Products]" is="#[MunitTools::notNullValue()]" message="No Products retrieved"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

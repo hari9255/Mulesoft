@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="bfbd76fd-b74b-49da-b228-f1afc294be68" />
+	<sub-flow name="verifyKBASystemApiCallSubFlow" doc:id="6eb1e9d5-4902-453c-8577-0d49349b77f9">
+		<try doc:name="Try" doc:id="d296010e-ec93-49b0-9dd5-511d07f81da6">
+			<choice doc:name="Choice" doc:id="e9a5c731-a1a5-4bea-b341-1972f9fe09d0">
+				<when expression="vars.instantIDtransactionStatus =='passed'">
+					<!-- <logger level="INFO" doc:name="Kba Bi Passed"
+						doc:id="22d3b239-d21c-441a-a327-c5e67d72b894" message="Request UUID #[correlationId] Flow Name #[flow.name]::KBA biPassed .Request From Pre Submit " /> -->
+					<json-logger:logger doc:name="Kba Bi Passed" doc:id="432c5e7f-39f4-4c0b-9925-1245a1437279" config-ref="JSON_Logger_Config" message="KBA biPassed .Request From Pre Submit " tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<set-variable value="#[vars.instantIDtransactionStatus]"
+						doc:name="SetKbaTransactionStatus" doc:id="78eaebc9-33e6-41af-9aec-0fc7c586b096"
+						variableName="kbaTransactionStatus" />
+				</when>
+				<when expression="vars.IsPartnerRequest" >
+					<!-- <logger level="INFO" doc:name="Partner API Call" doc:id="50caec83-b3e0-4a19-acb5-c20884e03b2c" message="Request UUID #[correlationId] Flow Name #[flow.name]::Partner API Call KBA Not required"/> -->
+					<json-logger:logger doc:name="Partner API Call" doc:id="0fbc1fa5-6270-463f-812a-937c9b89ab05" config-ref="JSON_Logger_Config" message="Partner API Call KBA Not required" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<set-variable value="NotRequired" doc:name="SetkbaTransactionStatus" doc:id="d22960c7-e65f-4f5e-8af8-6c57b11947df" variableName="kbaTransactionStatus"/>
+				</when>
+				<otherwise>
+					<!-- <logger level="INFO" doc:name="KBA Required "
+						doc:id="37c13049-6f37-4045-9a5f-b660471acf67" message="Request UUID #[correlationId] Flow Name #[flow.name]::KBA Required " /> -->
+					<json-logger:logger doc:name="KBA Required " doc:id="cbc6fe8c-527e-4963-bbd8-1be27e4aee36" config-ref="JSON_Logger_Config" message="KBA Required " tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	"X-CORRELATION-ID" : correlationId
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<!-- <logger level="INFO" doc:name="KBARequest"
+						doc:id="48298828-991d-475b-8eb2-a3b1f1667aa2"
+						message="Request UUID #[correlationId] Flow Name #[flow.name]::ApplicationId #[vars.ApplicationId]  KBARequest  #[vars.kbaRequestPayload]" /> -->
+
+					<json-logger:logger doc:name="KBARequest" doc:id="4e1dd153-fe54-4da3-8a9e-e3a04a00bd58" config-ref="JSON_Logger_Config" message="KBARequest #[vars.ApplicationId]" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<flow-ref doc:name="getIdAuthDocResultFlow" doc:id="b4e73a1a-4e1a-4322-bd8a-b05ec7d22952"
+						name="getIdAuthDocResultFlow" />
+					<choice doc:name="Choice" doc:id="6fd7c7d1-5000-4b36-8fc7-836801c2e1c9">
+						<when expression="vars.docAuthResult == 'Passed'">
+							<logger level="INFO" doc:name="Logger"
+								doc:id="459edae2-100a-45a0-b8fb-7db3cb931727" message="Request UUID #[correlationId] Flow Name #[flow.name]:: IdAuth Doc Auth returned ::::: #[vars.docAuthResult]" />
+							<json-logger:logger doc:name="IdAuth Doc Auth" doc:id="939dc851-8061-4278-89f6-f7709946e894" config-ref="JSON_Logger_Config" message="IdAuth Doc Auth returned" tracePoint="PRINT">
+								<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	FlowName: flow.name,
+ 	 IdAuthDocAuthreturned: vars.docAuthResult
+}]]]></json-logger:content>
+							</json-logger:logger>
+							<json-logger:logger doc:name="Verify KBA Pass Before Request" doc:id="66a7d154-2dd2-470f-ad0d-ce5a47e5a6b0" message="Verify KBA Pass Before Request" config-ref="JSON_Logger_Config" endpoint="POST:/${customerVerificationFlow.kbaVerificationPassed.path}" tracePoint="BEFORE_REQUEST">
+								<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.kbaRequestPayload,
+ 	attributes: attributes
+}]]]></json-logger:content>
+							</json-logger:logger>
+							<http:request method="POST" doc:name="VerifyKBAPassed"
+								doc:id="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" config-ref="HTTP_Request_customerVerificationFlow"
+								path="/${customerVerificationFlow.kbaVerificationPassed.path}" target="instantIdResponse" responseTimeout="${http.request.timeout}">
+								<http:body><![CDATA[#[vars.kbaRequestPayload]]]></http:body>
+								<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+							</http:request>
+
+							<json-logger:logger doc:name="Verify KBA Pass After Request" doc:id="2ac3f1df-1584-4233-87df-b3cecbfbc021" message="Verify KBA Pass After Request" endpoint="POST:/${customerVerificationFlow.kbaVerificationPassed.path}" status="#[vars.'httpStatus']" tracePoint="AFTER_REQUEST" config-ref="JSON_Logger_Config">
+								<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.instantIdResponse,
+ 	attributes: attributes
+}]]]></json-logger:content>
+							</json-logger:logger>
+							<logger level="INFO" doc:name="Logger" doc:id="e1092747-296c-4108-b2fd-266ed80dec74" message="InstantIDResponse - #[vars.instantIdResponse]"/>
+						
+</when>
+						<otherwise>
+							<!-- <logger level="INFO" doc:name="Logger"
+								doc:id="bb628193-b424-46d4-b5af-8add34059210" message="Request UUID #[correlationId] Flow Name #[flow.name]::IdAuth Doc Auth returned ::::: #[vars.docAuthResult]" /> -->
+							<json-logger:logger doc:name="IdAuth Doc Auth" doc:id="c416b07b-df2c-41fc-8ab0-03141177eaee" config-ref="JSON_Logger_Config" message="IdAuth Doc Auth returned" tracePoint="PRINT">
+								<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	docAuthResult: vars.docAuthResult
+}]]]></json-logger:content>
+							</json-logger:logger>
+							<json-logger:logger doc:name="Verify KBA Attention Before Request" doc:id="8db086f1-72df-4665-95f5-af3e8e4aa812" message="Verify KBA Attention Before Request" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="POST:/${customerVerificationFlow.kbaVerificationAttention.path}">
+								<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.kbaRequestPayload,
+ 	attributes: attributes
+}]]]></json-logger:content>
+							</json-logger:logger>
+							<http:request method="POST" doc:name="VerifyKBAAttention"
+								doc:id="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" config-ref="HTTP_Request_customerVerificationFlow"
+								path="/${customerVerificationFlow.kbaVerificationAttention.path}" target="instantIdResponse" responseTimeout="${http.request.timeout}">
+								<http:body><![CDATA[#[vars.kbaRequestPayload]]]></http:body>
+							<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+							</http:request>
+							<json-logger:logger doc:name="Verify KBA Attention After Request" doc:id="d5308cc5-6e2f-4504-a95a-e8f3988da647" status="#[vars.'httpStatus']" message="Verify KBA Attention After Request" endpoint="POST:/${customerVerificationFlow.kbaVerificationAttention.path}">
+								<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.instantIdResponse,
+ 	attributes: attributes
+}]]]></json-logger:content>
+							</json-logger:logger>
+							<logger level="INFO" doc:name="Logger" doc:id="26336544-118c-4eee-ba17-5165625965fa" message="InstantIDResponse - #[vars.instantIdResponse]"/>
+						
+</otherwise>
+					</choice>
+					<!-- <http:request method="POST" doc:name="VerifyKBA"
+						doc:id="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" config-ref="HTTP_Request_customerVerificationFlow"
+						path="/${customerVerificationFlow.kbaVerification.path}" target="kbaResponse">
+						<http:body><![CDATA[#[vars.kbaRequestPayload]]]></http:body>
+					</http:request> -->
+					<set-variable value="#[vars.instantIdResponse[0].TransactionStatus]" doc:name="SetKbaTransactionStatus" doc:id="25b6ed62-c5a4-45b1-925b-1af6db4aa173" variableName="instantIDtransactionStatus" />
+					<!-- <logger level="INFO" doc:name="KBA Trasaction Status" doc:id="ac31fe3c-a94a-49fe-a931-d258918c0ad7" message="Request UUID #[correlationId] Flow Name #[flow.name]::KBA Trasaction Status for Application ID #[vars.ApplicationId] :::::::::::::::::::::::::::: #[vars.kbaTransactionStatus]" /> -->
+					<json-logger:logger doc:name="KBA Trasaction Status" doc:id="6abe41b1-6660-4029-8224-fe27178a5114" config-ref="JSON_Logger_Config" message="KBA Trasaction Status " tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	ApplicationID: vars.ApplicationId,
+ 	instantIDtransactionStatus : vars.instantIDtransactionStatus
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<ee:transform doc:name="Transform Message" doc:id="320f33e6-89f7-4ae9-9888-9ba591a2f03c">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="kbaResponseStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+vars.instantIdResponse.Status]]></ee:set-variable>
+							<ee:set-variable variableName="kbaTransactionReasonCode" ><![CDATA[%dw 2.0
+output application/json
+---
+if (null != vars.instantIdResponse.Status.TransactionReasonCode) 
+	"Fail" 
+else
+	"Pass"]]></ee:set-variable>
+							<ee:set-variable variableName="instantIDtransactionReasonCode" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.instantIdResponse.Status.TransactionReasonCode.Description default null]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<json-logger:logger doc:name="KBA TransactionReasonCode" doc:id="204e70e5-6afa-4cb3-a325-cc1e25fd1ffb" message="#[vars.kbaTransactionReasonCode]" config-ref="JSON_Logger_Config" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ RequestUUID : correlationId , 
+ApplicationID : vars.ApplicationId ,
+transactionReasonCodeDesc : vars.transactionReasonCodeDesc
+}]]]></json-logger:content>
+					</json-logger:logger>
+				</otherwise>
+			</choice>
+			<error-handler>
+				<on-error-continue enableNotifications="true"
+					logException="true" doc:name="On Error Continue" doc:id="7d8424c5-fc53-49f9-9dbf-30fa3df28b12">
+					<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02"
+						name="api-exceptions-response-build" />
+					<set-variable value="#[vars.tempApiExceptionVar]"
+						doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb"
+						variableName="verifyKBAException" />
+					<!-- <logger level="INFO" doc:name="Logger"
+						doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Request UUID #[correlationId] Flow Name #[flow.name] :: Exception Found in Verify KBA:::::::: #[vars.verifyKBA]" /> -->
+					<json-logger:logger doc:name="Exception Found in Verify KBA" doc:id="2e2fe6cc-b2c6-4ea7-9b76-214d9af0c7f2" config-ref="JSON_Logger_Config" message="Exception Found in Verify KBA" priority="DEBUG" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	KBA: vars.verifyKBA
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<set-variable value="true" doc:name="SetExceptionFlag"
+						doc:id="6f2958b4-d424-4fd7-a626-002930594f82" variableName="exceptionFlag" />
+
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="KBA Response"
+			doc:id="c26fdc90-3e73-49cf-b4bf-3323e50bc2e6"
+			message="Request UUID #[correlationId] Flow Name #[flow.name]::ApplicationId #[vars.ApplicationId]  KBA Response #[vars.kbaResponse]" />
+	</sub-flow>
+</mule>

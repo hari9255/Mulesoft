@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_partner_analytics" doc:name="HTTP Request configuration" doc:id="ef473b55-253b-4a21-9f4d-1decb49a0761" >
+		<http:request-connection protocol="HTTPS" host="${analytics.host}"/>
+
+	</http:request-config>
+	<flow name="adobeAnalyticsFlow" doc:id="1d97ce82-5350-4f0c-a78a-25911a13c3eb" >
+		<logger level="INFO" doc:name="Logger" doc:id="292f596a-a42e-4054-8711-4ac70e3d70a9" message="Partner Analitcs "/>
+		
+		<http:request method="POST" doc:name="Partner Analytics" doc:id="a2dba25d-ff65-4986-b130-10a930ba44df" config-ref="HTTP_Request_partner_analytics" path="/${analytics.endpoint}" target="analyticResponse">
+			<http:body ><![CDATA[#[vars.analyticRequest]]]></http:body>
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+          'User-Agent' : 'AHC-1.0',
+}]]]></http:headers>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="ce166c22-07d8-4bde-a2f4-5e460b464a83" message="#[vars.analyticResponse]"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="076469d8-d976-4317-860e-8641e62ecadd" >
+				<logger level="INFO" doc:name="Logger" doc:id="ac12787d-8e16-42a4-bb11-68a1dd3bdb44" message="Adobe Analytics Call Failed . #[error]"/>
+			</on-error-continue>
+		</error-handler>
+	
+</flow>
+</mule>

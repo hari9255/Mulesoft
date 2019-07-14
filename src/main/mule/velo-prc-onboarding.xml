@@ -1,0 +1,812 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/spring http://www.mulesoft.org/schema/mule/spring/current/mule-spring.xsd">
+    <http:listener-config name="velo-prc-onboarding-httpListenerConfig" doc:name="HTTP Listener config">
+        <http:listener-connection host="0.0.0.0" port="${http.listener.port}" />
+    </http:listener-config>
+    <apikit:config name="velo-prc-onboarding-config" raml="velo-prc-onboarding.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" doc:name="Router" />
+    <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="ca5af831-dd4c-4607-8554-10208fe933ea" basePath="/api/system/iam">
+        <http:request-connection host="velo-system-apis.cloudhub.io" port="443" />
+    </http:request-config>
+    <flow name="velo-prc-onboarding-main">
+        <http:listener config-ref="velo-prc-onboarding-httpListenerConfig" path="${http.listener.basePath}/*" doc:name="Listener">
+            <http:response statusCode="#[vars.httpStatus default 200]" />
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+            </http:error-response>
+        </http:listener>
+        <logger level="INFO" doc:name="Logger" doc:id="ce6762ad-820d-4c39-b12a-7b00dbf9f8b6" message="Request UUID #[correlationId] Flow Name #[flow.name] " />
+		<set-variable value="#[attributes.'method' ++ ':' ++ attributes.'requestPath']" doc:name="Endpoint" doc:id="61fa67eb-c3ee-44b1-a488-e552fa5639ac" variableName="endPoint" />
+        <json-logger:logger doc:name="START" doc:id="80d18945-c31d-4fa9-bc2a-0b78f11b8df9" message="START of Velo Process flow" config-ref="JSON_Logger_Config" endpoint="#[vars.'endPoint']" />
+        <set-variable value="#[attributes.headers.authorization]" doc:name="SetToken" doc:id="983cef8e-6671-411f-b7d4-90e82962a69b" variableName="token" />
+        <set-variable value="Success" doc:name="returnSuccessMessage" doc:id="f026d061-d7a0-45c5-b3d8-9770513ad66d" variableName="retSuccMes" />
+        <set-variable value="true" doc:name="SetSuccessCode" doc:id="d50d9e13-f646-4a76-9cc7-f583851b2747" variableName="successCode" />
+        <set-variable value="${environment}" doc:name="SetEnvironment" doc:id="f13cf8ed-2258-4872-882e-697394324e7d" variableName="selEnv" />
+        <set-variable value="false" doc:name="SetIsPartnerRequest" doc:id="e56300b7-b1ac-43f7-bec0-11a60c4676a3" variableName="IsPartnerRequest" />
+        <set-variable value="false" doc:name="Set isCaseApprovedFlow" doc:id="4d1b15fa-1b31-4ea2-8082-819da0bbf335" variableName="isCaseApprovedFlow" />
+        <ee:transform doc:name="Transform Message" doc:id="671c33da-f782-45fa-becc-312371964617">
+            <ee:message />
+            <ee:variables>
+                <ee:set-variable variableName="skipTrueIDResponse"><![CDATA[%dw 2.0
+output application/json
+---
+"false"]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_PASS_REASONS" ><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_PASS_REASONS')]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_FAIL_REASONS" ><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_FAIL_REASONS')]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <logger level="DEBUG" doc:name="Logger" doc:id="b9ed8b10-09f1-4960-bc93-3cab5b52371e" message="Environment ${environment}  " />
+        <apikit:router config-ref="velo-prc-onboarding-config" doc:name="APIkit Router" />
+        <json-logger:logger doc:name="END" doc:id="0888916f-1eb0-4aaf-b757-fc18d7c39e0b" message="END of Velo Process flow" config-ref="JSON_Logger_Config" endpoint="#[vars.'endPoint']" status="#[vars.'httpStatus']" tracePoint="END" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="edddd25a-d9fa-44c1-acb1-83c16205d62b">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "data": [],
+    "result": {
+        "success": false,
+        "code": vars.httpStatus,
+        "message": {
+			"errorDescription": error.description,
+			"errorType" : error.errorType
+		}
+    }
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="b1b373b5-d1f0-4e1b-b7bc-2622f057287d">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "data": {},
+    "result": {
+        "success": false,
+        "code": "404",
+        "message": "Resource not found"
+    }
+}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="velo-prc-onboarding-console">
+        <http:listener config-ref="velo-prc-onboarding-httpListenerConfig" path="/console/*" doc:name="Listener">
+            <http:response statusCode="#[vars.httpStatus default 200]" />
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="velo-prc-onboarding-config" doc:name="APIkit Console" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+<!--     <flow name="velo-process-apiFlow" doc:id="24581152-f2bc-4c4f-9290-2bfc85794ccb">
+        <logger level="INFO" doc:name="Logger" doc:id="6942bad7-0641-42fc-aef3-51a058d28dac" />
+    </flow> -->
+    <flow name="post:\process\iam\challenge:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="414a6e88-d69c-4a7c-a2d7-e5a8fe137cfc" message="Challenge flow called" />
+        <flow-ref doc:name="okta-challengeFlow" doc:id="e8d730d8-9fb6-471f-83ba-6ba0e9cb0893" name="okta-challengeFlow" />
+    </flow>
+<!--     <flow name="post:\process\depositonboarding\authenticateid:velo-prc-onb-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="48c1ef14-be7e-47bd-a32d-161d52aa5981">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  data: [
+    {
+      UserName: "Bidun",
+      AuthToken: "0010E0002934",
+      AccountNumber: "0010E0002934"
+    }
+  ],
+  result: {
+    success: true,
+    code: 200,
+    message: "Success Message"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\depositonboarding\submitkbaanswers:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  data: [
+    {
+      ApplicationId: "string",
+      ConversationId: "string",
+      TransactionId: "string",
+      TranasactionResult: "Passed",
+      ResultReason: "Unknown",
+      TransactionTimeStamp: "2018-05-14T21:08:08.395Z",
+      RiskAssessment: {
+        RiskScore: 0,
+        RiskCategory: "Identity",
+        ThreatLevel: "High"
+      },
+      Questions: {
+        QuestionSetId: 0,
+        QuestionList: [
+          {
+            AnswerType: "Single",
+            Text: "string",
+            Id: 0,
+            ChoiceList: [
+              {
+                Id: 0,
+                Text: "string"
+              }
+            ]
+          }
+        ]
+      },
+      CustomerNumber: "string",
+      AccountNumber: "string",
+      RequestUUID: "string",
+      ErrorMessageList: [
+        {
+          ErrorMessageNumber: "string",
+          ErrorMessageText: "string"
+        }
+      ]
+    }
+  ],
+  result: {
+    success: true,
+    code: 200,
+    message: "Success Message"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\depositonboarding\verifycustomer:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  data: [
+    {
+      ApplicationID: 100022,
+      CustomerNumber: "0010E0002934",
+      AccountNumber: "0010E0002934"
+    }
+  ],
+  result: {
+    success: true,
+    code: 200,
+    message: "Success Message"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+    <flow name="post:\process\iam\verify:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="44a1aa55-6bf7-4a62-967e-534c8f1b97f4" message="In Verify Flow " />
+        <flow-ref doc:name="okta-verify" doc:id="8663cdf9-0391-4cbb-b287-0bb64386f803" name="okta-verify" />
+    </flow>
+    <flow name="post:\process\iam\factors\sms:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="63759749-a02c-44c4-8b5a-f50d8e6ff779" message="In Factors SMS Flow" />
+        <flow-ref doc:name="okta-factor-smsFlow" doc:id="f4830118-29cb-44e5-840c-3c7547a96994" name="okta-factor-smsFlow" />
+    </flow>
+    <flow name="post:\process\iam\factors\sms\verify:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="5f1054a6-b0c5-4258-aaac-282b9d530a20" message="Factor SMS verify flow called" />
+        <flow-ref doc:name="okta-factors-sms-verifyFlow" doc:id="eab09f9d-a53b-4e2c-9cfb-ac102411caf6" name="okta-factors-sms-verifyFlow" />
+    </flow>
+    <flow name="post:\process\iam\users:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="8824ff5c-1ab7-4e01-923c-994236df3061" message="In User Create Flow" />
+        <flow-ref doc:name="okta-users" doc:id="eafe518a-9108-48eb-a374-dbb374b4a2fc" name="okta-users" />
+    </flow>
+    <flow name="post:\process\addressvalidator\addressverify:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="835b70e2-f19f-496a-857a-c584b0f3bc15" message="AddressVerficationFlow" />
+        <flow-ref doc:name="melissa-flowFlow" doc:id="762f6829-cda6-48f1-b078-8b38b6f32be4" name="melissa-flowFlow" />
+    </flow>
+<!--     <flow name="post:\process\corebanking\submitApplicationbridger:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  message: "Success"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!-- <flow name="post:\process\corebanking\checking:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  message: "Success"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\corebanking\getinstantid:velo-prc-onboarding-config">
+        <logger level="INFO" message="post:\process\corebanking\getinstantid:velo-prc-onb-config" />
+    </flow> -->
+<!--     <flow name="post:\process\corebanking\submitApplicationkba1:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  message: "Success"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\corebanking\submitApplicationkba2:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  message: "Success"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\mortagage\mortagerates:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  message: "get mortage rates details"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\corebanking\application\savings:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  data: [
+    {
+      ApplicationId: "string",
+      ConversationId: "string",
+      TransactionId: "string",
+      TranasactionResult: "Passed",
+      ResultReason: "Unknown",
+      TransactionTimeStamp: "2018-05-14T21:08:08.395Z",
+      RiskAssessment: {
+        RiskScore: 0,
+        RiskCategory: "Identity",
+        ThreatLevel: "High"
+      },
+      Questions: {
+        QuestionSetId: 0,
+        QuestionList: [
+          {
+            AnswerType: "Single",
+            Text: "string",
+            Id: 0,
+            ChoiceList: [
+              {
+                Id: 0,
+                Text: "string"
+              }
+            ]
+          }
+        ]
+      },
+      CustomerNumber: "string",
+      AccountNumber: "string",
+      RequestUUID: "string",
+      ErrorMessageList: [
+        {
+          ErrorMessageNumber: "string",
+          ErrorMessageText: "string"
+        }
+      ]
+    }
+  ],
+  result: {
+    success: true,
+    code: 200,
+    message: "Success Message"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\corebanking\submitApplicationsubmit:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  message: "Success"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\docrepository\sendsubmission:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="8f7688b1-760f-45bf-808e-21ea1150120d" message="In Synergy flow" />
+        <flow-ref doc:name="synergy-flow" doc:id="35972f4f-bc32-42f0-82ba-5b612d62bbb1" name="synergy-flow" />
+    </flow> -->
+    <flow name="put:\process\promotions\(promocode):application\json:velo-prc-onboarding-config">
+        <logger level="INFO" message="In Update PromoCode Flow" doc:name="Logger" />
+        <flow-ref doc:name="updatePromotionCodeFlow" doc:id="b32464bf-656f-45fc-a312-c7955e07c672" name="updatePromotionCodeFlow" />
+    </flow>
+    <flow name="get:\process\promotions\(promocode)\verify:velo-prc-onboarding-config">
+        <logger level="INFO" message="In get Promocode details flow" doc:name="Logger" />
+        <flow-ref doc:name="getPromoCodeDetailFlow" doc:id="9177b7b0-f06a-41cf-97ea-c8f1f0d8e4e7" name="getPromoCodeDetailFlow" />
+    </flow>
+    <flow name="get:\process\products:velo-prc-onboarding-config">
+        <logger level="INFO" message="In get Product flow" doc:name="Logger" />
+        <flow-ref doc:name="product-mortgage-rateFlow" doc:id="77ec971c-365b-4fdb-9aa3-484da03bb2a1" name="product-mortgage-rateFlow" />
+    </flow>
+<!--     <flow name="post:\process\promotions\promocode\Promo:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  Promotion: {
+    PromoCode: "90DAKSLA",
+    Status: "New"
+  },
+  OnboardingInvitation: {
+    FirstName: "John",
+    LastName: "Smith",
+    EmailAddress: "abcxyz@gmail.com",
+    PhoneNumber: "893-929-9990"
+  },
+  RequestUUID: "9d08dc0d-86ea-4061-bc12-abd34e59d7ae"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\promotions\promocode\verify:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  Promotion: {
+    PromoCode: "90DAKSLA",
+    Status: "New"
+  },
+  OnboardingInvitation: {
+    FirstName: "John",
+    LastName: "Smith",
+    EmailAddress: "abcxyz@gmail.com",
+    PhoneNumber: "893-929-9990"
+  },
+  RequestUUID: "9d08dc0d-86ea-4061-bc12-abd34e59d7ae"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+    <flow name="post:\process\case\request:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="f018bf0c-b54f-4f08-abdc-bba6554b6b9e" message="In CaseRequest Flow" />
+        <flow-ref doc:name="caseCreationFlow" doc:id="f87ef6d7-fdc8-48e3-abc2-c1c7bb5860a9" name="caseCreationFlow" />
+    </flow>
+<!--     <flow name="post:\process\corebanking\submitApplication:velo-prc-onb-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  message: "Success"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+<!--     <flow name="post:\process\caseapproved\checking:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="50b87dd4-59d2-41c8-828e-14e83830d568" message="Request UUID #[correlationId] Flow Name #[flow.name]::In caseApprovedChecking Flow ::::::::::: #[payload]" />
+        <json-logger:logger doc:name="In caseApprovedChecking Flow " doc:id="3e500909-bc8e-4145-96ef-cd15b7a4218d" config-ref="JSON_Logger_Config" message="In caseApprovedChecking Flow " priority="DEBUG" tracePoint="PRINT">
+            <json-logger:content><![CDATA[#[output application/json -
+{
+ 	payload: payload
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <set-variable value="#[payload.ApplicationId]" doc:name="SetApplicationId" doc:id="f0312c89-e6c2-4be6-ae71-b387a951a03f" variableName="ApplicationId" />
+        <set-variable value="${variables.caseStatus.APRROVED}" doc:name="SetCaseStatus" doc:id="a56b8785-8699-4baf-9d2c-d48a6a51d514" variableName="caseStatus" />
+        <set-variable value="true" doc:name="isCaseApprovedFlow" doc:id="f2f84ef0-d852-489d-93b4-7e315b9b2400" variableName="isCaseApprovedFlow" />
+        <set-variable value="#[payload.CustomerInformation.CISNumber]" doc:name="SetCISNumber" doc:id="6270d040-1fe1-4df6-963a-20ed1dcf1a34" variableName="CISNumber" />
+        <flow-ref doc:name="caseapprovedFlow" doc:id="7fc2f2df-174d-4670-a9e6-64b8725c0751" name="caseapprovedFlow" />
+        <logger level="INFO" doc:name="Logger" doc:id="a05f50ea-cb14-430f-b746-2d1dc7c2cdad" message="Request UUID #[correlationId] Flow Name #[flow.name]::Case Approved Checking Account Response :::::::::::: #[payload]" />
+        <json-logger:logger doc:name="Case Approved Checking Account Response" doc:id="cb264dbc-7241-4d9b-b649-7052fb4c2103" config-ref="JSON_Logger_Config" message="Case Approved Checking Account Response" priority="DEBUG" tracePoint="PRINT">
+            <json-logger:content><![CDATA[#[output application/json -
+{
+ 	payload: payload
+}]]]></json-logger:content>
+        </json-logger:logger>
+    </flow> -->
+<!--     <flow name="post:\process\caseapproved\saving:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="e56947d2-c3ba-4ea6-b837-4e3c67a430de" message="Request UUID #[correlationId] Flow Name #[flow.name]::In caseApproved Savings Flow ::::::::::: #[payload]" />
+        <json-logger:logger doc:name="In caseApproved Savings Flow" doc:id="014ff035-48ec-40e5-8364-0c9c8e85c2d2" config-ref="JSON_Logger_Config" message="In caseApproved Savings Flow" priority="DEBUG" tracePoint="PRINT">
+            <json-logger:content><![CDATA[#[output application/json -
+{
+ 	payload: payload
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <set-variable value="#[payload.ApplicationId]" doc:name="SetApplicationId" doc:id="62eedcef-16d0-46db-a586-7e39bfba6a8a" variableName="ApplicationId" />
+        <set-variable value="${variables.caseStatus.APRROVED}" doc:name="SetCaseStatus" doc:id="a56b8785-8699-4baf-9d2c-d48a6a51d514" variableName="caseStatus" />
+        <set-variable value="true" doc:name="isCaseApprovedFlow" doc:id="f2f84ef0-d852-489d-93b4-7e315b9b2400" variableName="isCaseApprovedFlow" />
+        <set-variable value="#[payload.CustomerInformation.CISNumber]" doc:name="SetCISNumber" doc:id="6270d040-1fe1-4df6-963a-20ed1dcf1a34" variableName="CISNumber" />
+        <flow-ref doc:name="caseApprovedSavingsFlow" doc:id="1016ca81-a6a5-470b-849f-b3c7be19f3b5" name="caseApprovedSavingsFlow" />
+        <logger level="INFO" doc:name="Logger" doc:id="c505ea13-aaea-4e2d-8bcc-2ae1a0a83a65" message="Request UUID #[correlationId] Flow Name #[flow.name]::Case Approved Saving Account Response :::::::::::: #[payload]" />
+        <json-logger:logger doc:name="Case Approved Saving Account Response" doc:id="869413c3-4ca3-4b4c-bebd-e22b755d3ad3" config-ref="JSON_Logger_Config" message="Case Approved Saving Account Response" priority="DEBUG" tracePoint="PRINT">
+            <json-logger:content><![CDATA[#[output application/json -
+{
+ 	payload: payload
+}]]]></json-logger:content>
+        </json-logger:logger>
+    </flow> -->
+<!--     <flow name="post:\process\customerverification\getinstantid:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="eb659015-13e1-4189-88ba-4043322c408e" message="In customerVerification getInstantID Flow... " />
+        <flow-ref doc:name="getinstantid-flow" doc:id="22762e7a-e4df-4b53-addf-6e1e5de1745b" name="getinstantid-flow" />
+    </flow> -->
+<!--     <flow name="post:\process\customerverification\kbaverification:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="eb659015-13e1-4189-88ba-4043322c408e" message="In customerVerification kbaVerification Flow..." />
+        <flow-ref doc:name="kbaverification-flow" doc:id="22762e7a-e4df-4b53-addf-6e1e5de1745b" name="kbaverification-flow" />
+    </flow> -->
+    <flow name="post:\process\idverification\trueid:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="98de338c-68b3-4d56-81db-76eec9e903cd" message="In TrueId Authentication Flow" />
+		<logger level="INFO" doc:name="Logger" doc:id="768814a7-614c-42b7-83be-fad14bc5282b" message="#[payload.Settings default null]"/>
+		<json-logger:logger doc:name="Logger" doc:id="04c4a431-29b1-4180-a930-402c5bc0dea6" config-ref="JSON_Logger_Config" tracePoint="PRINT" message="Id Authentication Request">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<flow-ref doc:name="idvalidator-flow" doc:id="66e9b0e9-a86c-43c7-9623-6b7ce0f5c67a" name="idvalidator-flow" />
+    </flow>
+<!--     <flow name="post:\process\idverification\submitapplication:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  ApplicationId: "2c48aa94-42e3-4636-a14e-3aaf27eb37d4",
+  RequestUUID: "48d5d985-f9cb-407b-889f-712de67dbd50",
+  ErrorMessageList: [
+    {
+      ErrorMessageNumber: "string",
+      ErrorMessageText: "string"
+    }
+  ]
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+    <flow name="post:\process\submit\presubmission:velo-prc-onboarding-config">
+        <!-- <logger level="INFO" message="Request UUID #[correlationId] Flow Name #[flow.name]:: In PreSubmit Flow ::::: #[payload]" doc:name="Logger" /> -->
+        <json-logger:logger doc:name="In PreSubmit Flow" doc:id="81fb6238-7078-45f7-aaf8-091eea0b91a3" config-ref="JSON_Logger_Config" message="In PreSubmit Flow " priority="DEBUG" tracePoint="PRINT">
+            <json-logger:content><![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <set-variable value="#[payload.RequestUUID]" doc:name="SetCacheKey" doc:id="42a1f1f5-473f-4c80-a677-5bd49f8a8c54" variableName="cacheKey" />
+        <set-variable value="#[payload.ApplicationId]" doc:name="ApplicationId" doc:id="ec9ce247-9f9f-4683-8158-6a439ed3aa14" variableName="ApplicationId" />
+        <set-variable value="#[payload.ApplicantType]" doc:name="SetApplicantType" doc:id="5a2389a4-a64b-4a27-b57e-ddc519b2ad07" variableName="applicantType" />
+        <set-variable value="#[payload.CustomerInformation.CISNumber]" doc:name="SetCISNumber" doc:id="6270d040-1fe1-4df6-963a-20ed1dcf1a34" variableName="CISNumber" />
+        <logger level="INFO" doc:name="Logger" doc:id="37e1c349-4ae7-4910-b2be-02acde474f80" message="RequestUUID #[correlationId] Flow Name #[flow.name]:: applicantType #[vars.applicantType] #[vars.ApplicationId] ::::: #[payload]" />
+        <json-logger:logger doc:name="applicantType" doc:id="9e2bc142-859e-43f8-8b34-86c4bf29cb9a" config-ref="JSON_Logger_Config" message="applicantType" priority="DEBUG" tracePoint="PRINT">
+            <json-logger:content><![CDATA[#[output application/json ---
+{
+ 	applicantType: vars.applicantType
+}]]]></json-logger:content>
+        </json-logger:logger>
+        <choice doc:name="Choice" doc:id="1f72fb8d-2bd7-4ea1-bba5-1af0000dde79">
+            <when expression="vars.applicantType == 'USCitizen' or vars.applicantType == 'NONNRA'">
+                <flow-ref doc:name="nonnra-presubmission-flow" doc:id="463cf659-5694-422b-a394-abedd19cc215" name="nonnra-presubmission-flow" />
+            </when>
+            <when expression="vars.applicantType == 'NRA'">
+                <flow-ref doc:name="non-us-citizen-submit-flowFlow" doc:id="4c73c877-2ea2-40ab-830e-d61cde16ad28" name="non-us-citizen-submit-flowFlow" />
+            </when>
+            <otherwise>
+                <!-- <logger level="INFO" doc:name="Logger" doc:id="2b094f30-e738-4a31-bada-5462355e1a88" message="Request UUID #[correlationId] Flow Name #[flow.name]::Invalid ApplicantType given" /> -->
+                <json-logger:logger doc:name="Invalid ApplicantType given" doc:id="c94c8b67-1db2-4400-847c-b4a8d8a3905f" config-ref="JSON_Logger_Config" message="Invalid ApplicantType given" priority="DEBUG" tracePoint="PRINT" />
+                <set-payload value="null" doc:name="Set Payload" doc:id="723f0b7a-3000-4538-a6ad-509bbda46317" />
+                <set-variable value="Invalid ApplicantType given" doc:name="Set Error Message" doc:id="147d1338-dc80-4855-8488-cfcbd388d45c" variableName="retSuccMes" />
+                <set-variable value="400" doc:name="Set Http Status Code" doc:id="8d56a3d0-3f8e-44a4-b501-b656a610b15e" variableName="httpStatus" />
+                <flow-ref doc:name="global-return-response-build" doc:id="131b127f-57c6-4ed0-a8ed-6f978595b518" name="global-return-response-build" />
+            </otherwise>
+        </choice>
+    </flow>
+    <!-- <flow name="post:\process\mortgage\applications:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="af7ff202-94e2-4523-864f-b99d240c7a07" message="In mortgage Flow" />
+        <flow-ref doc:name="mortgage-flow" doc:id="890addf1-44a9-4404-b74d-4212e0029745" name="mortgage-flow" />
+    </flow> -->
+    <flow name="put:\process\crm\(caseId)\update:velo-prc-onboarding-config">
+        <flow-ref doc:name="caseupdateFlow" doc:id="1f4ccdc3-3e30-4369-b446-f949075f9e27" name="caseupdateFlow" />
+    </flow>
+    <flow name="post:\process\synergy:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="6c01b130-e20c-4959-ac73-d242c8006b59" />
+        <flow-ref doc:name="synergy-flow" doc:id="ed9c3560-4a73-4966-8e7a-fef82ecd454b" name="synergy-flow" />
+    </flow>
+    <flow name="post:\process\customerverification\truliooauthentication:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="5e427bb3-ff0e-44ff-8f0c-7fb2a914cd26" message="In Trulioo Id Authentication Flow" />
+        <flow-ref doc:name="trulioo-idauthentication-system-api-call-flow" doc:id="197b83d7-2c7a-44b0-a053-24f16091391e" name="trulioo-idauthentication-system-api-call-flow" />
+    </flow>
+    <flow name="post:\process\submit\submission:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="non-NRA Submission " doc:id="2a33e496-5f29-4e4c-91eb-6c40fda060a6" message="Request UUID #[correlationId] Flow Name #[flow.name]::non-NRA Submission flow :::::: #[payload]" />
+        <set-variable value="#[payload.RequestUUID]" doc:name="SetCacheKey" doc:id="42a1f1f5-473f-4c80-a677-5bd49f8a8c54" variableName="cacheKey" />
+        <set-variable value="#[payload[1].ApplicationId]" doc:name="ApplicationId" doc:id="ec9ce247-9f9f-4683-8158-6a439ed3aa14" variableName="ApplicationId" />
+        <set-variable value="#[payload[1].ApplicantType]" doc:name="SetApplicantType" doc:id="5a2389a4-a64b-4a27-b57e-ddc519b2ad07" variableName="applicantType" />
+        <flow-ref doc:name="NonNRASubmission" doc:id="7b0d9fcb-fe7e-4a16-a0f7-27b4736ae95d" name="NonNRASubmission" />
+    </flow>
+    <flow name="post:\process\caseapproved\submission:application\json:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="a8278e41-9a90-4cc1-8b8b-36dac8accd9f" message="Request UUID #[correlationId] Flow Name #[flow.name]::Onboarding Customer after case approval :::: #[payload]" />
+        <set-variable value="#[payload.ApplicantType]" doc:name="SetApplicantType" doc:id="5a2389a4-a64b-4a27-b57e-ddc519b2ad07" variableName="applicantType" />
+        <set-variable value="#[payload.ApplicationId]" doc:name="SetApplicationId" doc:id="62eedcef-16d0-46db-a586-7e39bfba6a8a" variableName="ApplicationId" />
+        <set-variable value="${variables.caseStatus.APRROVED}" doc:name="SetCaseStatus" doc:id="a56b8785-8699-4baf-9d2c-d48a6a51d514" variableName="caseStatus" />
+        <set-variable value="true" doc:name="isCaseApprovedFlow" doc:id="f2f84ef0-d852-489d-93b4-7e315b9b2400" variableName="isCaseApprovedFlow" />
+        <set-variable value="#[payload.CustomerInformation.CISNumber]" doc:name="SetCISNumber" doc:id="6270d040-1fe1-4df6-963a-20ed1dcf1a34" variableName="CISNumber" />
+        <flow-ref doc:name="updateCoreSystemFlow" doc:id="8195eb68-69b8-4169-a4d3-cde6ed1073f0" name="updateCoreSystemFlow" />
+        <logger level="INFO" doc:name="Logger" doc:id="72bf932d-53cf-4ca8-ae3b-9ed87b45ca35" message="Request UUID #[correlationId] Flow Name #[flow.name]:: Case Approved Response for Application Id #[vars.ApplicationId] ::::::::::::::::::::::::: #[payload]" />
+    </flow>
+<!--     <flow name="post:\process\submit\presubmissiontmp:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="9fe2800b-3f73-47d3-87e2-803f83bbe216">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+    "data": {
+        "PartnerId": "a04m000000BAcfJAAT",
+        "ApplicationStatus": "Approved",
+        "CaseNumber": "CAS-03154-X5F6J8",
+        "CustomerNumber": "",
+        "AccountNumber": 0,
+        "RequestUUID": null,
+        "ErrorMessageList": []
+    },
+    "result": {
+        "success": true,
+        "code": "200",
+        "message": "Success"
+    }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+    <flow name="post:\process\partner\account\create:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Partner Create" doc:id="fc34d117-27d6-4d07-a9b0-996a56b3f4dd" message="In Partner Account Create Flow  . " />
+        <flow-ref doc:name="partner-account-creation-flowFlow" doc:id="842d1008-a812-47a4-9974-a3c27ce3fe2d" name="PartnerAccountCreateMainFlow" />
+    </flow>
+    <flow name="post:\process\partner\account\update:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation=" http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" doc:id="b279a6e6-f232-407e-9507-71bcf42be1a8">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  Message: "success",
+  ResponseCode: 200,
+  Reasons: {
+    ReasonCode: 200,
+    ReasonDescription: "Case Created"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        <logger level="INFO" doc:name="Partner Update" doc:id="29a94d90-e135-4d7c-9259-b79e40d8cacc" message="In Partner Account Update Flow  . " />
+    </flow>
+    
+     <flow name="post:\process\notification\retry:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Partner Update" doc:id="701cd92d-9c80-4795-8b38-928dc8808882" message="In Partner notification retry" />
+		<ee:transform doc:name="Transform Message" doc:id="865b4e06-7063-4e2c-9ab9-5cfa2d29ab1d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  Message: "success",
+  ResponseCode: 202,
+  Reasons: {
+    ReasonCode: 202,
+    ReasonDescription: "Notification Initiated"
+  }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+                       <ee:set-variable variableName="httpStatus">202</ee:set-variable>
+                   </ee:variables>
+		</ee:transform>
+    
+</flow>
+    
+       <flow name="post:\process\initiatecomm\send:velo-prc-onboarding-config">
+        <json-logger:logger doc:name="Logger" doc:id="533a35bd-4b5f-4962-a055-4b3726f0116c" config-ref="JSON_Logger_Config" message="In the initiatecomm send sms flow">
+			<json-logger:content ><![CDATA[#[output application/json 
+---
+{
+ 	attributes: attributes,
+ 	communication: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<logger level="INFO" doc:name="intiate send Update" doc:id="bef5074b-5686-4882-b2d9-c07ab109d89c" message="In initate communication flow" />
+		<ee:transform doc:name="Transform Message" doc:id="24593971-3d1b-430c-b87a-634cc80197bc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  Message: "success",
+  ResponseCode: 202,
+  Reasons: {
+    ReasonCode: 202,
+    ReasonDescription: "Notification Initiated"
+  }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+                       <ee:set-variable variableName="httpStatus">202</ee:set-variable>
+                   </ee:variables>
+		</ee:transform>
+    
+</flow>
+    
+     
+    <flow name="post:\process\partner\account\case\update:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Partner Case Approved" doc:id="3799d5e7-1134-474c-a24d-3ec8c4117636" message="Partner Case Approved Flow " />
+        <choice doc:name="Choice" doc:id="87909277-ce26-449b-a5a8-a1851d82ef8f">
+            <when expression="payload.CaseStatus == 'Approved'">
+                <logger level="INFO" doc:name="Case Approved" doc:id="343366be-02cd-4c41-ac27-ee131eb4d7ed" message="Case Approved from MSD " />
+                <flow-ref doc:name="partner-case-approved" doc:id="32bd09c8-4a05-429c-b780-82874250a4c9" name="partner-case-approved" />
+            </when>
+            <otherwise>
+                <logger level="INFO" doc:name="Case Denied " doc:id="64208e9f-b9d6-4dd6-bebb-77a9e6f4e829" message="Case Denied from MSD for #[payload.RequestUUID]::::::::&quot;CaseStatus&quot;:#[payload.CaseStatus]" />
+				<set-payload value='#[output 
+application/json 
+--- 
+{
+	data: {
+		ApplicationId: payload.ApplicationId,
+		ApplicationStatus: "Declined"
+	}
+}]' doc:name="Set Payload" doc:id="59383a9f-f899-40e4-ae03-d64ef3b88e67" />
+            </otherwise>
+        </choice>
+    </flow>
+<!--     <flow name="post:\process\caseapproved\submission:velo-prc-onboarding-config">
+        <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+-
+{
+  data: {
+    CaseNumber: "CAS-01576-P6X6Y4",
+    ApplicationId: "a04m000000BAcfJAAT",
+    ApplicationStatus: "Approved",
+    CustomerNumber: "00000060509",
+    AccountNumber: 178356940,
+    Error: {
+      Message: null
+    }
+  },
+  result: {
+    success: true,
+    code: "200",
+    message: "Success"
+  }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow> -->
+    <!-- <flow name="post:\process\mortgage\applications\(applicationid)\coborrowers:velo-prc-onboarding-config">
+        <logger level="INFO" doc:name="Logger" doc:id="5ce05bef-57e4-4d7b-b2d8-747966a48850" message="In mortgage Flow" />
+		<ee:transform doc:id="9f1738b3-f7c6-406e-8b36-f7d20a6b05bd">
+            <ee:variables>
+				<ee:set-variable variableName="applicationId" ><![CDATA[attributes.uriParams.applicationid]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+		<flow-ref doc:name="mortgage-CoBorrower-flow" doc:id="c204e2e2-76cf-4c11-b83c-ff0411ea7928" name="mortgage-flow" />
+    </flow> -->
+</mule>

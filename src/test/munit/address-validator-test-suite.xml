@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="velo-process-api-test-suite.xml" />
+	<munit:test name="ofac-pep-request" description="MUnit Test" doc:id="255b6468-42fa-42ea-bee0-11fdc45da64b">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock OFAC pep Sys API Response" doc:id="353d6161-270f-465d-8668-326410af734a" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="10982066-f8b1-4055-9a7b-fd1aa578aba3" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="pepResponse" value='#[output application/json --- {"Name":"Rajat Kumar","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					
+</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Variables" doc:id="512f88e8-e984-41a2-b9d3-99a198af3169" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
+output application/java
+---
+"eyJraWQiOiJGSE1jTWJIUlpMd01QSXgweDlGM1lESDlUenVXdy1QNHJ6eFl6LTREc2xnIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULkdNa0NiaTlrNlNvX2lVNUQ4ZDR2SUw3aEpiVGF0em5qV0VoT3RKREk4STAiLCJpc3MiOiJodHRwczovL3Nzby10ZXN0LnZlbG9iYW5rLmNvbS9vYXV0aDIvYXVzZjJjMThxcXRtR0h5WDgwaDciLCJhdWQiOiJodHRwczovL2Rldm9wZW5hcGkudmVsb2JhbmsuY29tLyIsImlhdCI6MTU0ODIyOTg1NywiZXhwIjoxNTQ4MjMzNDU3LCJjaWQiOiIwb2FmcnVwbDdhNkZ1VDZhTzBoNyIsInNjcCI6WyJhcGk6cmVhZCJdLCJzdWIiOiIwb2FmcnVwbDdhNkZ1VDZhTzBoNyJ9.eYEm0Rn0U7s_hWArHDZXTnTg9s7JGTZYwYLq4FxJj2czLMgF8ROLj1zgXwM_ChwSvACCYR4DU1JR2F1iMmmbsMvE42gx1BRKSWOIPt8dOywzXGVHtRhDi7KB5MmWx2CZsGDnVdwjoTxtK0PfMSlV7nSNNBN6RKksBOmtRldx39lEbcn6YgPjV_zj-ISwreKAllp42CaGGfYwRMF_Uhh4I_rI03yCmmmhx9h7z6XggQOlXKGpSm6XYkXO7QCrh6o3vYsXTxnFkBJNPDH4yzzAAondIjMjrIu1S4OEVoQ68TajOOWE-xZoawdiIHEz6bE2DLG2UL09vix3QrIGodSz2w"]]></ee:set-variable>
+					<ee:set-variable variableName="ofacTmp" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "EntityType": "Individual",
+  "FirstName": "Rajat",
+  "MiddleName": "",
+  "LastName": "Kumar",
+  "AddressLine1": null,
+  "AddressLine2": null,
+  "AddressCity": null,
+  "AddressState": null,
+  "AddressPostalCode": null,
+  "AddressCountry": null,
+  "DateOfBirth": "1999-12-01",
+  "Gender": "Male",
+  "PassportNumber": null,
+  "Occupation": "Other",
+  "CustomerReference": null,
+  "RequestUUID": "c9fa7972-de06-4a92-b757-d055f3bfaaaa"
+}]]></ee:set-variable>
+				
+</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow Ref to OfacSystemApiCallSubFlow" doc:id="799db331-7a75-48ad-ba48-6736ba2f9b4c" name="OfacSystemApiCallPEPSubFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="72b8d0c4-11eb-42f9-a186-7029dd178ede" expression="#[vars.pepResponse]" is='#[MunitTools::equalTo({"Name":"Rajat Kumar","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null})]' message="Ofac PEP Response is valid"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="ofac-request" description="MUnit Test" doc:id="459f186b-3844-4eb6-89a8-b523bd5523cc">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock OFAC Sys API Response" doc:id="8227cbe0-fbee-4349-b7fd-1f19844f9ceb" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="14d452ff-910e-4e56-a4bc-392f6e81a5d0" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="ofacResponse" value='#[output application/json --- {"Name":"Rajat Kumar","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Variables" doc:id="a6c37773-5cf2-4fa3-b6be-bcd6080b43a1" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
+output application/java
+---
+"eyJraWQiOiJGSE1jTWJIUlpMd01QSXgweDlGM1lESDlUenVXdy1QNHJ6eFl6LTREc2xnIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULkdNa0NiaTlrNlNvX2lVNUQ4ZDR2SUw3aEpiVGF0em5qV0VoT3RKREk4STAiLCJpc3MiOiJodHRwczovL3Nzby10ZXN0LnZlbG9iYW5rLmNvbS9vYXV0aDIvYXVzZjJjMThxcXRtR0h5WDgwaDciLCJhdWQiOiJodHRwczovL2Rldm9wZW5hcGkudmVsb2JhbmsuY29tLyIsImlhdCI6MTU0ODIyOTg1NywiZXhwIjoxNTQ4MjMzNDU3LCJjaWQiOiIwb2FmcnVwbDdhNkZ1VDZhTzBoNyIsInNjcCI6WyJhcGk6cmVhZCJdLCJzdWIiOiIwb2FmcnVwbDdhNkZ1VDZhTzBoNyJ9.eYEm0Rn0U7s_hWArHDZXTnTg9s7JGTZYwYLq4FxJj2czLMgF8ROLj1zgXwM_ChwSvACCYR4DU1JR2F1iMmmbsMvE42gx1BRKSWOIPt8dOywzXGVHtRhDi7KB5MmWx2CZsGDnVdwjoTxtK0PfMSlV7nSNNBN6RKksBOmtRldx39lEbcn6YgPjV_zj-ISwreKAllp42CaGGfYwRMF_Uhh4I_rI03yCmmmhx9h7z6XggQOlXKGpSm6XYkXO7QCrh6o3vYsXTxnFkBJNPDH4yzzAAondIjMjrIu1S4OEVoQ68TajOOWE-xZoawdiIHEz6bE2DLG2UL09vix3QrIGodSz2w"]]></ee:set-variable>
+					<ee:set-variable variableName="ofacTmp" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "EntityType": "Individual",
+  "FirstName": "Rajat",
+  "MiddleName": "",
+  "LastName": "Kumar",
+  "AddressLine1": null,
+  "AddressLine2": null,
+  "AddressCity": null,
+  "AddressState": null,
+  "AddressPostalCode": null,
+  "AddressCountry": null,
+  "DateOfBirth": "1999-12-01",
+  "Gender": "Male",
+  "PassportNumber": null,
+  "Occupation": "Other",
+  "CustomerReference": null,
+  "RequestUUID": "c9fa7972-de06-4a92-b757-d055f3bfaaaa"
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow Ref to OfacSystemApiCallSubFlow" doc:id="d449dca3-3d0c-4741-b685-b5c1fbd72f7e" name="OfacSystemApiCallSubFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="2542c28a-82c4-47aa-b102-1d28e9238a55" expression="#[vars.ofacResponse]" is='#[MunitTools::equalTo({"Name":"Rajat Kumar","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null})]' message="Ofac Response is valid"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="okta-factor-sms" description="MUnit Test" doc:id="29441266-985f-4b0c-8ed1-ee1c0d0a6902">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Verify Response" doc:id="3e5a4080-eb4b-4ecc-94bd-e42d8a081763" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  {
+    "userId": "00uf2vr865w1YvxAJ0h7",
+    "factorType": "sms",
+    "provider": "OKTA",
+    "profile": {
+        "phoneNumber": "+1-646-736-9923"
+    }
+}]' mediaType="application/json" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference to post:\process\iam\factors\sms\verify:velo-process-api-config" doc:id="cd316aae-bc02-4442-baf5-9096ca21e0a2" name="post:\process\iam\factors\sms\verify:velo-process-api-config"/>
+			<set-payload value='#[output application/json --- {
+	"userId" : "00uf2vr865w1YvxAJ0h7",
+	"factorId" : "mblf2wiy6cLuf76aM0h7",
+	"passCode": "627485" 
+}]' doc:name="Set Payload" doc:id="8b73c729-8cb1-4156-96f7-d63a4dc4bd86" mimeType="application/json" />
+		
+</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Factor" doc:id="eb8ff0cb-6842-4d58-b1b0-db1a4ab585b4" expression="#[payload.userId]" is='#[MunitTools::notNullValue()]' message="User verification was unsuccessfull"/>
+			<!-- <munit-tools:assert-that doc:name="Assert Factor Type" doc:id="fbabd6ae-6fb7-44d5-a4f0-d8c5d40c80eb" expression="#[payload.factorType]" is='#[MunitTools::equalTo("sms")]' message="Factor type is not SMS"/> -->
+		
+</munit:validation>
+	</munit:test>
+
+	<munit:test name="okta-factor-sms-verify" description="MUnit Test" doc:id="56e983f0-05b7-4259-bc38-e57163082811">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Verify Response" doc:id="6ec48399-d5f9-4ed2-8caf-f755f643a641" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  {
+    "userId": "00uf2vr865w1YvxAJ0h7",
+    "factorId": "mblf2wiy6cLuf76aM0h7",
+    "passCode": "627485"
+}]' mediaType="application/json" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference to post:\process\iam\factors\sms\verify:velo-process-api-config" doc:id="6e54b4f6-90a7-4907-9448-ab0d41b2efe5" name="post:\process\iam\factors\sms\verify:velo-process-api-config"/>
+			<set-payload value='#[output application/json --- {
+	"userId" : "00uf2vr865w1YvxAJ0h7",
+	"factorId" : "mblf2wiy6cLuf76aM0h7",
+	"passCode": "627485" 
+}]' doc:name="Set Payload" doc:id="06c1d9da-b7cd-422e-8b96-e69011c0ad63" mimeType="application/json" />
+		
+</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Successfull Verification" doc:id="a14cd018-f2b7-4a0e-89ca-73231c51294d" expression="#[payload.passCode]" is='#[MunitTools::notNullValue()]' message="User verification was unsuccessfull"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="okta-challenge" description="MUnit Test" doc:id="506586e2-21c3-4176-8eb0-acf0b62ee4bb">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Challenge Response" doc:id="f1154a1d-9087-4677-b469-beeed7d7d572" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---   {
+    "userId": "00uf2vr865w1YvxAJ0h7",
+    "factorType": "sms",
+    "provider": "OKTA",
+    "profile": {
+        "phoneNumber": "+1-646-736-9923"
+    }
+}]' mediaType="application/json" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference to post:\process\iam\challenge:velo-process-api-config" doc:id="a6f4754e-6d58-4ec6-b6ef-db9ad7ceb04b" name="post:\process\iam\challenge:velo-process-api-config"/>
+			<set-payload value='#[output application/json --- {
+    "userId" : "00uf2vr865w1YvxAJ0h7",
+    "factorId": "mblf2wiy6cLuf76aM0h7" 
+ }]' doc:name="Set Payload" doc:id="d9ada9a5-de22-42dc-8d60-cedba5937e2e" mimeType="application/json" />
+		
+</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Challenge Response" doc:id="18118f8e-617b-4ae2-afec-7573737d4e9c" expression="#[payload.userId]" is='#[MunitTools::notNullValue()]' message="User verification was unsuccessfull"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="okta-user-verify-success" description="MUnit Test" doc:id="e7848b71-4aa9-4a1d-8704-ccfc68b66878">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Verify Response" doc:id="b3136e58-0034-41db-a7cf-3395d4e27a64" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3b17ebd1-867f-415a-81bc-812669942434" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- {
+	"passCode": "627485"
+}]' mediaType="application/json" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference to post:\process\iam\verify:velo-process-api-config" doc:id="925b2fe2-afe0-403a-a0ca-2bacea5da6b5" name="post:\process\iam\verify:velo-process-api-config"/>
+			<set-payload value='#[output application/json --- {
+    "userId" : "00uf2vr865w1YvxAJ0h7",
+    "factorId": "mblf2wiy6cLuf76aM0h7",
+    "passCode": "627485"
+}]' doc:name="Set Payload" doc:id="6d6ad3b2-e8db-4eb1-a8be-b89c7efc1893" mimeType="application/json" />
+		
+</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Successfull Verification" doc:id="eb94eb93-c2eb-44d7-b510-5819811f10f5" expression="#[payload.passCode]" is='#[MunitTools::notNullValue()]' message="User verification was unsuccessfull"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="okta-user-verify-not-found" description="MUnit Test" doc:id="2b252f58-3302-470f-bc0c-f69e81fbc1f5">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="37fa8ebd-3240-4674-8551-a678329f431c" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3b17ebd1-867f-415a-81bc-812669942434" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+    "userId" : "00uf2vr865w1YvxAJ0h7",
+    "factorId": "mblf2wiy6cLuf76aM0h7",
+    "passCode": "627485"
+}]' doc:name="Set Payload" doc:id="581cc63d-535d-4b91-b401-b142b39649b6" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\verify:velo-process-api-config" doc:id="56d0d935-50f6-4da1-9554-e170cb63d18a" name="post:\process\iam\verify:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Creation failure" doc:id="6088d714-87ea-44a3-a8ab-4f8765757125" expression="#[payload.result.success]" is="#[MunitTools::equalTo(false)]" message="User creation was successfull"/>
+			<!-- <munit-tools:assert-that doc:name="Assert for Bad Request" doc:id="b34168e9-d68b-4a8a-9212-bbec78ba7f84" expression="#[payload.result.code]" is='#[MunitTools::equalTo(404)]' message="User was found"/> -->
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="okta-create-user-bad-request" description="MUnit Test" doc:id="6b939bfc-02ad-42cd-9618-231ad7225a32">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="cf02a77e-ebab-42cc-9b35-a9cd76ce3b56" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3b17ebd1-867f-415a-81bc-812669942434" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "profile": {
+    "firstName": "Isaac",
+    "lastName": "Brock",
+    "email": "abd11111@xyz.com",
+    "login": "abd11111@xyz.com",
+    "mobilePhone": "555-415-8888"
+  }
+}]' doc:name="Set Payload" doc:id="0af2b4a5-ad0f-4266-bcf4-a733e5c155a3" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\users:velo-process-api-config" doc:id="8f7c5c20-67e6-41c3-962d-74351b895a16" name="post:\process\iam\users:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Creation failure" doc:id="a73f2859-40b9-4ed7-8c08-3ee7424d46c9" expression="#[payload.result.success]" is="#[MunitTools::equalTo(false)]" message="User creation was successfull"/>
+			<munit-tools:assert-that doc:name="Assert for Bad Request" doc:id="2eb4f1db-b4cd-486b-b7fb-946905689948" expression="#[payload.result.message.errorType.identifier]" is='#[MunitTools::equalTo("BAD_REQUEST")]' message="Not a Bad Request"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="okta-create-user-success" description="MUnit Test" doc:id="382cfaf9-a06c-49e4-8269-d3fb06cfcf49">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0a1876f4-33a7-4865-94cf-bd0a0627f12c" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3b17ebd1-867f-415a-81bc-812669942434" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="usersResponse" value='#[output application/json --- {
+    "id": "00uj2m8jqyuqukSoS0h7",
+    "status": "STAGED",
+    "created": "2019-01-23T08:05:29.000Z",
+    "activated": null,
+    "statusChanged": null,
+    "lastLogin": null,
+    "lastUpdated": "2019-01-23T08:05:29.000Z",
+    "passwordChanged": null,
+    "profile": {
+        "firstName": "Isaac",
+        "lastName": "Brock",
+        "mobilePhone": "555-415-8888",
+        "secondEmail": null,
+        "login": "abd11111@xyz.com",
+        "email": "abd11111@xyz.com"
+    },
+    "credentials": {
+        "provider": {
+            "type": "OKTA",
+            "name": "OKTA"
+        }
+    },
+    "_links": {
+        "activate": {
+            "href": "https://sso-test.velobank.com/api/v1/users/00uj2m8jqyuqukSoS0h7/lifecycle/activate",
+            "method": "POST"
+        },
+        "self": {
+            "href": "https://sso-test.velobank.com/api/v1/users/00uj2m8jqyuqukSoS0h7"
+        }
+    }
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "profile": {
+    "firstName": "Isaac",
+    "lastName": "Brock",
+    "email": "abd11111@xyz.com",
+    "login": "abd11111@xyz.com",
+    "mobilePhone": "555-415-8888"
+  }
+}]' doc:name="Set Payload" doc:id="bed0c961-0c71-4d96-8c5d-ad059d4f2c58" mimeType="application/json" />
+			<flow-ref doc:name="Flow Reference to post:\process\iam\users:velo-process-api-config" doc:id="e27c06b2-1141-4ada-8bea-36582096a6c5" name="post:\process\iam\users:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert User Creation" doc:id="6f939250-c85f-41ca-92ef-1ab5243add93" expression="#[vars.usersResponse.id]" is="#[MunitTools::notNullValue()]" message="User was not created"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="promocode-update-success" description="MUnit Test" doc:id="2787db1a-10a8-41f7-b9e2-392415212973">
+
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="52f35b5b-eac5-4af1-8d15-1b15e31bc68f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="resPromoUpdate" value='#[output application/json --- {
+  "RequestUuid": "2c7205b0-1e39-11e9-9952-64006a91ed4e",
+  "Status": 200
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Payload and Attributes" doc:id="ddc8e951-f86c-4b45-9947-b57e7831c4e0" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json --- 
+{
+  "Promotion": {
+    "Status": "New"
+  },
+  "OnboardingInvitation": {
+    "FirstName": "John",
+    "LastName": "Smith",
+    "EmailAddress": "email.address@gmail.com",
+    "PhoneNumber": "893-929-9391"
+  },
+  "RequestUUID": "9d08dc0d-86ea-4061-bc12-abd34e59d7ae"
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="attributesMap" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"attributes" : {
+		"uriParams" : {
+		"promocode" : "ASD1G2"
+		}
+	}
+}
+]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<munit:set-event doc:name="Set Event" doc:id="10333392-73c9-406b-8545-45ad49f8a96c" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Ref to put:\process\promotions\(promocode):application\json:velo-process-api-config" doc:id="a88cfecd-114c-4081-9fcf-1e4aa3ec4cc5" name="put:\process\promotions\(promocode):application\json:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Suceess" doc:id="baacac36-b6b0-4551-961a-1d2c170dba5a" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Address verification was not a success"/>
+			<munit-tools:assert-that doc:name="Assert Status Code" doc:id="045ffcdc-0842-4ac3-8291-21e6276571ea" expression="#[payload.data.Status]" is="#[MunitTools::equalTo(200)]" message="Status Code is not 200"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="promocode-update-bad-request" description="MUnit Test" doc:id="ab757224-13eb-4ece-821d-d8bceb4e3173">
+
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5c16235a-05a1-4aef-8460-a92109740c8b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- {
+  &quot;RequestUuid&quot;: &quot;2c7205b0-1e39-11e9-9952-64006a91ed4e&quot;,
+  &quot;Status&quot;: 400,
+  &quot;Type&quot;: &quot;BAD_REQUEST&quot;,
+  &quot;Error&quot;: {
+    &quot;Message&quot;: &quot;Promo Code not found&quot;
+  },
+  &quot;Message&quot;: &quot;HTTP PUT on resource 'https://openapiservices.eastwestbank.com:443/PromotionsService/api/promotions/onboardinginvitation' failed: bad request (400).&quot;
+}]" mediaType="application/json" />
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Payload and Attributes" doc:id="f0f3200e-041d-4635-a435-8aaa79e54102" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json --- 
+{
+  "Promotion": {
+    "Status": "New"
+  },
+  "OnboardingInvitation": {
+    "FirstName": "John",
+    "LastName": "Smith",
+    "EmailAddress": "email.address@gmail.com",
+    "PhoneNumber": "893-929-9391"
+  },
+  "RequestUUID": "9d08dc0d-86ea-4061-bc12-abd34e59d7ae"
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="attributesMap" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"attributes" : {
+		"uriParams" : {
+		"promocode" : "ASD1G2"
+		}
+	}
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<munit:set-event doc:name="Set Event" doc:id="1bdaec3b-bef4-4669-93b4-02a49262df2f" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow Ref to put:\process\promotions\(promocode):application\json:velo-process-api-config" doc:id="e85766ae-9a71-4826-b2aa-7d76a5a372e2" name="put:\process\promotions\(promocode):application\json:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Failure" doc:id="db68155b-e85f-4978-9c53-01efe4bb4f62" expression="#[payload.result.success]" is='#[MunitTools::equalTo(false)]' message="Address verification was not a failure"/>
+			<logger level="INFO" doc:name="Logger" doc:id="d46f0fbe-d601-4a3a-918d-3c9c1eced8b4" message="#[payload]"/>
+			<!-- <munit-tools:assert-that doc:name="Assert Status Code" doc:id="e502c4ff-71e5-4238-bba7-81f3e57eb295" expression="#[payload.Status]" is="#[MunitTools::equalTo(400)]" message="Status Code is not 400"/> -->
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Address-Verify-Failure" description="Test" doc:id="e61a23ae-1d1b-4e77-b00f-a0fc96f65283">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Address Verification Response" doc:id="a9010ce4-65e1-44b3-a17e-49403a03bffd" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="melissa" value="#[output application/json --- {
+  &quot;RequestUuid&quot;: &quot;49845d40-1e27-11e9-b7ba-64006a91ed4e&quot;,
+  &quot;Status&quot;: 400,
+  &quot;Type&quot;: &quot;BAD_REQUEST&quot;,
+  &quot;Error&quot;: {
+    &quot;RecordID&quot;: &quot;YYLLLYYY&quot;,
+    &quot;FullAddress&quot;: &quot;9300 Flair Dr;El Monte, CA 91731-2802&quot;,
+    &quot;AddressLine1&quot;: &quot;9300 Flair Dr&quot;,
+    &quot;AddressLine2&quot;: &quot;El Monte, CA 91731-2802&quot;,
+    &quot;AddressLine3&quot;: &quot;&quot;,
+    &quot;City&quot;: &quot;El Monte&quot;,
+    &quot;State&quot;: &quot;CA&quot;,
+    &quot;Zipcode&quot;: &quot;91731-2802&quot;,
+    &quot;Country&quot;: &quot;United States of America&quot;,
+    &quot;Latitude&quot;: &quot;&quot;,
+    &quot;Longitude&quot;: &quot;&quot;,
+    &quot;ResultCodes&quot;: [
+      {
+        &quot;Code&quot;: &quot;AC16&quot;,
+        &quot;ShortDescription&quot;: &quot;SubAdministrative Area Change&quot;,
+        &quot;LongDescription&quot;: &quot;The subadministrative area was added or changed.&quot;
+      },
+      {
+        &quot;Code&quot;: &quot;AE09&quot;,
+        &quot;ShortDescription&quot;: &quot;Sub Premise Number Missing&quot;,
+        &quot;LongDescription&quot;: &quot;The thoroughfare (street address) was found but the sub premise (suite) was missing.&quot;
+      },
+      {
+        &quot;Code&quot;: &quot;AV14&quot;,
+        &quot;ShortDescription&quot;: &quot;Premise Partial&quot;,
+        &quot;LongDescription&quot;: &quot;The address has been partially verified to the Premise (House or Building) Level, which is NOT the highest level possible with the reference data.&quot;
+      }
+    ],
+    &quot;RequestUUID&quot;: &quot;YYLLLYYY&quot;,
+    &quot;ErrorMessageList&quot;: [
+      {
+        &quot;ErrorMessageNumber&quot;: &quot;AE09&quot;,
+        &quot;ErrorMessageText&quot;: &quot;Sub Premise Number Missing&quot;
+      }
+    ]
+  },
+  &quot;Message&quot;: &quot;HTTP POST on resource 'https://openapiservices.eastwestbank.com:443/AddressVerificationService/api/addressverifications' failed: bad request (400).&quot;
+}]" mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "StreetAddress1": "9300 Flair Drive",
+  "StreetAddress2": "",
+  "City": "El Monte",
+  "State": "CA",
+  "Zip": "91731",
+  "Country": "USA",
+  "RequestUUID": "YYLLLYYY"
+}]' doc:name="Set Payload" doc:id="4360bd21-5c9e-4ef8-8f57-c00500cb482f" mimeType="application/json"/>
+			<flow-ref doc:name="Flow ref to post:\process\addressvalidator\addressverify" doc:id="648214c8-8833-42f5-97fb-8fa6bdca842e" name="post:\process\addressvalidator\addressverify:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="92f961b0-8b43-463d-a3b7-9a138bdb72ba" message='#["Success " ++ payload.result.success]'/>
+			<munit-tools:assert-that doc:name="Assert for Failure" doc:id="1585e99a-41e7-4597-9612-e79d8a4d4e50" expression="#[payload.result.success]" is='#[MunitTools::equalTo(false)]' message="Address verification was not a failure"/>
+			<munit-tools:assert-that doc:name="Assert Status Code" doc:id="b10f36f9-8d64-4e89-b0e9-6755977609f9" expression="#[payload.data.Status]" is="#[MunitTools::equalTo(400)]" message="Status Code is not 400"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="Address-Verify-Exception" description="Test" doc:id="efee77d7-6115-49f1-8add-efe850f6e75e">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Address Verification Response" doc:id="5e1a6bc9-9cde-4ff1-b1c6-269bb439e6d3" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "StreetAddress1": "9300 Flair Drive",
+  "StreetAddress2": "",
+  "City": "El Monte",
+  "State": "CA",
+  "Zip": "91731",
+  "Country": "USA",
+  "RequestUUID": "YYLLLYYY"
+}]' doc:name="Set Payload" doc:id="35efccac-e6d3-4c95-a2b7-f1efdaa80d2e" mimeType="application/json"/>
+			<flow-ref doc:name="Flow ref to post:\process\addressvalidator\addressverify" doc:id="c9f3f9b8-694e-4106-b2d3-955bb7c8fd27" name="post:\process\addressvalidator\addressverify:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="a97147a3-a383-40c6-a17f-f4a85242d97b" message='#["Success " ++ payload.result.success]'/>
+			<munit-tools:assert-that doc:name="Assert for Failure" doc:id="a4d44541-c67d-4cc7-98c9-4dca0f26d1cf" expression="#[payload.result.success]" is='#[MunitTools::equalTo(false)]' message="Address verification was not a failure"/>
+		</munit:validation>
+	</munit:test>
+</mule>

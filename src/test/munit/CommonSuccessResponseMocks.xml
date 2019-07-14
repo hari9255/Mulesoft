@@ -1,0 +1,1570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="CommonSuccessResponseMocks.xml" >
+	</munit:config>
+	
+<sub-flow name="PepMock" doc:id="e5745db0-0b9b-4a6c-b7f1-8ab510ea3f30" >
+		<logger level="INFO" doc:name="Logger" doc:id="3accb015-09d5-4742-b13f-ce97ca123e2a" message="Mocking OFAC"/>
+
+			<munit-tools:mock-when doc:name="Mock PEP Sys API Response" doc:id="68f686d5-5c6f-4e1b-803e-ac1085708377" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="10982066-f8b1-4055-9a7b-fd1aa578aba3" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="pepResponse" value='#[output application/json --- {"Name":"VAMSI SAKHINETI","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					
+</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="PepExceptionMock" doc:id="168a4c8c-5f86-4e00-9cf6-0f7ab6c7684a" >
+		<logger level="INFO" doc:name="Logger" doc:id="e9d3d45c-4b85-499b-a8a3-81c4b30982cf" message="Mocking OFAC"/>
+
+			<munit-tools:mock-when doc:name="Mock PEP Sys API Response" doc:id="32e26e1c-9b3e-4c57-9096-d867d3537c96" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="10982066-f8b1-4055-9a7b-fd1aa578aba3" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR"/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OFAC-Mock" doc:id="5928adda-f83b-4cd7-870a-b159958e36a7" >
+		<logger level="INFO" doc:name="Logger" doc:id="466cba72-8559-4721-9c28-06bb995bbda5" message="Mocking PEP"/>
+		<munit-tools:mock-when doc:name="Mock OFAC Sys API Response" doc:id="2b3e5aa9-dcbf-4e49-a7ee-df72c8b8b07d" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="14d452ff-910e-4e56-a4bc-392f6e81a5d0" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="ofacResponse" value='#[output application/json --- {"Name":"VAMSI SAKHINETI","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OFAC-MatchResponse-Mock" doc:id="48ffa8de-2734-4a2b-a0e9-e9ad8de0e0ee" >
+		<logger level="INFO" doc:name="Logger" doc:id="5707be8b-d914-4a85-af00-e52cb12d497e" message="Mocking PEP"/>
+		<munit-tools:mock-when doc:name="Mock OFAC Sys API Response" doc:id="2343b0d5-0b06-4f58-ab32-83ee12f87832" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="14d452ff-910e-4e56-a4bc-392f6e81a5d0" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="ofacResponse" value='#[output application/json --- {"Name":"VAMSI SAKHINETI","IsPep":null,"ResultID":0,"ResultStatus":"Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+<sub-flow name="Pep-MatchResponse-Mock" doc:id="cced754b-5049-4750-b7b4-1b6f9a0cf822" >
+		<logger level="INFO" doc:name="Logger" doc:id="c8e09110-ef09-4934-b564-7c9f0bceb18f" message="Mocking OFAC"/>
+
+			<munit-tools:mock-when doc:name="Mock PEP Sys API Response" doc:id="8819dcf0-517c-4821-9b89-b340682d4ff1" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="10982066-f8b1-4055-9a7b-fd1aa578aba3" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="pepResponse" value='#[output application/json --- {"Name":"VAMSI SAKHINETI","IsPep":null,"ResultID":0,"ResultStatus":"Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					
+</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>		
+	<sub-flow name="TruliooIDVerificationMock" doc:id="6a71553f-ea7b-4982-a22c-f40fa726b225" >
+		<logger level="INFO" doc:name="Logger" doc:id="b19248d2-772f-4b43-92ef-4a50e3fdac52" message="TruliooIDVerification"/>
+		<ee:transform doc:name="Transform Message" doc:id="5488d19c-2a68-46a8-b9de-735f641ae44d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"TransactionID":"4cb32b42-e2a5-44c4-9a72-509ae962b007",
+	"UploadedDt":"2019-01-28T10:04:58",
+	"CountryCode":"CN",
+	"ProductName":"IdentityVerification",
+	"Record":{
+		"TransactionRecordID":"154d6a8b-aa4e-4ef0-8618-f349fd58ad8f",
+		"RecordStatus":"match",
+		"DatasourceResults":[
+			{
+				"DatasourceName":"BankCard2",
+				"DatasourceFields":[
+
+				],
+				"AppendedFields":[
+
+				],
+				"Errors":[
+					{
+						"Code":"1001",
+						"Message":"Missingrequiredfield:MobileNumber"
+					},
+					{
+						"Code":"1001",
+						"Message":"Missingrequiredfield:BankAccountNumber"
+					}
+				],
+				"FieldGroups":[
+
+				]
+			},
+			{
+				"DatasourceName":"ChinaNationalID",
+				"DatasourceFields":[
+					{
+						"FieldName":"ProvinceOfIssue",
+						"Status":"missing"
+					},
+					{
+						"FieldName":"DayOfBirth",
+						"Status":"match"
+					},
+					{
+						"FieldName":"DistrictOfIssue",
+						"Status":"missing"
+					},
+					{
+						"FieldName":"MonthOfBirth",
+						"Status":"match"
+					},
+					{
+						"FieldName":"CountyOfIssue",
+						"Status":"missing"
+					},
+					{
+						"FieldName":"YearOfBirth",
+						"Status":"match"
+					},
+					{
+						"FieldName":"FirstSurName",
+						"Status":"match"
+					},
+					{
+						"FieldName":"FullName",
+						"Status":"match"
+					},
+					{
+						"FieldName":"FirstGivenName",
+						"Status":"match"
+					},
+					{
+						"FieldName":"nationalid",
+						"Status":"match"
+					},
+					{
+						"FieldName":"CityOfIssue",
+						"Status":"missing"
+					}
+				],
+				"AppendedFields":[
+
+				],
+				"Errors":[
+
+				],
+				"FieldGroups":[
+
+				]
+			},
+			{
+				"DatasourceName":"MobileID",
+				"DatasourceFields":[
+
+				],
+				"AppendedFields":[
+
+				],
+				"Errors":[
+					{
+						"Code":"1001",
+						"Message":"Missingrequiredfield:MobileNumber"
+					}
+				],
+				"FieldGroups":[
+
+				]
+			}
+		],
+		"Errors":[
+
+		],
+		"Rule":{
+			"RuleName":"RuleScriptChina1",
+			"Note":"Scriptmanuallycreated"
+		}
+	},
+	"Errors":[
+
+	]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="9b7a18a6-717a-4b5a-90b6-6c54e32b88f0" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="5785fa3e-9a0f-4de8-94f8-174ec528e4a8" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="idVerificationResp" value='#[payload]' mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="TruliooIDVerificationExceptionMock" doc:id="b0321673-117f-46e5-b0ed-a8f39adb569c" >
+		<logger level="INFO" doc:name="Logger" doc:id="86c0e8c5-ac1c-4e65-9172-c98d85def2da" message="TruliooIDVerification"/>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="32523ac4-29ae-40a6-bc9b-55576229cad9" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="5785fa3e-9a0f-4de8-94f8-174ec528e4a8" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	
+	<sub-flow name="TrueIDVerificationMock_Sub_Flow" doc:id="7d11eba1-2c50-4d52-bada-4d35adf92003" >
+		<munit-tools:mock-when doc:name="Mock ID Verification Response" doc:id="829f312e-bed2-487c-8e86-260d86a6923e" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="trueIDResponse" value="#[output application/json --- {
+        &quot;Status&quot;: {
+            &quot;ConversationId&quot;: &quot;31000155742905&quot;,
+            &quot;RequestId&quot;: &quot;372372995&quot;,
+            &quot;TransactionStatus&quot;: &quot;passed&quot;,
+            &quot;Reference&quot;: &quot;payload.RequestUUID&quot;
+        },
+        &quot;Products&quot;: [
+            {
+                &quot;ProductType&quot;: &quot;TrueID&quot;,
+                &quot;ExecutedStepName&quot;: &quot;True_ID_Step&quot;,
+                &quot;ProductConfigurationName&quot;: &quot;TrueID_Flow&quot;,
+                &quot;ProductStatus&quot;: &quot;pass&quot;
+            }
+        ],
+        &quot;PassThroughs&quot;: [
+            {
+                &quot;Type&quot;: &quot;true.id&quot;,
+                &quot;Data&quot;: &quot;{\&quot;IDAuthResultResponse\&quot;:{\&quot;Header\&quot;:{\&quot;TransactionId\&quot;:\&quot;2072371R778614\&quot;},\&quot;Success\&quot;:true,\&quot;AuthenticationResult\&quot;:{\&quot;DocumentName\&quot;:\&quot;Connecticut (CT) Driver License\&quot;,\&quot;DocAuthResult\&quot;:\&quot;Failed\&quot;,\&quot;DocIssuerCode\&quot;:\&quot;CT\&quot;,\&quot;DocIssuerName\&quot;:\&quot;Connecticut\&quot;,\&quot;DocClassCode\&quot;:\&quot;DriversLicense\&quot;,\&quot;DocClass\&quot;:\&quot;DriversLicense\&quot;,\&quot;DocClassName\&quot;:\&quot;Drivers License\&quot;,\&quot;DocIsGeneric\&quot;:\&quot;false\&quot;,\&quot;DocIssue\&quot;:\&quot;2009\&quot;,\&quot;DocIssueType\&quot;:\&quot;Driver License\&quot;,\&quot;DocSize\&quot;:\&quot;ID1\&quot;,\&quot;ClassificationMode\&quot;:\&quot;Automatic\&quot;,\&quot;OrientationChanged\&quot;:\&quot;false\&quot;,\&quot;PresentationChanged\&quot;:\&quot;false\&quot;,\&quot;FullName\&quot;:\&quot;EVAN M MOZINGO\&quot;,\&quot;Sex\&quot;:\&quot;Male\&quot;,\&quot;Age\&quot;:\&quot;29\&quot;,\&quot;DOB\&quot;:{\&quot;Year\&quot;:1989,\&quot;Month\&quot;:9,\&quot;Day\&quot;:11},\&quot;ExpirationDate\&quot;:{\&quot;Year\&quot;:2017,\&quot;Month\&quot;:9,\&quot;Day\&quot;:11},\&quot;Portrait\&quot;:\&quot;\&quot;,\&quot;Signature\&quot;:\&quot;\&quot;,\&quot;Alerts\&quot;:{\&quot;IDAuthAlertData\&quot;:[{\&quot;AlertID\&quot;:\&quot;f1c68102-de49-4ce7-9fac-3e5365478acb\&quot;,\&quot;AlertName\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AlertKey\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Failed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified the presence of a pattern on the visible image.\&quot;,\&quot;Regions\&quot;:{\&quot;Region\&quot;:[\&quot;Stylized DOB Label\&quot;]}},{\&quot;AlertID\&quot;:\&quot;e34ddd53-7edf-452c-86af-21f5dc333857\&quot;,\&quot;AlertName\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AlertKey\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Failed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified the presence of a pattern on the visible image.\&quot;,\&quot;Regions\&quot;:{\&quot;Region\&quot;:[\&quot;Expires Label\&quot;]}},{\&quot;AlertID\&quot;:\&quot;f6abb23e-d181-45e1-bc6b-426d698ccda8\&quot;,\&quot;AlertName\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AlertKey\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Failed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified the presence of a pattern on the visible image.\&quot;,\&quot;Regions\&quot;:{\&quot;Region\&quot;:[\&quot;Inches\&quot;]}},{\&quot;AlertID\&quot;:\&quot;114a6ddf-cc0b-4f30-8a68-03a66754ba28\&quot;,\&quot;AlertName\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AlertKey\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Failed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified the presence of a pattern on the visible image.\&quot;,\&quot;Regions\&quot;:{\&quot;Region\&quot;:[\&quot;Background Center\&quot;]}},{\&quot;AlertID\&quot;:\&quot;f52770ac-f621-455a-8b96-f46a29376ca8\&quot;,\&quot;AlertName\&quot;:\&quot;1D Control Number Valid\&quot;,\&quot;AlertKey\&quot;:\&quot;1D Control Number Valid\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Failed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Checks whether the 1D barcode is indicative of known-fake documents.\&quot;},{\&quot;AlertID\&quot;:\&quot;e421565b-a690-4190-b80b-e6848f13d6d6\&quot;,\&quot;AlertName\&quot;:\&quot;2D Barcode Content\&quot;,\&quot;AlertKey\&quot;:\&quot;2D Barcode Content\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Failed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Checked the contents of the two-dimensional barcode on the document.\&quot;},{\&quot;AlertID\&quot;:\&quot;12584bf6-1e98-4b6c-8ad0-1ee174d04aca\&quot;,\&quot;AlertName\&quot;:\&quot;Control Number Crosscheck\&quot;,\&quot;AlertKey\&quot;:\&quot;Control Number Crosscheck\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Caution\&quot;,\&quot;AlertDescription\&quot;:\&quot;Compare the machine-readable control number field to the human-readable document number field.\&quot;},{\&quot;AlertID\&quot;:\&quot;c97d332b-1614-43a1-814d-87c990d542be\&quot;,\&quot;AlertName\&quot;:\&quot;Document Expired\&quot;,\&quot;AlertKey\&quot;:\&quot;Document Expired\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Attention\&quot;,\&quot;AlertDescription\&quot;:\&quot;Checked if the document is expired.\&quot;},{\&quot;AlertID\&quot;:\&quot;555f26aa-569e-4822-a2c0-208fa6536a80\&quot;,\&quot;AlertName\&quot;:\&quot;2D Barcode Read\&quot;,\&quot;AlertKey\&quot;:\&quot;2D Barcode Read\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified that the two-dimensional barcode on the document was read successfully.\&quot;},{\&quot;AlertID\&quot;:\&quot;5ffe389c-cabe-457f-9b2f-db59bfb8693b\&quot;,\&quot;AlertName\&quot;:\&quot;Birth Date Crosscheck\&quot;,\&quot;AlertKey\&quot;:\&quot;Birth Date Crosscheck\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Compare the machine-readable birth date field to the human-readable birth date field.\&quot;},{\&quot;AlertID\&quot;:\&quot;24eaf03b-a993-4dcc-a904-687a39c07f7d\&quot;,\&quot;AlertName\&quot;:\&quot;Birth Date Valid\&quot;,\&quot;AlertKey\&quot;:\&quot;Birth Date Valid\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified that the birth date is valid.\&quot;},{\&quot;AlertID\&quot;:\&quot;07d87549-281f-4c38-94bf-a36c0ac6d35a\&quot;,\&quot;AlertName\&quot;:\&quot;Document Classification\&quot;,\&quot;AlertKey\&quot;:\&quot;Document Classification\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified that the type of document is supported and is able to be fully authenticated.\&quot;},{\&quot;AlertID\&quot;:\&quot;2a798b7e-6440-4186-a054-9c82fc3bb0dc\&quot;,\&quot;AlertName\&quot;:\&quot;Document Crosscheck Aggregation\&quot;,\&quot;AlertKey\&quot;:\&quot;Document Crosscheck Aggregation\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Compared the machine-readable fields to the human-readable fields.\&quot;},{\&quot;AlertID\&quot;:\&quot;eff2250b-641d-42b3-be6e-57a6f81cdca3\&quot;,\&quot;AlertName\&quot;:\&quot;Document Number Crosscheck\&quot;,\&quot;AlertKey\&quot;:\&quot;Document Number Crosscheck\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Compare the machine-readable document number field to the human-readable document number field.\&quot;},{\&quot;AlertID\&quot;:\&quot;d5081f2c-8b4c-4bdd-be1f-833c5a51e321\&quot;,\&quot;AlertName\&quot;:\&quot;Expiration Date Crosscheck\&quot;,\&quot;AlertKey\&quot;:\&quot;Expiration Date Crosscheck\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Compare the machine-readable expiration date field to the human-readable expiration date field.\&quot;},{\&quot;AlertID\&quot;:\&quot;c6826de7-7807-4966-b5c9-c193ba37b9dd\&quot;,\&quot;AlertName\&quot;:\&quot;Expiration Date Valid\&quot;,\&quot;AlertKey\&quot;:\&quot;Expiration Date Valid\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified that the expiration date is valid.\&quot;},{\&quot;AlertID\&quot;:\&quot;03bf1f2a-e481-4c43-9cbb-cf26f6485cd6\&quot;,\&quot;AlertName\&quot;:\&quot;Full Name Crosscheck\&quot;,\&quot;AlertKey\&quot;:\&quot;Full Name Crosscheck\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Compare the machine-readable full name field to the human-readable full name field.\&quot;},{\&quot;AlertID\&quot;:\&quot;833e1152-79d9-460d-8796-e24f50281939\&quot;,\&quot;AlertName\&quot;:\&quot;Issue Date Valid\&quot;,\&quot;AlertKey\&quot;:\&quot;Issue Date Valid\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified that the issue date is valid.\&quot;},{\&quot;AlertID\&quot;:\&quot;907ec438-603a-4b08-bde5-df676d3c7a6f\&quot;,\&quot;AlertName\&quot;:\&quot;Layout Valid\&quot;,\&quot;AlertKey\&quot;:\&quot;Layout Valid\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified that the layout of the document is correct.\&quot;,\&quot;Regions\&quot;:{\&quot;Region\&quot;:[\&quot;2D Barcode Bottom Left\&quot;,\&quot;2D Barcode Top Left\&quot;]}},{\&quot;AlertID\&quot;:\&quot;9a75f66b-13f2-41a6-8013-281f34df0a16\&quot;,\&quot;AlertName\&quot;:\&quot;Sex Crosscheck\&quot;,\&quot;AlertKey\&quot;:\&quot;Sex Crosscheck\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Compare the machine-readable sex field to the human-readable sex field.\&quot;},{\&quot;AlertID\&quot;:\&quot;dc8cd512-3d17-460d-a5df-a2adc883ec6c\&quot;,\&quot;AlertName\&quot;:\&quot;Visible Color Response\&quot;,\&quot;AlertKey\&quot;:\&quot;Visible Color Response\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified the color response of an element on the visible image.\&quot;,\&quot;Regions\&quot;:{\&quot;Region\&quot;:[\&quot;Background Salmon\&quot;]}},{\&quot;AlertID\&quot;:\&quot;ba275d05-808f-4c14-9805-dcef3ee30280\&quot;,\&quot;AlertName\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AlertKey\&quot;:\&quot;Visible Pattern\&quot;,\&quot;AuthenticationResult\&quot;:\&quot;Passed\&quot;,\&quot;AlertDescription\&quot;:\&quot;Verified the presence of a pattern on the visible image.\&quot;,\&quot;Regions\&quot;:{\&quot;Region\&quot;:[\&quot;Background Boat\&quot;]}}]},\&quot;Fields\&quot;:{\&quot;IDAuthFieldData\&quot;:[{\&quot;Address\&quot;:\&quot;1 MUDRY FARM RD\u2028BRISTOL, CT 02809-2366\&quot;},{\&quot;City\&quot;:\&quot;BRISTOL\&quot;},{\&quot;AddressLine1\&quot;:\&quot;1 MUDRY FARM RD\&quot;},{\&quot;PostalCode\&quot;:\&quot;02809-2366\&quot;},{\&quot;State\&quot;:\&quot;CT\&quot;},{\&quot;DOB\&quot;:{\&quot;Year\&quot;:1989,\&quot;Month\&quot;:9,\&quot;Day\&quot;:11}},{\&quot;ControlNumber\&quot;:\&quot;demo a11230009\&quot;},{\&quot;DocumentClassName\&quot;:\&quot;Drivers License\&quot;},{\&quot;DocumentNumber\&quot;:\&quot;096760377\&quot;},{\&quot;ExpirationDate\&quot;:{\&quot;Year\&quot;:2017,\&quot;Month\&quot;:9,\&quot;Day\&quot;:11}},{\&quot;FirstName\&quot;:\&quot;EVAN\&quot;},{\&quot;FullName\&quot;:\&quot;EVAN M MOZINGO\&quot;},{\&quot;GivenName\&quot;:\&quot;EVAN M\&quot;},{\&quot;Height\&quot;:\&quot;5' 9\\\&quot;\&quot;},{\&quot;IssueDate\&quot;:{\&quot;Year\&quot;:2010,\&quot;Month\&quot;:10,\&quot;Day\&quot;:12}},{\&quot;IssuingStateCode\&quot;:\&quot;CT\&quot;},{\&quot;IssuingStateName\&quot;:\&quot;Connecticut\&quot;},{\&quot;LicenseClass\&quot;:\&quot;D\&quot;},{\&quot;MiddleName\&quot;:\&quot;M\&quot;},{\&quot;Sex\&quot;:\&quot;M\&quot;},{\&quot;Surname\&quot;:\&quot;MOZINGO\&quot;}]}}}}&quot;
+            }
+        ]
+    }]" mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="TruliooIDVerificationMock_Sub_Flow" doc:id="42ef3c3f-6f75-45ae-919d-694f427a9ad8" >
+		<munit-tools:mock-when doc:name="Mock Trulio Response" doc:id="8d28600b-9783-4116-b6dc-482d9d7eb42f" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="truliooidauth" value='#[output application/json --- {"TransactionID":"4cb32b42-e2a5-44c4-9a72-509ae962b007","UploadedDt":"2019-01-28T10:04:58","CountryCode":"CN","ProductName":"IdentityVerification","Record":{"TransactionRecordID":"154d6a8b-aa4e-4ef0-8618-f349fd58ad8f","RecordStatus":"match","DatasourceResults":[{"DatasourceName":"BankCard2","DatasourceFields":[],"AppendedFields":[],"Errors":[{"Code":"1001","Message":"Missingrequiredfield:MobileNumber"},{"Code":"1001","Message":"Missingrequiredfield:BankAccountNumber"}],"FieldGroups":[]},{"DatasourceName":"ChinaNationalID","DatasourceFields":[{"FieldName":"ProvinceOfIssue","Status":"missing"},{"FieldName":"DayOfBirth","Status":"match"},{"FieldName":"DistrictOfIssue","Status":"missing"},{"FieldName":"MonthOfBirth","Status":"match"},{"FieldName":"CountyOfIssue","Status":"missing"},{"FieldName":"YearOfBirth","Status":"match"},{"FieldName":"FirstSurName","Status":"match"},{"FieldName":"FullName","Status":"match"},{"FieldName":"FirstGivenName","Status":"match"},{"FieldName":"nationalid","Status":"match"},{"FieldName":"CityOfIssue","Status":"missing"}],"AppendedFields":[],"Errors":[],"FieldGroups":[]},{"DatasourceName":"MobileID","DatasourceFields":[],"AppendedFields":[],"Errors":[{"Code":"1001","Message":"Missingrequiredfield:MobileNumber"}],"FieldGroups":[]}],"Errors":[],"Rule":{"RuleName":"RuleScriptChina1","Note":"Scriptmanuallycreated"}},"Errors":[]}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>		
+	<sub-flow name="TruliooIDVerificationExceptionMock_Sub_Flow" doc:id="0431a528-b746-4cf9-88ed-f750c6756503" >
+		<munit-tools:mock-when doc:name="Mock Trulio Response" doc:id="87ce34d9-0147-4b03-8856-ff8a9377d6a9" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="FISCheckingAccountMock" doc:id="1f410596-a357-4477-8523-b0395c52f998" >
+	<logger level="INFO" doc:name="FISCheckingAccountMock" doc:id="e33424ee-86e2-41da-96f0-8a4bfd3eff7c" message="FISCheckingAccountMock"/>
+		<munit-tools:mock-when doc:name="FISSuccessResponse" doc:id="bd32a27f-fc3f-4f71-bc8c-730e695b6b4e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f478a6a9-f63c-4ac2-bc3b-7e56c73d3dfc" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="FISResponse" value='#[output application/json --- {"data":{"CustomerNumber":"00000061099","AccountNumber":178627081,"CardNumber":0,"RequestUUID":"a04m000000BAcfJAAT","ErrorMessageList":[]},"result":{"success":true,"code":200,"message":null}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			
+	</sub-flow>
+	<sub-flow name="FISSavingAccountMock" doc:id="7f4240a0-91d4-4711-b7e5-1c55d3f47aee" >
+	<logger level="INFO" doc:name="FISCheckingAccountMock" doc:id="f29ed036-08ae-463f-9b0a-a07f49c9f136" message="FISCheckingAccountMock"/>
+		<munit-tools:mock-when doc:name="FISSavingAccountMock" doc:id="5ad88787-a516-437f-8625-eed0730a70a0" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="caae1ac4-46e9-4b50-8cd6-fa158b454d91" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="FISResponse" value='#[output application/json --- {"data":{"CustomerNumber":"00000061099","AccountNumber":178627081,"CardNumber":0,"RequestUUID":"a04m000000BAcfJAAT","ErrorMessageList":[]},"result":{"success":true,"code":200,"message":null}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			
+	</sub-flow>	
+	<sub-flow name="FISSavingAccountExceptionMock" doc:id="98492dc0-b5c1-44a2-94d9-74280916c756" >
+	<logger level="INFO" doc:name="FISCheckingAccountMock" doc:id="4597f484-b4cc-44fa-b573-03c42aab869d" message="FISCheckingAccountMock"/>
+		<munit-tools:mock-when doc:name="FISSavingAccountMock" doc:id="4a1a904f-3855-479a-9f63-7ce9c2b6a0ac" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="caae1ac4-46e9-4b50-8cd6-fa158b454d91" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			
+	</sub-flow>	
+	<sub-flow name="FISCheckingCaseApprovedAccountMock" doc:id="3238ee04-ac18-428b-b66a-14f9af95c3bb" >
+		<munit-tools:mock-when doc:name="FISSuccessResponseCaseApproved" doc:id="72a4ba13-8e2a-4da0-b1e2-9b2ca3a9ec4f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="14c61715-d149-4dcf-974e-51b5a33cf045" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="FisResponse" value='#[output application/json --- {"data" :{"CustomerNumber":"00000064011","AccountApplicationCode":"CUP","AccountNumber":"110520297572","AccountOpenDate":"2019-01-07","RequestUUID":null,"ErrorMessageList":[]},"result":{"success":true,"code":200,"message":null}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="FISCheckingAccountTerafinaFlowMock" doc:id="58ff0a1b-7372-45a9-81d6-bcde399da15a" >
+	<logger level="INFO" doc:name="FISCheckingAccountMock" doc:id="bcfb14cc-da5d-4cfc-aee8-58352bff23c5" message="FISCheckingAccountMock"/>
+		<munit-tools:mock-when doc:name="FISSuccessResponse" doc:id="2636ff61-49f6-4e67-8a46-559889031cb0" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f478a6a9-f63c-4ac2-bc3b-7e56c73d3dfc" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="FISResponse" value='#[output application/json --- {"data":{"CustomerNumber":"00000061099","AccountNumber":178627081,"CardNumber":0,"RequestUUID":"a04m000000BAcfJAAT","ErrorMessageList":[]},"result":{"success":true,"code":200,"message":null}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="MSDCaseCreationResponseMock" doc:id="ee3501b7-d1e0-4064-a3cc-33e2b76bbd97" >
+	<logger level="INFO" doc:name="Logger" doc:id="06c005d6-4012-4c3e-ac6f-dd242c940feb" message="MSDCaseCreationResponse Mock"/>
+		<munit-tools:mock-when doc:name="MSDCaseCreationResponse" doc:id="db1005eb-f8f5-4159-9d93-bc6593ea13c1" processor="http:request">
+				<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="f8c8299d-9235-4e8d-9a12-ed19f16fad98" />
+			</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="mdsResponse" value='#[output application/json --- {  "CaseNumber": "CAS-44030-K9K9T2"}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="partnerIdVerificationMockForSSNFlow" doc:id="2c292007-6192-4179-843d-93adf7fe72d7" >
+		<logger level="INFO" doc:name="Logger" doc:id="be41a060-d86d-4a46-8a74-c78c0351597c" message="partnerIdVerificationMockForSSNFlow"/>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="6723cff3-ac63-4d13-ae3c-0cddea28f425" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f27ed405-981c-499c-b130-63c82fc28476" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="instantIdResponse" value='#[output application/json --- {"Status":{"ConversationId":"31000155801375","RequestId":"372431935","TransactionStatus":"passed","TransactionReasonCode":{"Code":"instantid_pass","Description":"PASS"},"Reference":"Reference1"},"Products":[{"ProductType":"InstantID","ExecutedStepName":"InstantIDStep","ProductConfigurationName":"ewb.onlineaccountopening_instantid","ProductStatus":"pass"},{"ProductType":"InstantID","ExecutedStepName":"PostIDStep","ProductConfigurationName":"INSTANTID_PASS","ProductStatus":"pass","ProductReason":{"Code":"instantid_pass","Description":"PASS"}}],"PassThroughs":[{"Type":"INSTANT_ID"}]}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="partnerIdVerificationMockForSSNFlowTrasactionStatusIsPassedAndKBAIsFail" doc:id="a36c9914-4e15-4890-a90c-022c3b414e64" >
+		<logger level="INFO" doc:name="Logger" doc:id="e477e044-94a1-42d8-a8b3-1f9ea3258e03" message="partnerIdVerificationMockForSSNFlow"/>
+		<ee:transform doc:name="Transform Message" doc:id="52a877f2-6e60-4f0a-a1e8-a385728be212" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Status": {
+    "ConversationId": "31000155801375",
+    "RequestId": "372431935",
+    "TransactionStatus": "passed",
+    "TransactionReasonCode": {
+      "Code": "instantid_pass",
+      "Description": "FAIL"
+    },
+    "Reference": "Reference1"
+  },
+  "Products": [
+    {
+      "ProductType": "InstantID",
+      "ExecutedStepName": "InstantIDStep",
+      "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+      "ProductStatus": "pass"
+    },
+    {
+      "ProductType": "InstantID",
+      "ExecutedStepName": "PostIDStep",
+      "ProductConfigurationName": "INSTANTID_PASS",
+      "ProductStatus": "pass",
+      "ProductReason": {
+        "Code": "instantid_pass",
+        "Description": "PASS"
+      }
+    }
+  ],
+  "PassThroughs": [
+    {
+      "Type": "INSTANT_ID"
+    }
+  ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="4c2c9151-3506-40a7-b52e-2aacb959e64d" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f27ed405-981c-499c-b130-63c82fc28476" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="instantIdResponse" value='#[payload]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="partnerIdVerificationMockForSSNFlowTrasactionStatusIsPassedAndKBAIsPending" doc:id="77f9464f-44c9-428f-b2c6-6069c776070b" >
+		<logger level="INFO" doc:name="Logger" doc:id="4182f1a8-a59a-474a-bd41-b4425b27f835" message="partnerIdVerificationMockForSSNFlow"/>
+		<ee:transform doc:name="Transform Message" doc:id="6ad073c1-a957-4b2a-895e-74ae480b5802" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Status": {
+    "ConversationId": "31000155801375",
+    "RequestId": "372431935",
+    "TransactionStatus": "passed",
+    "TransactionReasonCode": {
+      "Code": "instantid_pass",
+      "Description": "PENDING"
+    },
+    "Reference": "Reference1"
+  },
+  "Products": [
+    {
+      "ProductType": "InstantID",
+      "ExecutedStepName": "InstantIDStep",
+      "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+      "ProductStatus": "pass"
+    },
+    {
+      "ProductType": "InstantID",
+      "ExecutedStepName": "PostIDStep",
+      "ProductConfigurationName": "INSTANTID_PASS",
+      "ProductStatus": "pass",
+      "ProductReason": {
+        "Code": "instantid_pass",
+        "Description": "PASS"
+      }
+    }
+  ],
+  "PassThroughs": [
+    {
+      "Type": "INSTANT_ID"
+    }
+  ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="52ab3196-0a6f-4076-8a2c-c4b2dc448bc9" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f27ed405-981c-499c-b130-63c82fc28476" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="instantIdResponse" value='#[payload]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+<sub-flow name="partnerIdVerificationMockForUnKnownType" doc:id="a97e0017-8402-457d-90f5-40719ae39e47" >
+		<logger level="INFO" doc:name="Logger" doc:id="51644479-6f27-498a-b2c8-f2a2e2e82747" message="partnerIdVerificationMockForSSNFlow"/>
+		<ee:transform doc:name="Transform Message" doc:id="556f658a-7678-4f22-abd3-ee08a3c510ad" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Status": {
+    "ConversationId": "31000155801375",
+    "RequestId": "372431935",
+    "TransactionStatus": "passed",
+    "TransactionReasonCode": {
+      "Code": "instantid_pass",
+      "Description": "UnKnownDescription"
+    },
+    "Reference": "Reference1"
+  },
+  "Products": [
+    {
+      "ProductType": "InstantID",
+      "ExecutedStepName": "InstantIDStep",
+      "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+      "ProductStatus": "pass"
+    },
+    {
+      "ProductType": "InstantID",
+      "ExecutedStepName": "PostIDStep",
+      "ProductConfigurationName": "INSTANTID_PASS",
+      "ProductStatus": "pass",
+      "ProductReason": {
+        "Code": "instantid_pass",
+        "Description": "PASS"
+      }
+    }
+  ],
+  "PassThroughs": [
+    {
+      "Type": "INSTANT_ID"
+    }
+  ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="360a7944-7891-4a10-b0f8-2420ee346920" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f27ed405-981c-499c-b130-63c82fc28476" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="instantIdResponse" value='#[payload]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	
+	<sub-flow name="InstantIdAttentionMock" doc:id="0d2ec941-3982-4f82-9fc3-19f26067aaa3" >
+		<logger level="INFO" doc:name="Logger" doc:id="10f7479c-2f75-4c7f-91a1-0dd4739b4de7" message="Instant Id attention mock"/>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="293f464e-5e12-4b8b-830a-0b819adc15b9" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:name" whereValue="IdVerification (InstantIdAttention)" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value='#[{"Status":{"ConversationId":"31000155801375","RequestId":"372431935","TransactionStatus":"passed","TransactionReasonCode":{"Code":"instantid_pass","Description":"PASS"},"Reference":"Reference1"},"Products":[{"ProductType":"InstantID","ExecutedStepName":"InstantIDStep","ProductConfigurationName":"ewb.onlineaccountopening_instantid","ProductStatus":"pass"},{"ProductType":"InstantID","ExecutedStepName":"PostIDStep","ProductConfigurationName":"INSTANTID_PASS","ProductStatus":"pass","ProductReason":{"Code":"instantid_pass","Description":"PASS"}}],"PassThroughs":[{"Type":"INSTANT_ID","Data":"{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"36015\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetAddress1\":\"1004SHAMROCKLANE\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\"},\"DOB\":{\"Year\":1952,\"Month\":3,\"Day\":24},\"SSN\":\"152640146\",\"HomePhone\":\"2167618965\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385127967\",\"VerifiedInput\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"County\":\"ISLAND\"},\"SSN\":\"152640146\",\"DOB\":{\"Year\":\"1952\",\"Month\":\"03\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"0\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":40,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potentialaddressdiscrepancy-theInputaddressmaybepreviousaddress\",\"Sequence\":1},{\"RiskCode\":\"27\",\"Description\":\"Unabletoverifyphonenumber\",\"Sequence\":2},{\"RiskCode\":\"07\",\"Description\":\"Theinputphonenumbermaybedisconnected\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"VerifynamewithAddress(viaDLutilitybillDirectoryAssistancepaycheckstuborotherGovern\"},{\"RiskCode\":\"D\",\"Description\":\"Verifyphone(DirectoryAssistanceutilitybill)\"}]}},\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"CALIFORNIA\",\"IssuedStartDate\":{\"Year\":1963,\"Month\":1},\"IssuedEndDate\":{\"Year\":1963,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"76\",\"StreetName\":\"SUCIA\",\"StreetSuffix\":\"CT\",\"StreetAddress1\":\"76SUCIACT\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":1999,\"Month\":7},\"DateLastSeen\":{\"Year\":2013,\"Month\":5}},{\"Address\":{\"StreetNumber\":\"120\",\"StreetPreDirection\":\"N\",\"StreetName\":\"59TH\",\"StreetSuffix\":\"ST\",\"StreetAddress1\":\"120N59THST\",\"City\":\"SEATTLE\",\"State\":\"WA\",\"Zip5\":\"98103\",\"Zip4\":\"5812\"},\"DateFirstSeen\":{\"Year\":1981,\"Month\":10},\"DateLastSeen\":{\"Year\":2012,\"Month\":1}},{\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"98282\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":2007},\"DateLastSeen\":{\"Year\":2012}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"Latitude\":\"48.173993\",\"Longitude\":\"-122.482829\"}}}}}"}]}]' />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="IDVResponseForPassWorkFlow" doc:id="fd3ff7aa-4502-4442-a125-14c58e4e864c" >
+		<ee:transform doc:name="Transform Message" doc:id="a1b43aa1-c5cc-49f9-b42e-5564df4de9e3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Status": {
+    "ConversationId": "31000155801375",
+    "RequestId": "372431935",
+    "TransactionStatus": "passed",
+    "TransactionReasonCode": {
+      "Code": "instantid_pass",
+      "Description": "PASS"
+    },
+    "Reference": "Reference1"
+  },
+  "Products": [
+    {
+      "ProductType": "InstantID",
+      "ExecutedStepName": "InstantIDStep",
+      "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+      "ProductStatus": "pass"
+    },
+    {
+      "ProductType": "InstantID",
+      "ExecutedStepName": "PostIDStep",
+      "ProductConfigurationName": "INSTANTID_PASS",
+      "ProductStatus": "pass",
+      "ProductReason": {
+        "Code": "instantid_pass",
+        "Description": "PASS"
+      }
+    }
+  ],
+  "PassThroughs": [
+    {
+      "Type": "INSTANT_ID",
+      "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"36015\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetAddress1\":\"1004SHAMROCKLANE\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\"},\"DOB\":{\"Year\":1952,\"Month\":3,\"Day\":24},\"SSN\":\"152640146\",\"HomePhone\":\"2167618965\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385127967\",\"VerifiedInput\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"County\":\"ISLAND\"},\"SSN\":\"152640146\",\"DOB\":{\"Year\":\"1952\",\"Month\":\"03\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"0\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":40,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potentialaddressdiscrepancy-theInputaddressmaybepreviousaddress\",\"Sequence\":1},{\"RiskCode\":\"27\",\"Description\":\"Unabletoverifyphonenumber\",\"Sequence\":2},{\"RiskCode\":\"07\",\"Description\":\"Theinputphonenumbermaybedisconnected\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"VerifynamewithAddress(viaDLutilitybillDirectoryAssistancepaycheckstuborotherGovern\"},{\"RiskCode\":\"D\",\"Description\":\"Verifyphone(DirectoryAssistanceutilitybill)\"}]}},\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"CALIFORNIA\",\"IssuedStartDate\":{\"Year\":1963,\"Month\":1},\"IssuedEndDate\":{\"Year\":1963,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"76\",\"StreetName\":\"SUCIA\",\"StreetSuffix\":\"CT\",\"StreetAddress1\":\"76SUCIACT\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":1999,\"Month\":7},\"DateLastSeen\":{\"Year\":2013,\"Month\":5}},{\"Address\":{\"StreetNumber\":\"120\",\"StreetPreDirection\":\"N\",\"StreetName\":\"59TH\",\"StreetSuffix\":\"ST\",\"StreetAddress1\":\"120N59THST\",\"City\":\"SEATTLE\",\"State\":\"WA\",\"Zip5\":\"98103\",\"Zip4\":\"5812\"},\"DateFirstSeen\":{\"Year\":1981,\"Month\":10},\"DateLastSeen\":{\"Year\":2012,\"Month\":1}},{\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"98282\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":2007},\"DateLastSeen\":{\"Year\":2012}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"Latitude\":\"48.173993\",\"Longitude\":\"-122.482829\"}}}}}"
+    }
+  ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="0d44189e-6c09-490e-ba6b-9428d59aa1fc" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="kbaResponse" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="InstantIdPassMock" doc:id="a6e17399-3b1a-47d9-bd3e-a296e4496425" >
+		<logger level="INFO" doc:name="Logger" doc:id="bdd2bd5d-aa18-4eb2-8bf8-f86c7b77fc83" message="Instant Id attention mock"/>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="c165932a-4081-4cd5-a5fb-cc22e8f7fd1b" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:name" whereValue="Id Verification InstantId Pass Before Request" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value='#[{"Status":{"ConversationId":"31000155801375","RequestId":"372431935","TransactionStatus":"passed","TransactionReasonCode":{"Code":"instantid_pass","Description":"PASS"},"Reference":"Reference1"},"Products":[{"ProductType":"InstantID","ExecutedStepName":"InstantIDStep","ProductConfigurationName":"ewb.onlineaccountopening_instantid","ProductStatus":"pass"},{"ProductType":"InstantID","ExecutedStepName":"PostIDStep","ProductConfigurationName":"INSTANTID_PASS","ProductStatus":"pass","ProductReason":{"Code":"instantid_pass","Description":"PASS"}}],"PassThroughs":[{"Type":"INSTANT_ID","Data":"{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"36015\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetAddress1\":\"1004SHAMROCKLANE\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\"},\"DOB\":{\"Year\":1952,\"Month\":3,\"Day\":24},\"SSN\":\"152640146\",\"HomePhone\":\"2167618965\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385127967\",\"VerifiedInput\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"County\":\"ISLAND\"},\"SSN\":\"152640146\",\"DOB\":{\"Year\":\"1952\",\"Month\":\"03\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"0\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":40,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potentialaddressdiscrepancy-theInputaddressmaybepreviousaddress\",\"Sequence\":1},{\"RiskCode\":\"27\",\"Description\":\"Unabletoverifyphonenumber\",\"Sequence\":2},{\"RiskCode\":\"07\",\"Description\":\"Theinputphonenumbermaybedisconnected\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"VerifynamewithAddress(viaDLutilitybillDirectoryAssistancepaycheckstuborotherGovern\"},{\"RiskCode\":\"D\",\"Description\":\"Verifyphone(DirectoryAssistanceutilitybill)\"}]}},\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"CALIFORNIA\",\"IssuedStartDate\":{\"Year\":1963,\"Month\":1},\"IssuedEndDate\":{\"Year\":1963,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"76\",\"StreetName\":\"SUCIA\",\"StreetSuffix\":\"CT\",\"StreetAddress1\":\"76SUCIACT\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":1999,\"Month\":7},\"DateLastSeen\":{\"Year\":2013,\"Month\":5}},{\"Address\":{\"StreetNumber\":\"120\",\"StreetPreDirection\":\"N\",\"StreetName\":\"59TH\",\"StreetSuffix\":\"ST\",\"StreetAddress1\":\"120N59THST\",\"City\":\"SEATTLE\",\"State\":\"WA\",\"Zip5\":\"98103\",\"Zip4\":\"5812\"},\"DateFirstSeen\":{\"Year\":1981,\"Month\":10},\"DateLastSeen\":{\"Year\":2012,\"Month\":1}},{\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"98282\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":2007},\"DateLastSeen\":{\"Year\":2012}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"Latitude\":\"48.173993\",\"Longitude\":\"-122.482829\"}}}}}"}]}]' />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="InstantIdVerificationReturnsKBAForPASSWorkFlow" doc:id="a8f71964-ae7b-424c-bcb7-c80df1dc0e01" >
+		<ee:transform doc:name="Transform Message" doc:id="398b8f2f-c69c-4676-9f29-cae5ab31559f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Status": {
+        "ConversationId": "31000157713785",
+        "RequestId": "375482205",
+        "TransactionStatus": "pending",
+        "ActionType": "answers",
+        "Reference": "Reference1"
+    },
+    "Products": [
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "InstantID Step",
+            "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+            "ProductStatus": "pass"
+        },
+        {
+            "ProductType": "Velocity",
+            "ExecutedStepName": "PostID Step",
+            "ProductConfigurationName": "ewb.testing.onlineaccountopening_velocity_postid",
+            "ProductStatus": "pass",
+            "Items": [
+                {
+                    "ItemName": "FREQUENCY",
+                    "ItemStatus": "pass"
+                },
+                {
+                    "ItemName": "QUIZ",
+                    "ItemStatus": "pass"
+                }
+            ]
+        },
+        {
+            "ProductType": "IdentityEvent",
+            "ExecutedStepName": "Identity_Events Step",
+            "ProductConfigurationName": "ewb.onlineaccountopening_identity_events",
+            "ProductStatus": "pass"
+        },
+        {
+            "ProductType": "IIDQA",
+            "ExecutedStepName": "Authentication Step",
+            "ProductConfigurationName": "ewb.testing.redherrings_authentication_open",
+            "ProductStatus": "pending",
+            "QuestionSet": {
+                "QuestionSetId": 119633745,
+                "Questions": [
+                    {
+                        "QuestionId": 2229268415,
+                        "Key": 10801,
+                        "Type": "singlechoice",
+                        "Text": {
+                            "Statement": "Which of the following corporations have you ever been associated with?"
+                        },
+                        "HelpText": {
+                            "Statement": "Corporation Names may contain slight misspellings."
+                        },
+                        "Choices": [
+                            {
+                                "ChoiceId": 2070923915,
+                                "Text": {
+                                    "Statement": "Aerial Boundaries"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070923925,
+                                "Text": {
+                                    "Statement": "Brookmeade 106"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070923935,
+                                "Text": {
+                                    "Statement": "Tiger Asia Investment"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070923945,
+                                "Text": {
+                                    "Statement": "World Aerospace"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070923955,
+                                "Text": {
+                                    "Statement": "None of the above"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "QuestionId": 2229268425,
+                        "Key": 30071,
+                        "Type": "singlechoice",
+                        "Text": {
+                            "Statement": "What kind of TX license plate has been on your 1986 Plymouth Reliant?"
+                        },
+                        "HelpText": {
+                            "Statement": "May include vehicles which you recently sold or vehicles for which you co-signed. May also include a previous kind of license plate."
+                        },
+                        "Choices": [
+                            {
+                                "ChoiceId": 2070923965,
+                                "Text": {
+                                    "Statement": "Antique"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070923975,
+                                "Text": {
+                                    "Statement": "Disabled Veteran"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070923985,
+                                "Text": {
+                                    "Statement": "Emergency"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070923995,
+                                "Text": {
+                                    "Statement": "Private"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070924005,
+                                "Text": {
+                                    "Statement": "I have never been associated with this vehicle"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "QuestionId": 2229268435,
+                        "Key": 5401,
+                        "Type": "singlechoice",
+                        "Text": {
+                            "Statement": "Which of the following colleges have you attended?"
+                        },
+                        "HelpText": {
+                            "Statement": "Select the college you have attended."
+                        },
+                        "Choices": [
+                            {
+                                "ChoiceId": 2070924015,
+                                "Text": {
+                                    "Statement": "Bluefield State College"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070924025,
+                                "Text": {
+                                    "Statement": "Pratt Institute"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070924035,
+                                "Text": {
+                                    "Statement": "Ringling School Of Art And Design"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070924045,
+                                "Text": {
+                                    "Statement": "Valley Forge Military College"
+                                }
+                            },
+                            {
+                                "ChoiceId": 2070924055,
+                                "Text": {
+                                    "Statement": "None of the above"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "PassThroughs": [
+        {
+            "Type": "INSTANT_ID",
+            "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"31676\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"TRACY\",\"Last\":\"WALLACH\"},\"Address\":{\"StreetAddress1\":\"PO BOX 5400\",\"City\":\"ROUND ROCK\",\"State\":\"TX\",\"Zip5\":\"78683\"},\"DOB\":{\"Year\":1963,\"Month\":1,\"Day\":1},\"SSN\":\"666767215\",\"HomePhone\":\"2059829931\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385123628\",\"VerifiedInput\":{\"Name\":{\"First\":\"TRACY\",\"Last\":\"WALLACH\"},\"Address\":{\"StreetAddress1\":\"PO BOX 5400\",\"City\":\"ROUND ROCK\",\"State\":\"TX\",\"Zip5\":\"78683\"},\"SSN\":\"666767215\",\"HomePhone\":\"2059829931\",\"DOB\":{\"Year\":\"1963\",\"Month\":\"01\",\"Day\":\"01\"}},\"DOBVerified\":false,\"NameAddressSSNSummary\":8,\"NameAddressPhone\":{\"Summary\":\"11\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":30,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"04\",\"Description\":\"The input last name and SSN are verified  but not with the input address and phone\",\"Sequence\":1}]}},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"PassportValidated\":false,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"Zip5\":\"78683\"}}}}}"
+        }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="eaacab12-c3e3-4bea-b1cb-85bc521fc573" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="1d4da8a1-5ca6-41da-814a-1ea0b83c7045" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="CaseCreationMockSub_Flow" doc:id="906d5a0b-5b39-45b9-bec7-c176221df4b2">
+		<munit-tools:mock-when doc:name="Mock Case Creation Response" doc:id="512a9253-146c-4c74-9226-9cdf02cb179b" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f8c8299d-9235-4e8d-9a12-ed19f16fad98" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="mdsResponse" value='#[output application/json --- {   "CaseNumber": "CAS-44739-T4Q1Z0" }]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="CaseUpdateMockSub_Flow" doc:id="3397e947-7878-4f16-b1c9-a1052fc48407" >
+		<munit-tools:mock-when doc:name="Mock Case Update Response" doc:id="d39e5a54-fc0b-4ded-a57c-368af9d7dbb6" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="7e65af25-59d3-4dbd-abe5-f8a61291ec43" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:payload value='#[output application/json --- {"Case Update":"Success"}]' mediaType="application/json" />
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="oauthResponseMockSub_Flow" doc:id="d69bf1bd-8a8c-42d3-bf55-39ce409a24ae" >
+		<munit-tools:mock-when doc:name="Mock oauth Response" doc:id="3f768372-de10-4814-a669-adee49d372a4" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="e9239fa0-6b12-440d-98ea-66c54e1c6422" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:payload value='#[output application/json --- {"access_token":"00Dc0000003kdiz!ARMAQHOLh4x18zr80guwCJWVpoL11PTrg5iUjdNk44MLu2PH.YOBsmavKL57ryN2LGX6CNF_QWqM8i1uW3REWv4hESEG9Ra3","instance_url":"https://eastwestbank--dodev.cs14.my.salesforce.com","id":"https://test.salesforce.com/id/00Dc0000003kdizEAA/0056A000001sjsGQAQ","token_type":"Bearer","issued_at":"1548930756772","signature":"/3KUSEIbDMVk2efvoMynr0yws7JUEeQmi4N5FP/wIL4="}]' mediaType="application/json" />
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="SynergySuccessMockSub_Flow" doc:id="5774109f-9ed5-465b-8440-08b2032d82c6" >
+			<munit-tools:mock-when doc:name="Mock Synergy Response" doc:id="bb6301c0-ce26-4f2a-a3c9-994a7f589200" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="synergy" value='#[output application/json --- {         "RequestUUID":  "YYYYYYY",         "ErrorMessageList": null     }]' mediaType="application/json">
+							
+						</munit-tools:variable>
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="SynergySuccessMockForDeferredFlow" doc:id="3fdbe200-a8be-4ec7-b833-875c6df688d3" >
+			<ee:transform doc:name="Transform Message" doc:id="f83a5cc5-0fbc-4879-92e5-9fa563803387" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "RequestUUID": "YYYYYYY",
+  "ErrorMessageList": null
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock Synergy Response" doc:id="4ec6d2ae-b02d-456e-8ecd-50e4bb21a7a5" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="b3c87b4d-c675-4316-aa63-2695141e1248" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="synergyResponse" value='#[payload]' mediaType="application/json">
+							
+						</munit-tools:variable>
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="SynergySuccessMockForDeferredExceptionFlow" doc:id="0bb69e05-c082-41b7-b696-d95282745f64" >
+			<ee:transform doc:name="Transform Message" doc:id="5c04c128-d9a2-41b6-b041-53722dfe5b54" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "RequestUUID": "YYYYYYY",
+  "ErrorMessageList": null
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock Synergy Response" doc:id="f594729c-c378-4962-b2fc-72921645265a" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="b3c87b4d-c675-4316-aa63-2695141e1248" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				<munit-tools:variables >
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	
+	<sub-flow name="PinpointSuccessMockSub_Flow" doc:id="918f9ae1-4e87-4352-adbd-fe0f46838181" >
+		<munit-tools:mock-when doc:name="Mock Pinpoint Response" doc:id="953ba7b8-142a-42b0-b0a0-464256099a81" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="bad45c7e-8314-43ad-893e-ace9630a5536" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="pinpointResponse" value='#[output application/json --- {"data":[{"status":"ok","message":"session info updated, new account created"},{"status":"ok","message":{"infection_data":{"malware":{"malware_ids":{},"info":{},"malware":{},"timestamp":"2019-01-18 17:45:37","risk_score":0,"customer_session_id":"w2F5r9wnMUoTmpIug3p5IX3sW"}},"device_data":{"device_key":"N/A","is_new":true,"v3":{"screen_width":1024,"activeX":0,"dma_code":0,"ip_class":"A","continent_code":"NA","remote_addr":"63.157.54.31","city":"Los Angeles","plugins":"429867076","country_code":"US","counter":1,"last_access":"2019-01-18 17:46:33","screen_touch":0,"agent_key":"","accept":"*/*","screen_dpi":24,"client_language":"en-US","post_code":"90031","screen_height":768,"mimes":"13481324","longitude":-118.2113,"latitude":34.0783,"first_time":"2019-01-18 17:46:33","cpu":"Win32","browser":"Chrome","machine_id":"","digest":"d61ce144e8df0f0c31575ada6b8f6909e5a1c74d","js":1,"country_name":"United States","file_upload_indicator":0,"platform":"Win32","history_length":16,"file_upload":1,"client_time_zone":480,"navigator_props":3354031354,"doc_location":"https%3A//int-eastwestbank.cs95.force.com/DepositLandingPage","browser_version":"71.0.3578","client_charset":"UTF-8","isp":"CenturyLink","x_forwarded_for":"63.157.54.31, 10.234.239.18","accept_language":"en-US,en;q=0.9","user_agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36","org":"CenturyLink","region":"CA","first_access":"2019-01-18 17:46:33","charset":1,"country":"USA","id":2919919604,"pinpoint_session":"00062321403150004560","cookie":"0.8794905533008","hashed_user_id":"N/A","application":"222916","os":"Windows 10","business":"eastwestbank","fonts":"FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8","area_code":0,"ip_time_zone":"-480","accept_encoding":"gzip, deflate, br","country_code3":"USA"}},"recommendation":{"risk_score":0,"reason_id":0,"recommendation":"allow","reason":""},"customer_session_id":"w2F5r9wnMUoTmpIug3p5IX3sW"}}],"result":{"success":true,"code":200,"message":"Success"}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OktaFactorSmsMockSub_Flow" doc:id="5ca0c0a4-4d02-440b-b4c1-39d156d11a10" >
+		<ee:transform doc:name="Transform Message" doc:id="eb8b2887-cffb-4f5f-ae3b-2cbb5edd86a9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "userId": "00uf2vr865w1YvxAJ0h7",
+    "factorType": "sms",
+    "provider": "OKTA",
+    "profile": {
+        "phoneNumber": "+1-646-736-9923"
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock okta-factor-sms Response" doc:id="c611f8e0-087b-44cd-900c-ce56f7675bdc" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="factorSMS" value='#[payload]'/>
+					</munit-tools:variables>
+
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OktaFactorSmsVerifyMockSub_Flow" doc:id="4b5d5741-c722-4f28-995a-7dae8dba94a8" >
+		<ee:transform doc:name="Transform Message" doc:id="a4ed3d72-cf60-44df-8628-a69160da6429" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "userId": "00uf2vr865w1YvxAJ0h7",
+    "factorId": "mblf2wiy6cLuf76aM0h7",
+    "passCode": "627485"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock Verify Response" doc:id="a09a28d8-7aba-44ce-9634-aec49cc1d1a0" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="smsVerify" value='#[payload]'/>
+					</munit-tools:variables>
+
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OktaChallengeMockSub_Flow" doc:id="96b9a050-0bd3-48b1-88f0-4164f5425492" >
+		<ee:transform doc:name="Transform Message" doc:id="807c5415-5c9b-4207-bb9e-50ad85bab06a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "userId": "00uf2vr865w1YvxAJ0h7",
+    "factorType": "sms",
+    "provider": "OKTA",
+    "profile": {
+        "phoneNumber": "+1-646-736-9923"
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock Challenge Response" doc:id="c1fe1e7d-b887-4ae2-b56f-36221e9457c7" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="challenge" value='#[payload]'/>
+					</munit-tools:variables>
+				
+</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OktaUserVerifyMockSub_Flow" doc:id="0fd2d07c-ffc7-493b-a2da-d6733bc16742" >
+		<ee:transform doc:name="Transform Message" doc:id="0f62a4f6-efa4-4808-88ee-1dfc816660e4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"passCode": "627485"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock Verify Response" doc:id="b75a99b1-4cca-4e83-a8dc-21687116a5d4" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3b17ebd1-867f-415a-81bc-812669942434" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="usersResponse" value='#[payload]'/>
+					</munit-tools:variables>
+				
+</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OktaUserSuccessMockSub_Flow" doc:id="001b9396-a26f-4ccd-9bd4-04a010e49873" >
+		<ee:transform doc:name="Transform Message" doc:id="f21a2d5e-3bd9-40b6-b8f5-2502d427fc22" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "id": "00uj2m8jqyuqukSoS0h7",
+    "status": "STAGED",
+    "created": "2019-01-23T08:05:29.000Z",
+    "activated": null,
+    "statusChanged": null,
+    "lastLogin": null,
+    "lastUpdated": "2019-01-23T08:05:29.000Z",
+    "passwordChanged": null,
+    "profile": {
+        "firstName": "Isaac",
+        "lastName": "Brock",
+        "mobilePhone": "555-415-8888",
+        "secondEmail": null,
+        "login": "abd11111@xyz.com",
+        "email": "abd11111@xyz.com"
+    },
+    "credentials": {
+        "provider": {
+            "type": "OKTA",
+            "name": "OKTA"
+        }
+    },
+    "_links": {
+        "activate": {
+            "href": "https://sso-test.velobank.com/api/v1/users/00uj2m8jqyuqukSoS0h7/lifecycle/activate",
+            "method": "POST"
+        },
+        "self": {
+            "href": "https://sso-test.velobank.com/api/v1/users/00uj2m8jqyuqukSoS0h7"
+        }
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock User Creation" doc:id="f3fed45f-e79a-4cf1-84c9-19376a291d32" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3b17ebd1-867f-415a-81bc-812669942434" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="usersResponse" value='#[payload]'/>
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OktaCreateUserMockSub_Flow" doc:id="16967375-259b-4063-84a1-52bba9b21bca" >
+		<munit-tools:mock-when doc:name="Mock Create User Response" doc:id="7aa2f3cf-6885-440d-a34a-a331491113f1" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3d98d078-27b7-4349-91b7-e1e797b107cb" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="oktaCrtUsrResp" value='#[output application/json --- {
+    "id": "00uj2m8jqyuqukSoS0h7",
+    "status": "STAGED",
+    "created": "2019-01-23T08:05:29.000Z",
+    "activated": null,
+    "statusChanged": null,
+    "lastLogin": null,
+    "lastUpdated": "2019-01-23T08:05:29.000Z",
+    "passwordChanged": null,
+    "profile": {
+        "firstName": "Isaac",
+        "lastName": "Brock",
+        "mobilePhone": "555-415-8888",
+        "secondEmail": null,
+        "login": "abd11111@xyz.com",
+        "email": "abd11111@xyz.com"
+    },
+    "credentials": {
+        "provider": {
+            "type": "OKTA",
+            "name": "OKTA"
+        }
+    },
+    "_links": {
+        "activate": {
+            "href": "https://sso-test.velobank.com/api/v1/users/00uj2m8jqyuqukSoS0h7/lifecycle/activate",
+            "method": "POST"
+        },
+        "self": {
+            "href": "https://sso-test.velobank.com/api/v1/users/00uj2m8jqyuqukSoS0h7"
+        }
+    }
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="fb2f9428-0928-4456-a646-79189cf56ce4" >
+		<munit-tools:mock-when doc:name="Mock Create User Response" doc:id="2df65cb4-71fc-4890-ad69-7bb9de592eb6" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3d98d078-27b7-4349-91b7-e1e797b107cb" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="oktaCrtUsrResp" value="#[output application/json --- {
+  &quot;RequestUuid&quot;: &quot;59b6a870-2ba2-11e9-b2f4-64006a91ed4e&quot;,
+  &quot;Status&quot;: 400,
+  &quot;Type&quot;: &quot;BAD_REQUEST&quot;,
+  &quot;Error&quot;: {
+    &quot;errorCode&quot;: &quot;E0000001&quot;,
+    &quot;errorSummary&quot;: &quot;Api validation failed: login&quot;,
+    &quot;errorLink&quot;: &quot;E0000001&quot;,
+    &quot;errorId&quot;: &quot;oaeXyMUoVdOQW6i6Zfj4wzCng&quot;,
+    &quot;errorCauses&quot;: [
+      {
+        &quot;errorSummary&quot;: &quot;login: An object with this field already exists in the current organization&quot;
+      }
+    ]
+  },
+  &quot;Message&quot;: &quot;HTTP POST on resource 'https://velobank-admin.oktapreview.com:443/api/v1/users' failed: bad request (400).&quot;
+}]" mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>	
+	<sub-flow name="OktaUpdateUserProfileMockSub_Flow" doc:id="e60277ec-b92d-4435-8243-eed45069acf8" >
+		<logger level="INFO" doc:name="Logger" doc:id="89dda5a7-d519-404c-a6a3-f8be9cfa6148" message="Mocking Update Okta"/>
+		<munit-tools:mock-when doc:name="Mock User Profile Update Response" doc:id="ca410ec7-8f18-47e1-b4fa-7237cb9b20f5" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="d94e2c82-dc98-49b7-bb06-0fae3e8af283" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="oktaUserProfileResponse" value='#[output application/json --- {"id":"00uj1q9e9fTIxNDaB0h7","status":"STAGED","created":"2019-01-21T09:12:11.000Z","activated":null,"statusChanged":null,"lastLogin":null,"lastUpdated":"2019-01-23T10:39:33.000Z","passwordChanged":null,"profile":{"CIS_Number":"00000064594","firstName":"Naresh","lastName":"Shiwani","mobilePhone":"+19413764511","secondEmail":null,"login":"nshiwani@appirio.com","email":"nshiwani@appirio.com"},"credentials":{"provider":{"type":"OKTA","name":"OKTA"}},"_links":{"activate":{"href":"https://sso-test.velobank.com/api/v1/users/00uj1q9e9fTIxNDaB0h7/lifecycle/activate","method":"POST"},"self":{"href":"https://sso-test.velobank.com/api/v1/users/00uj1q9e9fTIxNDaB0h7"}}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="OktaUpdateUserProfileCaseApprovedMockSub_Flow" doc:id="2304df0c-61f7-44d5-98b4-e3ea05ee8e86" >
+		<munit-tools:mock-when doc:name="Mock User Profile Update Response" doc:id="ebbc9a77-77da-489d-b979-16f7195a1f63" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="eb34b859-abd2-4507-9c0a-e85006019ac8" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="oktaUserProfileResponse" value='#[output application/json --- {"id":"00uj1q9e9fTIxNDaB0h7","status":"STAGED","created":"2019-01-21T09:12:11.000Z","activated":null,"statusChanged":null,"lastLogin":null,"lastUpdated":"2019-01-23T10:39:33.000Z","passwordChanged":null,"profile":{"CIS_Number":"00000064594","firstName":"Naresh","lastName":"Shiwani","mobilePhone":"+19413764511","secondEmail":null,"login":"nshiwani@appirio.com","email":"nshiwani@appirio.com"},"credentials":{"provider":{"type":"OKTA","name":"OKTA"}},"_links":{"activate":{"href":"https://sso-test.velobank.com/api/v1/users/00uj1q9e9fTIxNDaB0h7/lifecycle/activate","method":"POST"},"self":{"href":"https://sso-test.velobank.com/api/v1/users/00uj1q9e9fTIxNDaB0h7"}}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="PromoUpdateCaseApprovedMockSub_Flow" doc:id="75b20ef4-10c0-4290-9f50-b3e7c14166a7" >
+		<logger level="INFO" doc:name="Logger" doc:id="ec2805f6-c224-40a9-8a9a-46c84e2c0b62" message="Mocking Promo Update response"/>
+		<munit-tools:mock-when doc:name="Mock User Profile Update Response" doc:id="71387245-fc5e-459b-90b2-7b92d0dc8f0c" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f307805f-045e-43b2-92fa-53dccc67236d" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="updatePromocodeResponse" value='#[output application/json --- ""]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>	
+	<sub-flow name="CreateCustomerNumberMockSub_Flow" doc:id="62ed8ba6-eb51-4376-aa68-474ae699e14d" >
+		<munit-tools:mock-when doc:name="Mock Create Customer Number Response" doc:id="3aed0490-90cb-4bb9-a606-ee6b6bb7db96" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="0d33f98e-7929-4236-af5f-bddd4b14c6c1" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="CISResponse" value='#[output application/json --- {
+  "data": {
+    "CreateCustomerResponse": {
+      "CustomerNumber": "00000064011",
+      "ApplicationCode": "CUST"
+    },
+    "RequestUUID": null,
+    "ErrorMessageList": [
+      
+    ]
+  },
+  "result": {
+    "success": true,
+    "code": "200",
+    "message": null
+  }
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>	
+	<sub-flow name="CreateCupcardNumberMockSub_Flow" doc:id="c96a7b7a-83df-47d0-9f90-761a11e00b6f" >
+		<munit-tools:mock-when doc:name="Mock Create Cupcard Number Response" doc:id="efaa9971-7dc8-43ef-9a75-093613a64b3d" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="61e3267d-7c66-402c-a678-8358fe01936b" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="cupCardResponse" value='#[output application/json --- {
+  "data": {
+    "ResponseCode": "00",
+    "ResponseDescription": "New Card Purchase",
+    "NewCardNumber": 6019990000143204,
+    "Balance": 0.00,
+    "TransactionId": "F137616501",
+    "CustomerId": "110000000005202975",
+    "Fee": 0.00,
+    "ReferenceId": "110520297572",
+    "NameOnCard": "Nageswara gun",
+    "RequestUUID": null,
+    "ErrorMessageList": [
+      
+    ]
+  },
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": null
+  }
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>			
+	<sub-flow name="CreateCupcardAccountMockSub_Flow" doc:id="badd7342-16c3-4dc2-a336-3ebfcc1bd433" >
+		<munit-tools:mock-when doc:name="Mock Create Cupcard Account Response" doc:id="73c7cb18-7796-4f89-b912-43cddd13e605" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="b39bd6d8-2d64-4d62-9fe3-ebccfe3665e2" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="FISResponse" value='#[output application/json --- {
+  "data": {
+    "CustomerNumber": "00000064011",
+    "AccountApplicationCode": "CUP",
+    "AccountNumber": "110520297572",
+    "AccountOpenDate": "2019-01-07",
+    "RequestUUID": null,
+    "ErrorMessageList": [
+      
+    ]
+  },
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": null
+  }
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+			<sub-flow name="InstantIdAttentionMock_declined_status" doc:id="5682d526-9e9d-4e79-a913-567e1562c517" >
+		<logger level="INFO" doc:name="Logger" doc:id="32685f25-aa69-42fe-b951-4089bd69b569" message="Instant Id attention mock" />
+		<munit-tools:mock-when doc:name="Mock when" doc:id="07fd1d1d-36f7-4b30-afaf-cf8b2afd496e" processor="http:request" >
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:name" whereValue="IdVerification (InstantIdAttention)" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value='#[{"Status":{"ConversationId":"31000155801375","RequestId":"372431935","TransactionStatus":"decline","TransactionReasonCode":{"Code":"instantid_pass","Description":"PASS"},"Reference":"Reference1"},"Products":[{"ProductType":"InstantID","ExecutedStepName":"InstantIDStep","ProductConfigurationName":"ewb.onlineaccountopening_instantid","ProductStatus":"pass"},{"ProductType":"InstantID","ExecutedStepName":"PostIDStep","ProductConfigurationName":"INSTANTID_PASS","ProductStatus":"pass","ProductReason":{"Code":"instantid_pass","Description":"PASS"}}],"PassThroughs":[{"Type":"INSTANT_ID","Data":"{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"36015\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetAddress1\":\"1004SHAMROCKLANE\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\"},\"DOB\":{\"Year\":1952,\"Month\":3,\"Day\":24},\"SSN\":\"152640146\",\"HomePhone\":\"2167618965\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385127967\",\"VerifiedInput\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"County\":\"ISLAND\"},\"SSN\":\"152640146\",\"DOB\":{\"Year\":\"1952\",\"Month\":\"03\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"0\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":40,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potentialaddressdiscrepancy-theInputaddressmaybepreviousaddress\",\"Sequence\":1},{\"RiskCode\":\"27\",\"Description\":\"Unabletoverifyphonenumber\",\"Sequence\":2},{\"RiskCode\":\"07\",\"Description\":\"Theinputphonenumbermaybedisconnected\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"VerifynamewithAddress(viaDLutilitybillDirectoryAssistancepaycheckstuborotherGovern\"},{\"RiskCode\":\"D\",\"Description\":\"Verifyphone(DirectoryAssistanceutilitybill)\"}]}},\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"CALIFORNIA\",\"IssuedStartDate\":{\"Year\":1963,\"Month\":1},\"IssuedEndDate\":{\"Year\":1963,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"76\",\"StreetName\":\"SUCIA\",\"StreetSuffix\":\"CT\",\"StreetAddress1\":\"76SUCIACT\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":1999,\"Month\":7},\"DateLastSeen\":{\"Year\":2013,\"Month\":5}},{\"Address\":{\"StreetNumber\":\"120\",\"StreetPreDirection\":\"N\",\"StreetName\":\"59TH\",\"StreetSuffix\":\"ST\",\"StreetAddress1\":\"120N59THST\",\"City\":\"SEATTLE\",\"State\":\"WA\",\"Zip5\":\"98103\",\"Zip4\":\"5812\"},\"DateFirstSeen\":{\"Year\":1981,\"Month\":10},\"DateLastSeen\":{\"Year\":2012,\"Month\":1}},{\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"98282\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":2007},\"DateLastSeen\":{\"Year\":2012}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"Latitude\":\"48.173993\",\"Longitude\":\"-122.482829\"}}}}}"}]}]' />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+		</sub-flow>
+	<sub-flow name="InstantIdAttentionMock_failed_status" doc:id="2688d01a-c3b7-4bfa-9df6-cb50c87b65db" >
+		<logger level="INFO" doc:name="Logger" doc:id="64e5cf3d-d187-4b9b-8347-e5e0116e4b5a" message="Instant Id attention mock" />
+		<munit-tools:mock-when doc:name="Mock when" doc:id="981a8e63-4190-47cd-b00f-e8c2d6e74bc0" processor="http:request" >
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:name" whereValue="IdVerification (InstantIdAttention)" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value='#[{"Status":{"ConversationId":"31000155801375","RequestId":"372431935","TransactionStatus":"failed","TransactionReasonCode":{"Code":"instantid_pass","Description":"PASS"},"Reference":"Reference1"},"Products":[{"ProductType":"InstantID","ExecutedStepName":"InstantIDStep","ProductConfigurationName":"ewb.onlineaccountopening_instantid","ProductStatus":"pass"},{"ProductType":"InstantID","ExecutedStepName":"PostIDStep","ProductConfigurationName":"INSTANTID_PASS","ProductStatus":"pass","ProductReason":{"Code":"instantid_pass","Description":"PASS"}}],"PassThroughs":[{"Type":"INSTANT_ID","Data":"{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"36015\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetAddress1\":\"1004SHAMROCKLANE\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\"},\"DOB\":{\"Year\":1952,\"Month\":3,\"Day\":24},\"SSN\":\"152640146\",\"HomePhone\":\"2167618965\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385127967\",\"VerifiedInput\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"County\":\"ISLAND\"},\"SSN\":\"152640146\",\"DOB\":{\"Year\":\"1952\",\"Month\":\"03\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"0\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":40,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potentialaddressdiscrepancy-theInputaddressmaybepreviousaddress\",\"Sequence\":1},{\"RiskCode\":\"27\",\"Description\":\"Unabletoverifyphonenumber\",\"Sequence\":2},{\"RiskCode\":\"07\",\"Description\":\"Theinputphonenumbermaybedisconnected\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"VerifynamewithAddress(viaDLutilitybillDirectoryAssistancepaycheckstuborotherGovern\"},{\"RiskCode\":\"D\",\"Description\":\"Verifyphone(DirectoryAssistanceutilitybill)\"}]}},\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"CALIFORNIA\",\"IssuedStartDate\":{\"Year\":1963,\"Month\":1},\"IssuedEndDate\":{\"Year\":1963,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"76\",\"StreetName\":\"SUCIA\",\"StreetSuffix\":\"CT\",\"StreetAddress1\":\"76SUCIACT\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":1999,\"Month\":7},\"DateLastSeen\":{\"Year\":2013,\"Month\":5}},{\"Address\":{\"StreetNumber\":\"120\",\"StreetPreDirection\":\"N\",\"StreetName\":\"59TH\",\"StreetSuffix\":\"ST\",\"StreetAddress1\":\"120N59THST\",\"City\":\"SEATTLE\",\"State\":\"WA\",\"Zip5\":\"98103\",\"Zip4\":\"5812\"},\"DateFirstSeen\":{\"Year\":1981,\"Month\":10},\"DateLastSeen\":{\"Year\":2012,\"Month\":1}},{\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"98282\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":2007},\"DateLastSeen\":{\"Year\":2012}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"Latitude\":\"48.173993\",\"Longitude\":\"-122.482829\"}}}}}"}]}]' />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>		
+	<sub-flow name="InstantIdAttentionMock_pending_status" doc:id="4eb86cdb-7982-4745-9978-6871a1804a30" >
+		<logger level="INFO" doc:name="Logger" doc:id="ac96dd41-e581-4b07-af01-37b2987bfb3c" message="Instant Id attention mock" />
+		<munit-tools:mock-when doc:name="Mock when" doc:id="7aad3e56-2e30-473a-b7f5-e2d32c0dae7f" processor="http:request" >
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:name" whereValue="IdVerification (InstantIdAttention)" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value='#[{"Status":{"ConversationId":"31000155801375","RequestId":"372431935","TransactionStatus":"pending","TransactionReasonCode":{"Code":"instantid_pass","Description":"PASS"},"Reference":"Reference1"},"Products":[{"ProductType":"InstantID","ExecutedStepName":"InstantIDStep","ProductConfigurationName":"ewb.onlineaccountopening_instantid","ProductStatus":"pass"},{"ProductType":"InstantID","ExecutedStepName":"PostIDStep","ProductConfigurationName":"INSTANTID_PASS","ProductStatus":"pass","ProductReason":{"Code":"instantid_pass","Description":"PASS"}}],"PassThroughs":[{"Type":"INSTANT_ID","Data":"{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"36015\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetAddress1\":\"1004SHAMROCKLANE\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\"},\"DOB\":{\"Year\":1952,\"Month\":3,\"Day\":24},\"SSN\":\"152640146\",\"HomePhone\":\"2167618965\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385127967\",\"VerifiedInput\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"County\":\"ISLAND\"},\"SSN\":\"152640146\",\"DOB\":{\"Year\":\"1952\",\"Month\":\"03\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"0\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":40,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potentialaddressdiscrepancy-theInputaddressmaybepreviousaddress\",\"Sequence\":1},{\"RiskCode\":\"27\",\"Description\":\"Unabletoverifyphonenumber\",\"Sequence\":2},{\"RiskCode\":\"07\",\"Description\":\"Theinputphonenumbermaybedisconnected\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"VerifynamewithAddress(viaDLutilitybillDirectoryAssistancepaycheckstuborotherGovern\"},{\"RiskCode\":\"D\",\"Description\":\"Verifyphone(DirectoryAssistanceutilitybill)\"}]}},\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"CALIFORNIA\",\"IssuedStartDate\":{\"Year\":1963,\"Month\":1},\"IssuedEndDate\":{\"Year\":1963,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"76\",\"StreetName\":\"SUCIA\",\"StreetSuffix\":\"CT\",\"StreetAddress1\":\"76SUCIACT\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":1999,\"Month\":7},\"DateLastSeen\":{\"Year\":2013,\"Month\":5}},{\"Address\":{\"StreetNumber\":\"120\",\"StreetPreDirection\":\"N\",\"StreetName\":\"59TH\",\"StreetSuffix\":\"ST\",\"StreetAddress1\":\"120N59THST\",\"City\":\"SEATTLE\",\"State\":\"WA\",\"Zip5\":\"98103\",\"Zip4\":\"5812\"},\"DateFirstSeen\":{\"Year\":1981,\"Month\":10},\"DateLastSeen\":{\"Year\":2012,\"Month\":1}},{\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"98282\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":2007},\"DateLastSeen\":{\"Year\":2012}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"Latitude\":\"48.173993\",\"Longitude\":\"-122.482829\"}}}}}"}]}]' />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>		
+		<sub-flow name="InstantIdAttentionMock_default_status" doc:id="efe07d2a-3b9f-4cfa-a8bd-878dc97b07b2" >
+		<logger level="INFO" doc:name="Logger" doc:id="caf3b754-9520-4f49-8a0e-444a3b1c8964" message="Instant Id attention mock" />
+		<munit-tools:mock-when doc:name="Mock when" doc:id="950bad37-acd5-48bb-8118-c4a46129c939" processor="http:request" >
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:name" whereValue="IdVerification (InstantIdAttention)" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value='#[{"Status":{"ConversationId":"31000155801375","RequestId":"372431935","TransactionStatus":"","TransactionReasonCode":{"Code":"instantid_pass","Description":"PASS"},"Reference":"Reference1"},"Products":[{"ProductType":"InstantID","ExecutedStepName":"InstantIDStep","ProductConfigurationName":"ewb.onlineaccountopening_instantid","ProductStatus":"pass"},{"ProductType":"InstantID","ExecutedStepName":"PostIDStep","ProductConfigurationName":"INSTANTID_PASS","ProductStatus":"pass","ProductReason":{"Code":"instantid_pass","Description":"PASS"}}],"PassThroughs":[{"Type":"INSTANT_ID","Data":"{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"36015\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetAddress1\":\"1004SHAMROCKLANE\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\"},\"DOB\":{\"Year\":1952,\"Month\":3,\"Day\":24},\"SSN\":\"152640146\",\"HomePhone\":\"2167618965\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385127967\",\"VerifiedInput\":{\"Name\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"County\":\"ISLAND\"},\"SSN\":\"152640146\",\"DOB\":{\"Year\":\"1952\",\"Month\":\"03\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"0\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":40,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potentialaddressdiscrepancy-theInputaddressmaybepreviousaddress\",\"Sequence\":1},{\"RiskCode\":\"27\",\"Description\":\"Unabletoverifyphonenumber\",\"Sequence\":2},{\"RiskCode\":\"07\",\"Description\":\"Theinputphonenumbermaybedisconnected\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"VerifynamewithAddress(viaDLutilitybillDirectoryAssistancepaycheckstuborotherGovern\"},{\"RiskCode\":\"D\",\"Description\":\"Verifyphone(DirectoryAssistanceutilitybill)\"}]}},\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"CALIFORNIA\",\"IssuedStartDate\":{\"Year\":1963,\"Month\":1},\"IssuedEndDate\":{\"Year\":1963,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"76\",\"StreetName\":\"SUCIA\",\"StreetSuffix\":\"CT\",\"StreetAddress1\":\"76SUCIACT\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":1999,\"Month\":7},\"DateLastSeen\":{\"Year\":2013,\"Month\":5}},{\"Address\":{\"StreetNumber\":\"120\",\"StreetPreDirection\":\"N\",\"StreetName\":\"59TH\",\"StreetSuffix\":\"ST\",\"StreetAddress1\":\"120N59THST\",\"City\":\"SEATTLE\",\"State\":\"WA\",\"Zip5\":\"98103\",\"Zip4\":\"5812\"},\"DateFirstSeen\":{\"Year\":1981,\"Month\":10},\"DateLastSeen\":{\"Year\":2012,\"Month\":1}},{\"Address\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"StreetAddress1\":\"1004SHAMROCKLN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"98282\",\"Zip4\":\"6562\"},\"DateFirstSeen\":{\"Year\":2007},\"DateLastSeen\":{\"Year\":2012}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JAMES\",\"Last\":\"SANTIAGO\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1004\",\"StreetName\":\"SHAMROCK\",\"StreetSuffix\":\"LN\",\"City\":\"CAMANOISLAND\",\"State\":\"WA\",\"Zip5\":\"90222\",\"Zip4\":\"6562\",\"Latitude\":\"48.173993\",\"Longitude\":\"-122.482829\"}}}}}"}]}]' />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="getPromoDetails" doc:id="a562ec44-7279-45ee-8774-6bb77086323b" >
+		<ee:transform doc:name="Transform Message" doc:id="108ef631-96d7-415e-b99c-745e24ed9ee5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Promotion": {
+        "PromoCode": "CV0DKA0D",
+        "Status": "Finished",
+        "StartDate": null,
+        "ExpirationDate": "2018-12-01T00:00:00"
+    },
+    "OnboardingInvitation": {
+        "FirstName": "RIMAS",
+        "LastName": "BROWN",
+        "EmailAddress": "ashok.rao@gmail.com",
+        "PhoneNumber": "1085551212"
+    },
+    "RequestUUID": null,
+    "ErrorMessageList": null
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="3acb55f9-d79f-4836-a16d-2e44f2e0e11f" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+					<munit-tools:variable key="promoDetails" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="InstantIdTrasactionStatusAsPendingForPassWorkFlow" doc:id="f6a5c810-14fb-4d52-99a7-4b2f5eb7e589" >
+		<ee:transform doc:name="Transform Message" doc:id="6649c4fb-0256-430d-8034-e9fe854e0dcc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Status": {
+        "ConversationId": "31000157713765",
+        "RequestId": "375482185",
+        "TransactionStatus": "passed",
+        "TransactionReasonCode": {
+	      "Code": "instantid_pass",
+	      "Description": "FAIL"
+	    },      
+        "Reference": "Reference1"
+    },
+    "Products": [
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "InstantID Step",
+            "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+            "ProductStatus": "pass"
+        },
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "PostID Step",
+            "ProductConfigurationName": "INSTANTID_PASS",
+            "ProductStatus": "pass",
+            "ProductReason": {
+                "Code": "instantid_pass",
+                "Description": "PASS"
+            }
+        }
+    ],
+    "PassThroughs": [
+        {
+            "Type": "INSTANT_ID",
+            "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41886\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCOE\",\"State\":\"CA\",\"Zip5\":\"94124\"},\"DOB\":{\"Year\":1962,\"Month\":9,\"Day\":14},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133838\",\"VerifiedInput\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"County\":\"FULTON\"},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"DOB\":{\"Year\":\"1962\",\"Month\":\"09\",\"Day\":\"14\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":50,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\"}},\"PhoneOfNameAddress\":\"4048637784\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"GEORGIA\",\"IssuedStartDate\":{\"Year\":1974,\"Month\":1},\"IssuedEndDate\":{\"Year\":1975,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HOLLISTER\",\"StreetSuffix\":\"AVE\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"FORT STEWART\",\"State\":\"GA\",\"Zip5\":\"31315\",\"Zip4\":\"1771\"},\"DateFirstSeen\":{\"Year\":2013,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"4106 BROXTON CT\",\"City\":\"HEPHZIBAH\",\"State\":\"GA\",\"Zip5\":\"30815\",\"Zip4\":\"6032\"},\"DateFirstSeen\":{\"Year\":1992,\"Month\":6},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"265 RALPH DAVID ABERNATHY BLVD SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"30312\",\"Zip4\":\"2634\"},\"Phone\":\"4048637784\",\"DateFirstSeen\":{\"Year\":2011},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"Latitude\":\"33.736887\",\"Longitude\":\"-84.396539\"}}}}}"
+        }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="14031885-ed9d-4cd3-9a74-28af51a794d0" processor="http:request" >
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>	
+<sub-flow name="InstantIdTrasactionStatusAsPassedAndKBAAsPendingForPassWorkFlow" doc:id="4648ae6b-db73-4e3c-94da-1eacbefd09af" >
+		<ee:transform doc:name="Transform Message" doc:id="02960afd-f8e0-4fd6-94b2-fd5082b3f4f7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Status": {
+        "ConversationId": "31000157713765",
+        "RequestId": "375482185",
+        "TransactionStatus": "passed",
+        "TransactionReasonCode": {
+	      "Code": "instantid_pass",
+	      "Description": "PENDING"
+	    },      
+        "Reference": "Reference1"
+    },
+    "Products": [
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "InstantID Step",
+            "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+            "ProductStatus": "pass"
+        },
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "PostID Step",
+            "ProductConfigurationName": "INSTANTID_PASS",
+            "ProductStatus": "pass",
+            "ProductReason": {
+                "Code": "instantid_pass",
+                "Description": "PASS"
+            }
+        }
+    ],
+    "PassThroughs": [
+        {
+            "Type": "INSTANT_ID",
+            "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41886\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCOE\",\"State\":\"CA\",\"Zip5\":\"94124\"},\"DOB\":{\"Year\":1962,\"Month\":9,\"Day\":14},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133838\",\"VerifiedInput\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"County\":\"FULTON\"},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"DOB\":{\"Year\":\"1962\",\"Month\":\"09\",\"Day\":\"14\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":50,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\"}},\"PhoneOfNameAddress\":\"4048637784\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"GEORGIA\",\"IssuedStartDate\":{\"Year\":1974,\"Month\":1},\"IssuedEndDate\":{\"Year\":1975,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HOLLISTER\",\"StreetSuffix\":\"AVE\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"FORT STEWART\",\"State\":\"GA\",\"Zip5\":\"31315\",\"Zip4\":\"1771\"},\"DateFirstSeen\":{\"Year\":2013,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"4106 BROXTON CT\",\"City\":\"HEPHZIBAH\",\"State\":\"GA\",\"Zip5\":\"30815\",\"Zip4\":\"6032\"},\"DateFirstSeen\":{\"Year\":1992,\"Month\":6},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"265 RALPH DAVID ABERNATHY BLVD SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"30312\",\"Zip4\":\"2634\"},\"Phone\":\"4048637784\",\"DateFirstSeen\":{\"Year\":2011},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"Latitude\":\"33.736887\",\"Longitude\":\"-84.396539\"}}}}}"
+        }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="8098b150-534f-48b6-bbf8-08b8d55feb84" processor="http:request" >
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="kbaResponse" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>				
+<sub-flow name="InstantIdTrasactionStatusAsPassedAndKBAAsPASSForPassWorkFlow" doc:id="b7b750d5-288c-4686-8539-de97af4ea5a6" >
+		<ee:transform doc:name="Transform Message" doc:id="f0d6cbd5-ec24-4c3d-ac6e-e50205ade619" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Status": {
+        "ConversationId": "31000157713765",
+        "RequestId": "375482185",
+        "TransactionStatus": "passed",
+        "TransactionReasonCode": {
+	      "Code": "instantid_pass",
+	      "Description": "PASS"
+	    },      
+        "Reference": "Reference1"
+    },
+    "Products": [
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "InstantID Step",
+            "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+            "ProductStatus": "pass"
+        },
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "PostID Step",
+            "ProductConfigurationName": "INSTANTID_PASS",
+            "ProductStatus": "pass",
+            "ProductReason": {
+                "Code": "instantid_pass",
+                "Description": "PASS"
+            }
+        }
+    ],
+    "PassThroughs": [
+        {
+            "Type": "INSTANT_ID",
+            "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41886\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCOE\",\"State\":\"CA\",\"Zip5\":\"94124\"},\"DOB\":{\"Year\":1962,\"Month\":9,\"Day\":14},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133838\",\"VerifiedInput\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"County\":\"FULTON\"},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"DOB\":{\"Year\":\"1962\",\"Month\":\"09\",\"Day\":\"14\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":50,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\"}},\"PhoneOfNameAddress\":\"4048637784\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"GEORGIA\",\"IssuedStartDate\":{\"Year\":1974,\"Month\":1},\"IssuedEndDate\":{\"Year\":1975,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HOLLISTER\",\"StreetSuffix\":\"AVE\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"FORT STEWART\",\"State\":\"GA\",\"Zip5\":\"31315\",\"Zip4\":\"1771\"},\"DateFirstSeen\":{\"Year\":2013,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"4106 BROXTON CT\",\"City\":\"HEPHZIBAH\",\"State\":\"GA\",\"Zip5\":\"30815\",\"Zip4\":\"6032\"},\"DateFirstSeen\":{\"Year\":1992,\"Month\":6},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"265 RALPH DAVID ABERNATHY BLVD SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"30312\",\"Zip4\":\"2634\"},\"Phone\":\"4048637784\",\"DateFirstSeen\":{\"Year\":2011},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"Latitude\":\"33.736887\",\"Longitude\":\"-84.396539\"}}}}}"
+        }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="db972dda-b209-4401-813b-31586776011f" processor="http:request" >
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="kbaResponse" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>				
+	<sub-flow name="NewUserInCIFMock_Sub_Flow" doc:id="198d3d54-6fae-45b9-bb47-c636c5efb1cd" >
+		<munit-tools:mock-when doc:name="Mock New User in CIF Response" doc:id="967f4c03-bfda-4e2a-af7d-88c26b644b43" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="725a680a-eb4c-4d68-9abb-0d5cb132ccbe" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+				<munit-tools:payload value='#[output application/json --- {"RequestUUID":"21c3268a-505c-11e9-8647-d663bd873d93","ErrorMessageList":[]}]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	
+	<sub-flow name="EnrollUserMock_Sub_Flow" doc:id="04ba38e8-af1b-4c74-b5cb-30f3ade4c4f2" >
+		<munit-tools:mock-when doc:name="Enroll User Response" doc:id="e2baf528-0880-48f6-b0eb-ba0d18aee6d4" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="128d17a4-2ede-4c2b-9a47-530e3c146d0e" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+				<munit-tools:payload value='#[output application/json --- {"RequestUUID":null,"ErrorMessageList":[]}]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+</mule>

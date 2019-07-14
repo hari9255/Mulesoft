@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="pinpointflow-test-suite.xml" />
+	<import doc:name="Import" doc:id="47514340-4b9a-4fcf-ac93-6fbf90b1e053" file="global-config.xml" />
+	<sub-flow name="pinpointflow-test-suiteSub_Flow" doc:id="55da20db-a9db-4560-8f82-569bf1b0cf27" >
+		<munit-tools:mock-when doc:name="Mock OFAC Sys API call" doc:id="7641ecda-49ad-430b-ad90-90f4bd2f3043" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute whereValue="doc:id" attributeName="14d452ff-910e-4e56-a4bc-392f6e81a5d0" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="ofacResponse" value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+		<munit-tools:mock-when doc:name="Mock OFAC PEP Sys API call" doc:id="3212f58d-ead2-44e7-b635-ba498b33f2e1" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute whereValue="doc:id" attributeName="10982066-f8b1-4055-9a7b-fd1aa578aba3" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="pepResponse" value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>	
+		<munit-tools:mock-when doc:name="Mock Case Creation call" doc:id="6b7081ed-228d-41fe-bca7-0a35ca26ac77" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute whereValue="doc:id" attributeName="f8c8299d-9235-4e8d-9a12-ed19f16fad98" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="mdsResponse" value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+		<munit-tools:mock-when doc:name="Mock Instant ID Passed" doc:id="10e575a3-2b5a-4a70-ac1e-b0b597109b1e" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute whereValue="doc:id" attributeName="e67c48a1-1575-401f-b0f8-6022ed6fcb33" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+		<munit-tools:mock-when doc:name="Mock Instant ID Attention" doc:id="5d1ec37a-adc5-4dd4-add6-20bfbeca63bf" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute whereValue="doc:id" attributeName="e67c48a1-1575-401f-b0f8-6022ed6fcb33" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value="#[output application/json --- {}]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>							
+	</sub-flow>
+
+	<munit:test name="pinpointflow-test-suite-pinPoint-ok-FlowTest" description="Test" doc:id="b6bb0f2c-db6a-4eaa-878c-df2338c14435" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to PinpointSuccessMockSub_Flow" doc:id="6bb3a9cd-f605-431c-9674-a77ea1b56223" name="PinpointSuccessMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#["a04m000000BAcfJAAT"]' doc:name="Application ID" doc:id="19ecc4ec-32d5-4e46-9ebc-5bfb4df4cad4" variableName="a04m000000BAcfJAAT"/>
+			<set-variable value='#[output application/json --- [
+  {
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "handler": "session_info",
+    "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+    "remote_addr": "59.165.215.253",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+    "result": "pass",
+    "channel": "online",
+    "new_account_data": {
+      "new_account": true,
+      "first_name": "Varsha",
+      "last_name": "KS",
+      "phone_number": "7767767766",
+      "email": "depositdemo@ewb.com"
+    }
+  },
+  {
+    "handler": "pinpoint_eval",
+    "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+    "remote_addr": "59.165.215.253",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+    "activity": "new_account",
+    "url": "http://uat-eastwestbank.cs95.force.com/tf4sf__dsp#/get-started",
+    "timestamp": "2018-07-20 11:12:37"
+  }
+]]' doc:name="Set Pinpoint Request" doc:id="e53a678d-6d33-46d5-98b1-4cb6159af5c1" variableName="pinpointRequest" mimeType="application/json"/>
+			<flow-ref doc:name="Flow-ref to pinPointFlow" doc:id="af72f2ce-5ae8-4628-8da6-a17ad1c84691" name="pinPointFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Result status" doc:id="f6bdc586-fc05-47a6-b87d-bd56d7dadbee" expression="#[vars.pinpointResponse.result.success]" is="#[MunitTools::equalTo(true)]" message="Pin Point Request was a failure"/>
+			<munit-tools:assert-that doc:name="Assert Pin Point Status" doc:id="e586681f-b094-4eb3-96ce-ba3154cb8231" expression="#[vars.pinPointStatus]" is='#[MunitTools::equalTo("ok")]' message="Pin Point status is not ok"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="pinpointflow-test-suite-pinPoint-error-FlowTest" description="Test" doc:id="19015615-115d-4e04-aa9b-cb0610a0d940" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Pinpoint Response" doc:id="f63d87cb-eda7-4a31-8db4-deeb5c8d5622" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="bad45c7e-8314-43ad-893e-ace9630a5536" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="pinpointResponse" value='#[output application/json --- {
+  "data": [
+    {
+      "status": "error",
+      "message": "customer_session_id not found"
+    },
+    {
+      "status": "error",
+      "message": "customer_session_id not found"
+    }
+  ],
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": "Success"
+  }
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#["a04m000000BAcfJAAT"]' doc:name="Application ID" doc:id="2cfc4034-445f-42a6-b645-a7e8008be794" variableName="a04m000000BAcfJAAT"/>
+			<set-variable value='#[output application/json --- [
+  {
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "handler": "session_info",
+    "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+    "remote_addr": "59.165.215.253",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+    "result": "pass",
+    "channel": "online",
+    "new_account_data": {
+      "new_account": true,
+      "first_name": "Varsha",
+      "last_name": "KS",
+      "phone_number": "7767767766",
+      "email": "depositdemo@ewb.com"
+    }
+  },
+  {
+    "handler": "pinpoint_eval",
+    "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+    "remote_addr": "59.165.215.253",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+    "activity": "new_account",
+    "url": "http://uat-eastwestbank.cs95.force.com/tf4sf__dsp#/get-started",
+    "timestamp": "2018-07-20 11:12:37"
+  }
+]]' doc:name="Set Pinpoint Request" doc:id="6a23c2c3-758e-4af5-ab4a-17eef7036e84" variableName="pinpointRequest" mimeType="application/json"/>
+			<flow-ref doc:name="Flow-ref to pinPointFlow" doc:id="70890bf7-15a7-4588-8c8c-1072e24a36d8" name="pinPointFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Result status" doc:id="28073c64-a3a2-4888-8095-2a97abc168f3" expression="#[vars.pinpointResponse.result.success]" is="#[MunitTools::equalTo(true)]" message="Pin Point Request was a failure"/>
+			<munit-tools:assert-that doc:name="Assert Pin Point Status" doc:id="a799e93c-c82b-4930-aa09-89a7f9ce3dd3" expression="#[vars.pinPointStatus]" is='#[MunitTools::equalTo("error")]' message="Pin Point status is not error"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="pinpointflow-test-suite-pinPoint-failure-FlowTest" description="Test" doc:id="b69dad21-ec85-42a1-9476-b0622157e4dd" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Pinpoint Response" doc:id="60f30c48-d395-49b8-8921-c6d7f3198462" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="bad45c7e-8314-43ad-893e-ace9630a5536" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="pinpointResponse" value='#[output application/json --- {
+  "data": [
+    {
+      "status": "error",
+      "message": "customer_session_id not found"
+    },
+    {
+      "status": "error",
+      "message": "customer_session_id not found"
+    }
+  ],
+  "result": {
+    "success": false,
+    "code": 200,
+    "message": "Success"
+  }
+}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-variable value='#["a04m000000BAcfJAAT"]' doc:name="Application ID" doc:id="2a5732c3-586f-416f-b2ec-79d853f64bb2" variableName="a04m000000BAcfJAAT"/>
+			<set-variable value='#[output application/json --- [
+  {
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "handler": "session_info",
+    "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+    "remote_addr": "59.165.215.253",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+    "result": "pass",
+    "channel": "online",
+    "new_account_data": {
+      "new_account": true,
+      "first_name": "Varsha",
+      "last_name": "KS",
+      "phone_number": "7767767766",
+      "email": "depositdemo@ewb.com"
+    }
+  },
+  {
+    "handler": "pinpoint_eval",
+    "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+    "remote_addr": "59.165.215.253",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+    "activity": "new_account",
+    "url": "http://uat-eastwestbank.cs95.force.com/tf4sf__dsp#/get-started",
+    "timestamp": "2018-07-20 11:12:37"
+  }
+]]' doc:name="Set Pinpoint Request" doc:id="0f7de874-08f2-4a06-a4ee-433e48390b7c" variableName="pinpointRequest" mimeType="application/json"/>
+			<flow-ref doc:name="Flow-ref to pinPointFlow" doc:id="e606908e-2348-4003-a049-3f00f72d5dac" name="pinPointFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Result status" doc:id="413495b3-7316-495c-8ab7-4be372c906df" expression="#[vars.pinpointResponse.result.success]" is="#[MunitTools::equalTo(false)]" message="Pin Point Request was not a failure"/>
+		</munit:validation>
+	</munit:test>
+</mule>

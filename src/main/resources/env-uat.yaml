@@ -1,0 +1,250 @@
+environment: "uat"
+http:
+  host: "uatopenapi.velobank.com" 
+  port: "443"
+  listener:
+    port: "8091"
+    basePath: "/onb"
+  request:
+    timeout: "35000"
+    
+json:
+  logger:
+    application:
+      name: ${project.artifactId}
+      version: ${project.version}
+
+analytics:
+  host: "eastwestbank.sc.omtrdc.net"
+  endpoint: "b/ss//6/"
+  REPORTSUITEID: "eastwestbankewbtestrs1"
+
+okta-process:
+  #host: "velo-process-olb-api-uat.us-w2.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  endpoints:
+   #userProfile: "olb/api/process/iam/users/{userId}"
+   userProfile: "api/system/iam/users/{userId}"
+
+okta:
+  #host: "velo-okta-system-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  endpoints:
+    user: "api/system/iam/users"
+    factorsms: "api/system/iam/factors/sms"
+    factorsmsverify: "api/system/iam/factors/sms/verify"
+    challenge: "api/system/iam/challenge"
+    verify: "api/system/iam/verify"
+  
+  
+promotion:
+  #host: "velo-systemproductpromo-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  update:    
+    path: "api/system/promotions/{promocode}"
+  verify:
+    path: "api/system/promotions/{promocode}/verify"
+  
+
+melissa:
+  #host: "velo-addrdocs-systerm-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  address:
+    path: "api/system/addressvalidator/addressverify"
+    
+synergy:
+  #host: "velo-addrdocs-systerm-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  docsubmit:
+    path: "api/system/docrepository/sendsubmission"   
+  
+#Product/Mortgage Rate
+product:
+  #host: "velo-systemproductpromo-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  path: "api/system/products"
+  
+  
+customerVerificationFlow:
+  #host: "velo-customer-verification-system-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  trueid: 
+    path: "api/system/customerverification/idauthentication"
+  kbaVerification:
+    path: "api/system/customerverification/kbaverificationcvi"
+  kbaVerificationPassed:
+    path: "api/system/customerverification/kbaverificationcvi"
+  kbaVerificationAttention:
+    path: "api/system/customerverification/kbaverification"
+  ofacVerification:
+    path: "api/system/customerverification/ofacverification_v2"
+  getinstantid:
+    path: "api/system/customerverification/idverification"
+    #Deprecated Does Not Return KBA2
+    #path: "api/system/customerverification/idverification"
+  instantIdPassed:
+    path: "api/system/customerverification/idverification"
+  instantIdAttention:
+    path: "api/system/customerverification/idverification"
+  truliooIdAuth:
+    path: "api/system/customerverificationnra/idauthentication"
+  truliooIdVerification:
+    path: "api/system/customerverificationnra/idverification"
+    #path: "api/system/customerverification/mocktruliooIDVerification"
+      
+mortgage:
+  #host: "velo-onboarding-system-api-v1-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  submitapplication:
+    path: "api/system/mortgage/submitapplication"
+  coBorrowerSubmitApplication:
+    path: "api/system/mortgage/applications/{applicationid}/borrowers"
+
+caseApproved:
+  #host: "velo-onboarding-system-api-v1-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  checking:
+    path: "api/system/corebanking/application/checking"
+
+fis:
+  #host: "velo-onboarding-system-api-v1-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  application:
+    checking: "api/system/corebanking/application/checking"
+    saving: "api/system/corebanking/application/savings"
+    misc: "api/system/corebanking/miscaccounts"
+    cupcard: "api/system/cupcards"
+    
+cis:
+  host: "uatopenapi.velobank.com"
+  create:
+    path: "api/system/customers/create" 
+        
+caseSynergy:
+  #host: "velo-addrdocs-systerm-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  application:
+    path: "api/system/docrepository/sendsubmission"
+    
+caseUpdatePromocode:
+  #host: "velo-systemproductpromo-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  application:
+    path: "api/system/promotions/{promocode}"
+    
+case:
+  #host: "velo-systemproductpromo-api-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  submitCaseRequest:
+    path: "/api/system/crm/case"
+      
+terafina:
+  host: "uat-eastwestbank.cs95.force.com"
+  
+  caseUpdate:
+    path: "services/apexrest/CaseUpdate/v1"
+
+estatement:
+  createInfoImage:
+    path: "api/system/statement/user/{cisnumber}"
+  enrollUserEstatement:
+    path:  "api/system/statement/user/{cisnumber}/accounts"      
+
+pinpoint:
+  #host: "velo-onboarding-system-api-v1-uat.cloudhub.io"
+  host: "uatopenapi.velobank.com"
+  trust:
+    path: "api/system/threatintelligence/info_eval"
+
+partnerCaseUpdate:
+  host: "uatopenapi.velobank.com"
+  path: "api/experience/case/approved"
+    
+variables:    
+  caseStatus:
+    PENDING: "Pending"
+    APRROVED: "Approved"
+    DECLINE: "Declined"
+  ofac:
+    SEARCH_NAME: "Digital Banking"
+    SEARCH_NAME_PEP: "Digital Banking-PEP"
+    ENTITY_TYPE: "Individual"
+  events:
+    BBAE:
+      DECLINE_EVENTS: "event153"
+      APPROVED_EVENTS: "event152"
+    WEBULL:
+      DECLINE_EVENTS: "event157"
+      APPROVED_EVENTS: "event156"
+  THREAT_INTELLIGENCE_PASS_REASONS: ["allow"]
+  THREAT_INTELLIGENCE_FAIL_REASONS: ["deny","alert","authenticate","allow_login_restrict"]
+  fis:
+    TYPE:
+      "Driver License": "VDL"
+      "Passport": "VPP"
+      "NationalId": "VNTID"      
+      "W8": ""
+      "Terms and Conditions": ""
+      "Other": ""  
+api:
+  id: "15705862"
+  
+Settings: 
+  AccountNumber: "45065"
+  Mode: "testing"
+  ConversationId: "31000102080715"
+  Locale: "en_US"
+  
+oauth:
+  grant_type: password
+  client_id: "3MVG9Yb5IgqnkB4ovsepzbqXZ6O1E.pCa2_YTY82dqBhQG2qbut1O9AIKnqlmKR7EVBCJFFsStAe1YXQz.gO0"
+  client_secret: "4930736754474379816"
+  token_url: "https://test.salesforce.com/services/oauth2/token"
+  username: "api.user@eastwestbank.com.uat"
+  password: "Velo@EWB$1dMjjmng69kw7MF1I4HfB3Oi3"
+  host: "test.salesforce.com"
+  path: "/services/oauth2/token"
+  expiry_duration_sec: "230"
+
+InternalOauth: 
+  host: "https://sso-test.velobank.com/oauth2/ausf2c18qqtmGHyX80h7/v1/token"
+  client_id: "0oai58ytfs0Iljj3K0h7" 
+  client_secret: "dPjRw2tZmDu_L59wSjp4mNQWgZRLT27GT3FL-lY6" 
+  grant_type: "client_credentials"
+
+PARTNER:
+  VELO:
+    CATEGORY_CODE: "903"
+  WEBULL:
+    PARTNER_NAME: "WEBULL"
+    PARTNER_CODE: "31000112989176"
+    USER_CODE: "W"
+    CATEGORY_CODE: "822"
+  BBAE:
+    PARTNER_NAME: "BBAE"
+    PARTNER_CODE: "31000112989075"
+    USER_CODE: "B"
+    CATEGORY_CODE: "821"
+    
+IDAUTH:
+  SETTINGS:
+    ACCOUNT: "45055"
+    WORKFLOW: "EWB_TrueID_Online_Flow"
+    MODE: "testing"
+    
+CARD:
+  ISCARDGENERATED: "false"
+  
+ENROLMENT:
+  USERTYPE: "Personal"
+  ACCOUNTTYPE: "NOW"
+  NOTIFYTYPE: "Email"
+  PAPERLESSSTATUS:
+    NEWDELIVERYPREF: "Paperless"
+    STATEMENTTYPE: "Default"
+  isEnrollEStatement: "true"
+  
+TIMEOUT:
+  ONEMINUTE: "60000"
+  ONEHALFMINUTE: "90000"
+  TWOMINUTE: "120000"

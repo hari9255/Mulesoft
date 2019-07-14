@@ -1,0 +1,16 @@
+{
+  "recommendation": {
+    "recommendation": "allow_login_restrict",
+    "resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+    "reason_id": -1,
+    "reason": "reason text",
+    "risk_score": 0
+  },
+  "risk_engine_recommendation": {
+    "risk_score": 1,
+    "reason_id": 1,
+    "recommendation": "allow_login_restrict",
+    "reason": "reason text"
+  },
+  "customer_session_id": "<CSID>"
+}

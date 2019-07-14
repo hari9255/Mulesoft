@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="melissa-flowFlow" doc:id="9af1f912-e1ea-450d-b801-a82cd067f7ed">
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Request Body #[payload] Request UUID #[correlationId] Flow Name #[flow.name]" /> -->
+		<json-logger:logger doc:name="Melissa Request Payload" doc:id="f3ea47bc-467b-4c22-8b14-0a401b6730fb" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT" endpoint="POST:/${melissa.address.path}" message="Melissa Address Validator Request Payload">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	RequestBody: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Melissa Before Request" doc:id="50052976-fb56-481f-a859-6742a2f774cb" config-ref="JSON_Logger_Config" message="Melissa Request" tracePoint="BEFORE_REQUEST" endpoint="POST:/${melissa.address.path}">
+			<json-logger:content><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="POST" doc:name="Request"
+			doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" config-ref="HTTP_Request_configuration_melissa"
+			path="/${melissa.address.path}" target="melissa"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+			<http:response-validator >
+				<http:success-status-code-validator values="200,400" />
+			</http:response-validator>
+		</http:request>
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Response : #[vars.melissa] Request UUID #[correlationId] Flow Name #[flow.name]" /> -->
+		<json-logger:logger doc:name="Melissa After Request" doc:id="df6f714d-68bf-41fc-bef7-c1b27959fc3c" config-ref="JSON_Logger_Config" message="Melissa Response" tracePoint="AFTER_REQUEST" status="#[vars.'httpStatus']" endpoint="POST:/${melissa.address.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="Melissa Response Payload" doc:id="b3525c37-8c06-4483-a168-f5ec4a0dbd3d" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT" endpoint="POST:/${melissa.address.path}" message="Melissa Address Validator Response Payload">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	melissa: vars.melissa
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<ee:transform doc:name="Transform Message" doc:id="d08f4572-94ee-4ec8-b382-bc9ee8090fd3" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="melissa" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.melissa]]></ee:set-variable>
+				<ee:set-variable variableName="respStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.melissa.Status default null]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="dc36eea6-43ad-40a4-b0d6-6394078c7501" >
+			<when expression='#[vars.respStatus == 400]'>
+				<logger level="INFO" doc:name="Logger" doc:id="49252719-6a2a-4c34-a591-7abe147d44df" />
+				<set-variable value="400" doc:name="Set httpStatus" doc:id="069ea3f3-fc28-4913-82ff-b0150fb12b69" variableName="httpStatus"/>
+				<set-variable value="BAD_REQUEST" doc:name="Set retSuccMes" doc:id="f78892fb-e7fe-4c09-86fb-e58fe3944d20" variableName="retSuccMes"/>
+				<set-variable value="false" doc:name="Set Variable" doc:id="599acc06-1436-46b7-b285-06a5f635a35a" variableName="successCode"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="586507f5-cb8b-4040-983c-79d5d5e7585f" message="Melissa request was successfull"/>
+			</otherwise>
+		</choice>
+		<set-payload value="#[vars.melissa]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<flow-ref doc:name="global-return-response-build" doc:id="464485ff-6096-4846-aaa8-be4b67cd4675" name="global-return-response-build"/>
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="e57da447-bf87-463b-9966-94f17f6f160c">
+				<flow-ref doc:name="generic-exception" doc:id="3f92e98d-87c2-4361-b4c5-b7fa420b56be"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

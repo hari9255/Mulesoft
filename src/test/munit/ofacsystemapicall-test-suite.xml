@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="ofacsystemapicall-test-suite.xml" />
+	<munit:test name="ofac-pep-request-test" description="MUnit Test" doc:id="846369a6-4ecc-4f3d-a324-d5b6fe5c1e27" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock OFAC pep Sys API Response" doc:id="9bf4fc2e-b2d0-4376-b5f1-fa8956a37697" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="10982066-f8b1-4055-9a7b-fd1aa578aba3" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="pepResponse" value='#[output application/json --- {"Name":"Rajat Kumar","IsPep":true,"ResultID":15911799,"ResultStatus":"Match","EntityScore":94,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					
+</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Variables" doc:id="0f481bcd-68a7-4195-81a6-90f4fed99f3a" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
+output application/java
+---
+"eyJraWQiOiJGSE1jTWJIUlpMd01QSXgweDlGM1lESDlUenVXdy1QNHJ6eFl6LTREc2xnIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULkdNa0NiaTlrNlNvX2lVNUQ4ZDR2SUw3aEpiVGF0em5qV0VoT3RKREk4STAiLCJpc3MiOiJodHRwczovL3Nzby10ZXN0LnZlbG9iYW5rLmNvbS9vYXV0aDIvYXVzZjJjMThxcXRtR0h5WDgwaDciLCJhdWQiOiJodHRwczovL2Rldm9wZW5hcGkudmVsb2JhbmsuY29tLyIsImlhdCI6MTU0ODIyOTg1NywiZXhwIjoxNTQ4MjMzNDU3LCJjaWQiOiIwb2FmcnVwbDdhNkZ1VDZhTzBoNyIsInNjcCI6WyJhcGk6cmVhZCJdLCJzdWIiOiIwb2FmcnVwbDdhNkZ1VDZhTzBoNyJ9.eYEm0Rn0U7s_hWArHDZXTnTg9s7JGTZYwYLq4FxJj2czLMgF8ROLj1zgXwM_ChwSvACCYR4DU1JR2F1iMmmbsMvE42gx1BRKSWOIPt8dOywzXGVHtRhDi7KB5MmWx2CZsGDnVdwjoTxtK0PfMSlV7nSNNBN6RKksBOmtRldx39lEbcn6YgPjV_zj-ISwreKAllp42CaGGfYwRMF_Uhh4I_rI03yCmmmhx9h7z6XggQOlXKGpSm6XYkXO7QCrh6o3vYsXTxnFkBJNPDH4yzzAAondIjMjrIu1S4OEVoQ68TajOOWE-xZoawdiIHEz6bE2DLG2UL09vix3QrIGodSz2w"]]></ee:set-variable>
+					<ee:set-variable variableName="ofacTmp" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "EntityType": "Individual",
+  "FirstName": "Rajat",
+  "MiddleName": "",
+  "LastName": "Kumar",
+  "AddressLine1": null,
+  "AddressLine2": null,
+  "AddressCity": null,
+  "AddressState": null,
+  "AddressPostalCode": null,
+  "AddressCountry": null,
+  "DateOfBirth": "1999-12-01",
+  "Gender": "Male",
+  "PassportNumber": null,
+  "Occupation": "Other",
+  "CustomerReference": null,
+  "RequestUUID": "c9fa7972-de06-4a92-b757-d055f3bfaaaa"
+}]]></ee:set-variable>
+				
+</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow Ref to OfacSystemApiCallPEPSubFlow" doc:id="2bcc6ab2-5b88-4d1d-92e3-0220e480bec1" name="OfacSystemApiCallPEPSubFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="8f898761-d1be-4084-9766-e903ff53cd73" expression="#[output application/json --- vars.pepResponse]" is='#[MunitTools::equalTo({"Name":"Rajat Kumar","IsPep":true,"ResultID":15911799,"ResultStatus":"Match","EntityScore":94,"RequestUUID":null,"ErrorMessageList":null})]' message="Ofac PEP Response is Invalid"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="ofac-request-test" description="MUnit Test" doc:id="c16ebcca-ad6f-49ad-9b73-4273c4fe2dd6" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock OFAC Sys API Response" doc:id="7e7a9ebb-89c5-4c62-a405-6992df10172a" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="14d452ff-910e-4e56-a4bc-392f6e81a5d0" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="ofacResponse" value='#[output application/json --- {"Name":"Rajat Kumar","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Variables" doc:id="c637ea93-1181-434e-8757-7120799be4df" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="ofacTmp" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "EntityType": "Individual",
+  "FirstName": "Rajat",
+  "MiddleName": "",
+  "LastName": "Kumar",
+  "AddressLine1": null,
+  "AddressLine2": null,
+  "AddressCity": null,
+  "AddressState": null,
+  "AddressPostalCode": null,
+  "AddressCountry": null,
+  "DateOfBirth": "1999-12-01",
+  "Gender": "Male",
+  "PassportNumber": null,
+  "Occupation": "Other",
+  "CustomerReference": null,
+  "RequestUUID": "c9fa7972-de06-4a92-b757-d055f3bfaaaa"
+}]]></ee:set-variable>
+					<ee:set-variable variableName="token" ><![CDATA[%dw 2.0
+output application/java
+---
+"eyJraWQiOiJGSE1jTWJIUlpMd01QSXgweDlGM1lESDlUenVXdy1QNHJ6eFl6LTREc2xnIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULkdNa0NiaTlrNlNvX2lVNUQ4ZDR2SUw3aEpiVGF0em5qV0VoT3RKREk4STAiLCJpc3MiOiJodHRwczovL3Nzby10ZXN0LnZlbG9iYW5rLmNvbS9vYXV0aDIvYXVzZjJjMThxcXRtR0h5WDgwaDciLCJhdWQiOiJodHRwczovL2Rldm9wZW5hcGkudmVsb2JhbmsuY29tLyIsImlhdCI6MTU0ODIyOTg1NywiZXhwIjoxNTQ4MjMzNDU3LCJjaWQiOiIwb2FmcnVwbDdhNkZ1VDZhTzBoNyIsInNjcCI6WyJhcGk6cmVhZCJdLCJzdWIiOiIwb2FmcnVwbDdhNkZ1VDZhTzBoNyJ9.eYEm0Rn0U7s_hWArHDZXTnTg9s7JGTZYwYLq4FxJj2czLMgF8ROLj1zgXwM_ChwSvACCYR4DU1JR2F1iMmmbsMvE42gx1BRKSWOIPt8dOywzXGVHtRhDi7KB5MmWx2CZsGDnVdwjoTxtK0PfMSlV7nSNNBN6RKksBOmtRldx39lEbcn6YgPjV_zj-ISwreKAllp42CaGGfYwRMF_Uhh4I_rI03yCmmmhx9h7z6XggQOlXKGpSm6XYkXO7QCrh6o3vYsXTxnFkBJNPDH4yzzAAondIjMjrIu1S4OEVoQ68TajOOWE-xZoawdiIHEz6bE2DLG2UL09vix3QrIGodSz2w"]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow Ref to OfacSystemApiCallSubFlow" doc:id="7ed178c9-cb0c-40e1-a977-8a17b4c46ace" name="OfacSystemApiCallSubFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="139da5a2-331a-4141-b5fc-468378588a23" expression="#[vars.ofacResponse]" is='#[MunitTools::equalTo({
+  "Name": "Rajat Kumar",
+  "IsPep": null,
+  "ResultID": 0,
+  "ResultStatus": "No Match",
+  "EntityScore": null,
+  "RequestUUID": null,
+  "ErrorMessageList": null
+})]' message="Ofac Response is Invalid"/>
+		</munit:validation>
+	</munit:test>
+</mule>

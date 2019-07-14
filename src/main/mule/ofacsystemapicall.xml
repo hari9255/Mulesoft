@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="ofacCallSubFlow" doc:id="0702479f-b58a-4e47-ab66-babeada878fe" >
+	<ee:transform doc:name="Transform Message" doc:id="05bb00de-bec3-4e53-a6bd-10371cbda3c5">
+									<ee:message>
+									</ee:message>
+									<ee:variables>
+				<ee:set-variable variableName="ofacTmp" ><![CDATA[%dw 2.0
+output application/json
+var ofacEntityType = "${variables.ofac.ENTITY_TYPE}"
+---
+{  
+  EntityType: ofacEntityType,
+  FirstName: payload.CustomerInformation.FirstName,
+  MiddleName: payload.CustomerInformation.MiddleName,
+  LastName: payload.CustomerInformation.LastName,
+  AddressLine1: payload.CustomerInformation.Address.StreetAddress1,
+  AddressLine2: payload.CustomerInformation.Address.StreetAddress2,
+  AddressCity: payload.CustomerInformation.Address.City,
+  AddressState: payload.CustomerInformation.Address.State,
+  AddressPostalCode: payload.CustomerInformation.Address.Zip,
+  AddressCountry: payload.CustomerInformation.Address.CountryCode,
+  DateOfBirth: payload.CustomerInformation.DateOfBirth,
+  Gender: payload.CustomerInformation.Gender,
+  PassportNumber: payload.CustomerInformation.Passport,
+  Occupation: payload.CustomerInformation.Occupation,
+  CustomerReference: null,
+  //PEP:payload.CustomerInformation.PEP,
+  RequestUUID: payload.RequestUUID
+}]]></ee:set-variable>
+				<ee:set-variable variableName="tmpOrgPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+									
+</ee:variables>
+								</ee:transform>
+								<scatter-gather doc:name="Scatter-Gather" doc:id="b7413578-becf-4839-a6d3-8d49331daa0b" >
+			<route >
+				<flow-ref doc:name="OfacSystemApiCallSubFlow" doc:id="176ea7f8-5409-4d91-8e1e-420c324a32f2" name="OfacSystemApiCallSubFlow" />
+			</route>
+			<route >
+				<flow-ref doc:name="OfacSystemApiCallPEPSubFlow" doc:id="ad1c4404-3622-413b-9ca9-a9bcc667e48d" name="OfacSystemApiCallPEPSubFlow" />
+			</route>
+		</scatter-gather>
+		<set-payload value="#[vars.tmpOrgPayload]" doc:name="Set Payload" doc:id="e65fd70c-1bad-47c8-92f9-38068c2bc39e" />
+		<set-variable value="null" doc:name="Set Variable" doc:id="d99b0347-ff80-4039-80f7-0ebea5dc823c" variableName="tmpOrgPayload"/>
+	
+
+</sub-flow>
+	<sub-flow name="OfacSystemApiCallSubFlow" doc:id="8bd08a3a-924d-4cf4-8f0b-0054962129e8">
+				<ee:transform doc:name="Transform Message" doc:id="a0018767-d671-4306-9e23-e1b9efc8ff0c" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="ofac" ><![CDATA[%dw 2.0
+output application/json
+var ofacSearchName = "${variables.ofac.SEARCH_NAME}"
+---
+vars.ofacTmp ++ {SearchName: ofacSearchName}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="ofac Request" doc:id="48d2665c-f392-4b59-943a-53e1a07b4f7d" message="ApplicationId #[vars.ApplicationId] ofac Request  #[vars.ofac] Request UUID #[correlationId] Flow Name #[flow.name]" />
+		<json-logger:logger doc:name="Ofac Request Payload" doc:id="fce329bc-473b-4cfc-b5fa-0792aedc3742" config-ref="JSON_Logger_Config" message="Ofac Request payload" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	ofac: vars.ofac,
+ 	ApplicationId: vars.ApplicationId
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<try doc:name="Try" doc:id="38cadb1f-cf94-4be9-92f0-e4e6f685aed0">
+			<json-logger:logger doc:name="Verify OFAC Before Request" doc:id="fd443826-5a6c-4fd1-8a53-bad4fb0ece57" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="POST:/${customerVerificationFlow.ofacVerification.path}" message="Verify Ofac Before Request"/>
+			<http:request method="POST" doc:name="Verify OFAC" doc:id="14d452ff-910e-4e56-a4bc-392f6e81a5d0" config-ref="HTTPS_System_API_Config" path="/${customerVerificationFlow.ofacVerification.path}" target="ofacResponse" responseTimeout="${TIMEOUT.ONEMINUTE}">
+			<http:body><![CDATA[#[vars.ofac]]]></http:body>
+			<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+			<json-logger:logger doc:name="Verify OFAC After Request" doc:id="67ebd428-765f-475e-8753-d5595d04d3b8" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="POST:/${customerVerificationFlow.ofacVerification.path}" status="#[vars.'httpStatus']" message="Verify Ofac After Request" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0fd6a1fd-73ff-43de-a242-22e2d28ec930">
+				<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build" />
+					<set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="ofacException" />
+					<logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Exception Found in ofacException :::::::: #[vars.ofacException] Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<set-variable value="true" doc:name="SetExceptionFlag" doc:id="ca234502-c9dd-4d8f-a6d0-c66f8bebaafb" variableName="exceptionFlag"/>
+				
+</on-error-continue>
+			</error-handler>
+		</try>
+	<logger level="INFO" doc:name="ofac Response" doc:id="9e36d451-847e-41f3-b3bb-71887fa2cbdc" message=" ApplicationId #[vars.ApplicationId]  ofac Response #[vars.ofacResponse] Request UUID #[correlationId] Flow Name #[flow.name]" />
+		<json-logger:logger doc:name="ofacResponse" doc:id="496f30d2-d0b9-4900-a98d-a66109f7ecc4" config-ref="JSON_Logger_Config" message="ofacResponse" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	ofacResponse: vars.ofacResponse,
+ 	ApplicationId: vars.ApplicationId
+}]]]></json-logger:content>
+		</json-logger:logger>
+	
+</sub-flow>
+
+<sub-flow name="OfacSystemApiCallPEPSubFlow" doc:id="d6702c31-cce5-4715-ad97-7a30eb6f5581">
+<ee:transform doc:name="Transform Message" doc:id="2fe5873d-9415-4ab8-8776-df91e0770fa2" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="pepRequest" ><![CDATA[%dw 2.0
+output application/json
+var ofacSearchNamePep = "${variables.ofac.SEARCH_NAME_PEP}"
+---
+vars.ofacTmp ++ {SearchName: ofacSearchNamePep}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<logger level="INFO" doc:name="ofac Request PEP Check" doc:id="dea23036-2eab-460f-b84e-54cfc77a1546" message="ApplicationId #[vars.ApplicationId] PEP Request  #[vars.pepRequest] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+		<json-logger:logger doc:name="ofac Request PEP Check" doc:id="4cc394d1-0468-437b-855a-8977e6651c33" config-ref="JSON_Logger_Config" message="PEP Request Payload" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	PEPReq: vars.pepRequest,
+ 	ApplicationId: vars.ApplicationId
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<try doc:name="Try" doc:id="5108997e-fbb9-486b-abda-5051f02aabcf">
+			<json-logger:logger doc:name="PEP Check Before Request" doc:id="b7fd258e-5a3f-4cfe-ae52-24840ff67a7b" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="POST:/${customerVerificationFlow.ofacVerification.path}" message="PEP Check Before Request"/>
+			<http:request method="POST" doc:name="Verify OFAC PEP Check" doc:id="10982066-f8b1-4055-9a7b-fd1aa578aba3" config-ref="HTTPS_System_API_Config" path="/${customerVerificationFlow.ofacVerification.path}" target="pepResponse" responseTimeout="${TIMEOUT.ONEMINUTE}">
+			<http:body><![CDATA[#[vars.pepRequest]]]></http:body>
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+			<json-logger:logger doc:name="PEP Check After Request" doc:id="cdf48496-b23b-445f-af51-1bd06454e6ca" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="POST:/${customerVerificationFlow.ofacVerification.path}" status="#[vars.'httpStatus']" message="PEP Check After Request" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ef7dd770-2537-4c3e-8c8a-ce3486ca0c27">
+				<flow-ref doc:name="api-exceptions-response-build" doc:id="28dad0e7-6e2f-4591-8e1b-2202197798ee" name="api-exceptions-response-build" />
+					<set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Variable" doc:id="0dd412a1-c280-4d23-a9c9-9540ad58f2dc" variableName="pepException" />
+					<logger level="INFO" doc:name="Logger" doc:id="f518a6f1-d060-4a0a-a75d-d9c86fa09052" message="Exception Found in pepException :::::::: #[vars.pepException] Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<set-variable value="true" doc:name="SetExceptionFlag" doc:id="1dd3b2a4-3c8a-4e16-a52c-a54316c86b72" variableName="exceptionFlag"/>
+				
+</on-error-continue>
+			</error-handler>
+		</try>
+		<logger level="INFO" doc:name="PEP Response" doc:id="4c887dd0-7a49-47bb-a992-ce0736189b84" message=" ApplicationId #[vars.ApplicationId]  PEP Response #[vars.pepResponse] Request UUID #[correlationId] Flow Name #[flow.name]" />
+		<json-logger:logger doc:name="Response PEP Check" doc:id="8daa93b1-fd64-40c4-a66e-d1b7ce35231d" config-ref="JSON_Logger_Config" message="pepResponse" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	pepResponse: vars.pepResponse,
+ 	ApplicationId: vars.ApplicationId
+}]]]></json-logger:content>
+		</json-logger:logger>
+	
+</sub-flow>
+	
+	</mule>

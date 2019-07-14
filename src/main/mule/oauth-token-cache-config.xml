@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd">
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="aa1ece56-7876-415a-8add-f1145376ccc2" >
+		<http:request-connection protocol="HTTPS" host="${oauth.host}" >
+			<tls:context name="trustallcertificate" enabledProtocols="TLSv1.2"><tls:trust-store insecure="true" /></tls:context>
+		</http:request-connection>
+		
+	</http:request-config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="9cee3648-7a14-4839-af57-42ca3cdf41b0" entryTtl="${oauth.expiry_duration_sec}" />
+	<flow name="oauth-token-cache-configFlow" doc:id="afcba0be-fa72-4662-931e-795d04bac1ac" >
+		<!-- <os:retrieve doc:name="Retrieve" doc:id="29f6aa58-c6aa-4c8c-8242-4a2f4301bb47" key="oauth-store-key" objectStore="Object_store" >
+			<os:default-value ><![CDATA[Empty]]></os:default-value>
+		</os:retrieve> -->
+		<logger level="INFO" doc:name="Logger" doc:id="e53623df-3640-448a-afac-75d950f20e53" message="Retrieve Token Payload---&gt; #[payload]" />
+		<json-logger:logger doc:name="Retrieve Token Payload" doc:id="5c2757f1-6339-405e-b444-3c49297183f6" config-ref="JSON_Logger_Config" message="Retrieve Token Payload" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	TokenPayload: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<logger level="INFO" doc:name="Not Exist Logger" doc:id="34e83e94-c0e7-41f9-93d6-e16408c48de6" message="Token Does Not Exist"/>
+				<json-logger:logger doc:name="Oauth Before Request" doc:id="448334db-b2ef-4d16-813d-cf836a34f5df" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" message="Oauth Request" endpoint="POST:/${oauth.path}"/>
+				<http:request method="POST" doc:name="OAuth Request" doc:id="e9239fa0-6b12-440d-98ea-66c54e1c6422" config-ref="HTTP_Request_configuration1" path="${oauth.path}" followRedirects="false">
+			<http:body ><![CDATA[grant_type=${oauth.grant_type}&client_id=${oauth.client_id}&client_secret=${oauth.client_secret}&username=${oauth.username}&password=${oauth.password}]]></http:body>
+					<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"Content-Type" : "application/x-www-form-urlencoded"
+}]]]></http:headers>
+		</http:request>
+				<json-logger:logger doc:name="Oauth After Request" doc:id="9922b6b6-7d58-49f1-b272-cb21162f9f51" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" message="Oauth Response" endpoint="POST:/${oauth.path}" status="#[vars.'httpStatus']"/>
+				<os:store doc:name="Store Access Token" doc:id="cfe0171a-a8a1-475c-940c-e38a4fcac8bc" key="oauth-store-key" objectStore="Object_store"/>
+				<set-variable value="${terafina.caseUpdate.path}" doc:name="Update Path" doc:id="4314de1d-264d-4cac-b2bb-068700aeb4f5" variableName="updatepath"/>
+				<ee:transform doc:name="Transform Message" doc:id="b56d3918-735a-4b2e-a4e4-a39a8ce02d0f" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	access_token: "Bearer " ++ payload.access_token,
+	saleforce_url: payload.instance_url ++ "/" ++ vars.updatepath
+
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+		<!-- <choice doc:name="Choice" doc:id="ca9a08a0-315e-404d-b141-5068c83cf6a2" >
+			<when expression="#[payload == 'Empty']" >
+				
+			
+</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Exist Logger" doc:id="190fb121-cf87-438d-86c3-70d733934be5" message="Token Exist"/>
+				<set-variable value="${terafina.caseUpdate.path}" doc:name="Update Path" doc:id="4d2a5187-893a-4203-90f2-9f0d20de4219" variableName="updatepath"/>
+				<ee:transform doc:name="Transform Message" doc:id="e57a883a-9064-417d-ac17-c50a8d91c284">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+{
+access_token: payload.access_token,
+saleforce_url: payload.instance_url ++ "/" ++ vars.updatepath
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+			</otherwise>
+		</choice> -->
+		<logger level="INFO" doc:name="Logger" doc:id="0924450c-2788-4056-8df3-569fa773436a" message="ACCESS TOKEN OUTPUT ==&gt; #[payload.access_token]"/>
+		<json-logger:logger doc:name="ACCESS TOKEN OUTPUT" doc:id="5c99aa7a-f27b-4c56-ae71-3cfd720130c4" config-ref="JSON_Logger_Config" message="ACCESS TOKEN OUTPUT" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	payload: payload.access_token
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="06722977-30a9-434b-a8a6-50aa8cc9ff5a" />
+	</flow>
+	
+
+
+</mule>

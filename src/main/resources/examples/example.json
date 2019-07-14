@@ -1,0 +1,16 @@
+{
+  "Promotion": {
+    "PromoCode": "A83ACD4P",
+    "Status": "New",
+    "StartDate": null,
+    "ExpirationDate": "2018-12-01T00:00:00"
+  },
+  "OnboardingInvitation": {
+    "FirstName": "John",
+    "LastName": "Smith",
+    "EmailAddress": "email.address@gmdadsfail.com",
+    "PhoneNumber": "893-929-9391"
+  },
+  "RequestUUID": null,
+  "ErrorMessageList": null
+}

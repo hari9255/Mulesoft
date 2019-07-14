@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="idverificationFlow" doc:id="a11729d0-04ee-4b3d-80ce-405c440c0710" >
+		<logger level="INFO" doc:name="ID Verification Flow" doc:id="7282827b-495c-45e4-9d66-ffb7911c7446" message="ApplicationId #[vars.ApplicationId]  ID Verification Flow "/>
+		
+		<flow-ref doc:name="getIdAuthDocResultFlow" doc:id="0ccc3f6a-ba5e-4b6b-aa9d-ab614e2eab88" name="getIdAuthDocResultFlow"/>
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="e7c6ce07-dbdb-4a77-a0b9-c820ca45e984" message="Id Verification/Instant id Request for Application Id #[vars.ApplicationId] :::::::::::::::::: #[vars.instantIdRequest] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+		<json-logger:logger doc:name="Instant Id Request Payload" doc:id="491ad9e8-5ec0-4258-a9b0-5a06b7134ffc" config-ref="JSON_Logger_Config" message="Instant Id Request Payload" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	instantIdRequest: vars.instantIdRequest
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<try doc:name="Try" doc:id="294372a0-5b52-4c5f-95f8-aa1a797bcf83" >
+			<choice doc:name="Choice" doc:id="ee5b404c-da6f-4981-82ea-307da47afe0a" >
+				<when expression="vars.docAuthResult == 'Passed'" >
+					<!-- <logger level="INFO" doc:name="Logger" doc:id="642c93c1-c1ea-43b9-9f6f-1bac290a8fcf" message="Id Auth Doc Result #[vars.docAuthResult] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+					<json-logger:logger doc:name="DocAuthResult" doc:id="f52d8c9e-39d1-4bf8-b0e0-498f0288c873" config-ref="JSON_Logger_Config" message="DocAuthResult" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	docAuthResult: vars.docAuthResult
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<ee:transform doc:name="Transform Message" doc:id="9538ccdf-4595-4136-a777-44e4684460cf">
+						<ee:message>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="instantIdPassRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Settings": {
+      //"AccountNumber": vars.instantIdRequest.Settings.AccountNumber,
+      "AccountNumber": p('Settings.AccountNumber'),
+      "Workflow": "ewb.oao.pass",
+      //"Mode": vars.instantIdRequest.Settings.Mode,
+      "Mode": p('Settings.Mode'),
+      "Reference": vars.instantIdRequest.Settings.Reference,
+      //"Locale": vars.instantIdRequest.Settings.Locale,
+      "Locale": p('Settings.Locale'),
+      "Venue": vars.instantIdRequest.Settings.Venue
+    },
+    "Person": {
+      "Name": {
+        "FirstName": vars.instantIdRequest.Person.Name.FirstName,
+        "LastName": vars.instantIdRequest.Person.Name.LastName
+      },
+      "Addresses": [
+        {
+          "StreetAddress1": vars.instantIdRequest.Person.Addresses[0].StreetAddress1,
+          "City": vars.instantIdRequest.Person.Addresses[0].City,
+          "State": vars.instantIdRequest.Person.Addresses[0].State,
+          "Zip5": vars.instantIdRequest.Person.Addresses[0].Zip5,
+          "Country": vars.instantIdRequest.Person.Addresses[0].Country,
+          "Context": vars.instantIdRequest.Person.Addresses[0].Context
+        }
+      ],
+      "SSN": {
+        "Number": vars.instantIdRequest.Person.SSN.Number,
+        "Type": vars.instantIdRequest.Person.SSN.Type
+      },
+      "DateOfBirth": {
+        "Year": vars.instantIdRequest.Person.DateOfBirth.Year,
+        "Month": vars.instantIdRequest.Person.DateOfBirth.Month,
+        "Day": vars.instantIdRequest.Person.DateOfBirth.Day
+      },
+      "Phones": [
+        {
+          "Number": vars.instantIdRequest.Person.Phones[0].Number,
+          "Context": vars.instantIdRequest.Person.Phones[0].Context
+        }
+      ]
+    }
+  } ]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<!-- <logger level="INFO" doc:name="Logger" doc:id="30525584-48be-44d5-b70e-8a49c53510bb" message="Instant ID PassFlow Request for Application Id #[vars.ApplicationId] :::::::::::::::::: #[vars.instantIdPassRequest] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+					<json-logger:logger doc:name="InstantId Pass Request Payload" doc:id="c4dc8cd9-a865-4e87-8510-021bb8270b3d" config-ref="JSON_Logger_Config" message="InstantIdPassRequest" tracePoint="PRINT" endpoint="POST:/${customerVerificationFlow.instantIdPassed.path}">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	InstantIdPassRequest: vars.instantIdPassRequest
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<json-logger:logger doc:name="Id Verification InstantId Pass Before Request" doc:id="12d5e510-f362-4834-8147-556620686757" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="POST:/${customerVerificationFlow.instantIdPassed.path}" message="Instant Id Pass Request">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.instantIdPassRequest,
+ 	attributes: attributes
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<http:request method="POST" doc:name="IdVerification (InstantIdPassed)" doc:id="1d4da8a1-5ca6-41da-814a-1ea0b83c7045" config-ref="HTTP_Request_customerVerificationFlow" path="/${customerVerificationFlow.instantIdPassed.path}" target="instantIdResponse" responseTimeout="${http.request.timeout}">
+				<http:body><![CDATA[#[vars.instantIdPassRequest]]]></http:body>
+						<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+			</http:request>
+
+					<json-logger:logger doc:name="Id Verification InstantId Pass After Request" doc:id="fdae52d3-3dec-4ecb-96d2-4ba1aecb4cd3" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="POST:/${customerVerificationFlow.instantIdPassed.path}" message="Instant Id Pass Response" status="#[vars.'httpStatus']">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.instantIdResponse,
+ 	attributes: attributes
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<json-logger:logger doc:name="Instant Id Pass Response" doc:id="5b8d16ce-a7d6-4a91-a3de-677d30174669" config-ref="JSON_Logger_Config" tracePoint="PRINT" endpoint="POST:/${customerVerificationFlow.instantIdPassed.path}" message="Instant Id Pass Response Payload">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	instantIdResponse: vars.instantIdResponse
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<logger level="INFO" doc:name="Logger" doc:id="2f0587d0-049b-41f8-aa46-b7d2717c705b" message="Instant ID Response  : #[vars.instantIdResponse]"/>
+				</when>
+				<!-- <when expression="vars.docAuthResult == 'Failed'" >
+					<logger level="INFO" doc:name="IdVerificationRequest(Failed)" doc:id="5ab7d33e-3f1b-44f3-857e-0904b2033292" message="IdVerificationRequest Failed : #[vars.docAuthResult]"/>
+					<set-variable value="${variables.caseStatus.DECLINE}" doc:name="Set Variable" doc:id="7352b353-f04f-46ca-9378-fd60bc7feb0f" variableName="caseStatus"/>
+					<flow-ref doc:name="caseCreationFlow" doc:id="33f890cb-9c5c-4104-826d-df62531d12eb" name="caseCreationFlow"/>
+				</when> -->
+				<otherwise >
+					<!-- <logger level="INFO" doc:name="Logger" doc:id="248997c1-97cd-4ac9-9794-95ffa0ac6a8b" message="Id Auth Doc Result #[vars.docAuthResult] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->					
+					<json-logger:logger doc:name="DocAuthResult" doc:id="0938597a-09c3-48e9-8701-f67738f916e2" config-ref="JSON_Logger_Config" message="DocAuthResult" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	DocAuthResult: vars.docAuthResult
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<ee:transform doc:name="Transform Message" doc:id="ddaea14c-fd82-4166-a27b-b1eb049e2bdb">
+						<ee:message>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="instantIdAttentionRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Settings": {
+      //"AccountNumber": vars.instantIdRequest.Settings.AccountNumber,
+      "AccountNumber": p('Settings.AccountNumber'),
+      "Workflow": "ewb.oao.attention",
+      //"Mode": vars.instantIdRequest.Settings.Mode,
+      "Mode": p('Settings.Mode'),
+      "Reference": vars.instantIdRequest.Settings.Reference,
+      //"Locale": vars.instantIdRequest.Settings.Locale,
+      "Locale": p('Settings.Locale'),
+      "Venue": vars.instantIdRequest.Settings.Venue
+    },
+    "Person": {
+      "Name": {
+        "FirstName": vars.instantIdRequest.Person.Name.FirstName,
+        "LastName": vars.instantIdRequest.Person.Name.LastName
+      },
+      "Addresses": [
+        {
+          "StreetAddress1": vars.instantIdRequest.Person.Addresses[0].StreetAddress1,
+          "City": vars.instantIdRequest.Person.Addresses[0].City,
+          "State": vars.instantIdRequest.Person.Addresses[0].State,
+          "Zip5": vars.instantIdRequest.Person.Addresses[0].Zip5,
+          "Country": vars.instantIdRequest.Person.Addresses[0].Country,
+          "Context": vars.instantIdRequest.Person.Addresses[0].Context
+        }
+      ],
+      "SSN": {
+        "Number":vars.instantIdRequest.Person.SSN.Number,
+        "Type": vars.instantIdRequest.Person.SSN.Type
+      },
+      "DateOfBirth": {
+        "Year": vars.instantIdRequest.Person.DateOfBirth.Year,
+        "Month": vars.instantIdRequest.Person.DateOfBirth.Month,
+        "Day": vars.instantIdRequest.Person.DateOfBirth.Day
+      },
+      "Phones": [
+        {
+          "Number": vars.instantIdRequest.Person.Phones[0].Number,
+          "Context": vars.instantIdRequest.Person.Phones[0].Context
+        }
+      ]
+    }
+  }  ]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<!-- <logger level="INFO" doc:name="Logger" doc:id="19c672cf-9fcb-4b0f-bc70-ef728e88264c" message="Instant ID AttentionFlow Request for Application Id #[vars.ApplicationId] :::::::::::::::::: #[vars.instantIdAttentionRequest] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+					<json-logger:logger doc:name="Id Verification InstantId Attention Before Request" doc:id="25d185de-4802-4f45-8815-80f15642af7c" config-ref="JSON_Logger_Config" message="IinstantIdAttentionRequest" endpoint="POST:/${customerVerificationFlow.instantIdAttention.path}" tracePoint="BEFORE_REQUEST">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<http:request method="POST" doc:name="IdVerification (InstantIdAttention)" doc:id="e67c48a1-1575-401f-b0f8-6022ed6fcb33" config-ref="HTTP_Request_customerVerificationFlow" path="/${customerVerificationFlow.instantIdAttention.path}" target="instantIdResponse" responseTimeout="${http.request.timeout}">
+				<http:body><![CDATA[#[vars.instantIdAttentionRequest]]]></http:body>
+						<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+			</http:request>
+					<json-logger:logger doc:name="Id Verification InstantId Attention After Request" doc:id="6fe29575-6a9f-4ad0-a70a-1ee8def85a7a" config-ref="JSON_Logger_Config" message="InstantIdResponse" endpoint="POST:/${customerVerificationFlow.instantIdAttention.path}" status="#[vars.'httpStatus']" tracePoint="AFTER_REQUEST">
+			<json-logger:content><![CDATA[#[output application/json ---
+{
+ 	vars: vars.instantIdResponse,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+					<json-logger:logger doc:name="Instant Id Attention Response" doc:id="dfe2ed40-88dc-4372-995c-e40a06e4a779" config-ref="JSON_Logger_Config" tracePoint="PRINT" message="Instant Id Attention Response Payload" endpoint="POST:/${customerVerificationFlow.instantIdAttention.path}">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vinstantIdResponse: vars.instantIdResponse
+
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<logger level="INFO" doc:name="Logger" doc:id="18948e26-7f4e-47fb-bd65-e0942e1ead90" message="Instant ID Response  : #[vars.instantIdResponse]"/>
+				</otherwise>
+			</choice>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a1848f99-b8a6-4cfc-a78b-b47df5b0f46e">
+				<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build" />
+					<set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="instantIdException" />
+					<logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Exception Found in ofacException :::::::: #[vars.ofacException] Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<set-variable value="true" doc:name="SetExceptionFlag" doc:id="ca234502-c9dd-4d8f-a6d0-c66f8bebaafb" variableName="exceptionFlag"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="4c74470b-b118-4b2b-a67b-f276ced23d6d" message=" Id Verification/Instant id Response for ApplicationId #[vars.ApplicationId] IdVerificationResponse  #[vars.instantIdResponse] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+	</flow>
+</mule>

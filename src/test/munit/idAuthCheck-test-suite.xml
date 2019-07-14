@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="idAuthCheck-test-suite.xml" />
+
+	<munit:test name="idAuthCheck-test-suite-idvalidator-success-flowTest" description="Test" doc:id="881a5077-ea77-458c-9951-5523a8b51df1" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to TrueIDVerificationMock_Sub_Flow" doc:id="a8c7f7cc-d735-4ba6-be72-7a5ace6af776" name="TrueIDVerificationMock_Sub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+    "Settings": {
+        "AccountNumber": "45055",
+        "Workflow": "TrueID_Online_Flow",
+        "Mode": "testing",
+        "Reference": "payload.RequestUUID",
+        "Locale": "en_US",
+        "Venue": "online"
+    },
+     "Document": {
+	        "DocumentType": "DriversLicense",
+		"Front": "/9j/4AAQSkZJRgABAQEASABIAAD",
+		"Back": "/9j/4AAQSkZJRgABAQEASABIAAD"
+    }
+    
+}]' doc:name="Set Payload" doc:id="1010e34d-ae31-4bac-9c2f-f77ddb8c7489" mimeType="application/json"/>
+			<flow-ref doc:name="Flow-ref to post:\process\idverification\trueid:velo-process-api-config" doc:id="a1d79716-e7d2-4e30-a55c-7e45289fb02a" name="post:\process\idverification\trueid:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Success" doc:id="bdb9bef0-c34f-4f9e-8985-3506b49a91f0" expression="#[payload.data.Status.TransactionStatus]" is='#[MunitTools::equalTo("passed")]' message="Id Verfication Failed"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="idAuthCheck-test-suite-idvalidator-failure-flowTest" description="Test" doc:id="81d70f29-4d3b-4aab-a2bf-f12a83e62b14" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock ID Verification Response" doc:id="41afb5f6-6ad3-4768-bd27-6c3b85aebe1e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+    "Settings": {
+        "AccountNumber": "45055",
+        "Workflow": "TrueID_Online_Flow",
+        "Mode": "testing",
+        "Reference": "payload.RequestUUID",
+        "Locale": "en_US",
+        "Venue": "online"
+    },
+     "Document": {
+	        "DocumentType": "DriversLicense",
+		"Front": "/9j/4AAQSkZJRgABAQEASABIAAD",
+		"Back": "/9j/4AAQSkZJRgABAQEASABIAAD"
+    }
+    
+}]' doc:name="Set Payload" doc:id="8279adef-0e9f-496d-80b6-d655847fd1b5" mimeType="application/json"/>
+			<flow-ref doc:name="Flow-ref to post:\process\idverification\trueid:velo-process-api-config" doc:id="7ead056d-f097-424e-97af-8ffba9d021e1" name="post:\process\idverification\trueid:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Failure" doc:id="30f40791-4bf3-4c25-935e-2f0348cc8e71" expression="#[payload.result.success]" is='#[MunitTools::equalTo(false)]' message="Id Verfication Passed"/>
+			<munit-tools:assert-that doc:name="Assert for Internal Server Error" doc:id="2fd0a424-70c7-4432-9722-b2cc5ea11504" expression='#[payload.result.message.errorType.namespace ++ ":" ++ payload.result.message.errorType.identifier]' is='#[MunitTools::equalTo("HTTP:INTERNAL_SERVER_ERROR")]' message="Not a Internal Server Error"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>

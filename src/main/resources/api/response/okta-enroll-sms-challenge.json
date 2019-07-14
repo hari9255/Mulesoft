@@ -1,0 +1,8 @@
+ {
+    "userId": "00uf2vr865w1YvxAJ0h7",
+    "factorType": "sms",
+    "provider": "OKTA",
+    "profile": {
+        "phoneNumber": "+1-646-736-9923"
+    }
+}

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<munit:config name="velo-process-api-interface-test-suite.xml" />
+	<http:request-config name="HTTP_MunitTest_Request_configuration" doc:name="HTTP Request configuration" doc:id="6929e491-f109-4851-a69f-c7e7dd0cec51">
+		<http:request-connection host="localhost" port="${http.listener.port}" />
+	</http:request-config>
+	<sub-flow name="velo-process-api-interface-test-suite-setpayload-Sub_Flow" doc:id="4acf4fa7-154a-4f35-990e-595a1732a51e" >
+		<set-payload value='#[output application/json --- {
+  "RequestUUID" : "35650bbd-4947-45c4-9113-76a5ce901d5a",
+  "CaseNumber" : "CAS-03245-X8X6Q9",
+  "Message" : {
+    "ReasonCode" : "300",
+    "ReasonDescription" : "Fraud Detected"
+  },
+  "CISNumber" : "abeodeisnsd639dfkf",
+  "AccountInformation" : {
+    "Type" : "Saving",
+    "AccountNumber" : "a12997eisnsd639dfkf"
+  }
+}]' doc:name="Set Payload" doc:id="e719ba6c-93a3-4060-97f9-c0fc9469603a" mimeType="application/json" />
+	</sub-flow>
+	<munit:test name="velo-process-api-interface-test-suite-velo-process-api-mainTest" description="Test" doc:id="658dc688-8383-4198-9ddb-9a8d79abc6dd">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="velo-process-api-main" />
+			<munit:enable-flow-source value="post:\process\partner\account\update:velo-process-api-config" />
+		</munit:enable-flow-sources>
+		<munit:execution >
+			<flow-ref doc:name="velo-process-api-interface-test-suite-setpayload-Sub_Flow" doc:id="c0be21f9-b7dc-4072-915a-ced1d590b45b" name="velo-process-api-interface-test-suite-setpayload-Sub_Flow"/>
+			<munit:set-event doc:name="Set Event" doc:id="1b80874a-6e84-470d-bd5c-85f9b2b3e429" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+			<http:request method="POST" doc:name="Process API Request" doc:id="2efc910d-2ba3-4ab0-8eca-b1741d9a8970" config-ref="HTTP_MunitTest_Request_configuration" path="${http.listener.basePath}/process/partner/account/update" responseTimeout="120000"/>
+			<logger level="INFO" doc:name="Logger" doc:id="43f5e9d4-0c64-4be2-bc43-5329654a0b5c" message="After Request #[output application/json --- attributes]"/>
+			<!-- <flow-ref doc:name="Flow-ref to velo-process-api-main" doc:id="bb6ca6ee-80dd-4d35-a106-3552d861b532" name="velo-process-api-main" /> -->
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="66abf1f1-4b68-42b2-a47d-789ea88bee50" message="#[output application/json --- attributes]"/>
+			<munit-tools:assert-that doc:name="Assert API execution success" doc:id="11a46dee-6cdd-48f8-aaa3-a04334fdf15d" expression='#[attributes.statusCode]' is='#[MunitTools::equalTo(200)]' message="Api Execution was not Success"/>
+		</munit:validation>		
+	</munit:test>
+	<munit:test name="velo-process-api-interface-test-suite-not-implementedTest" description="Test" doc:id="c7143625-4b70-452e-b2ae-2f6ff2250522">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="velo-process-api-main" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Not Implemented response" doc:id="d66d1360-d6ba-4974-8702-cd01d59705b7" processor="apikit:router">
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED"/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >	
+			<flow-ref doc:name="velo-process-api-interface-test-suite-setpayload-Sub_Flow" doc:id="5e668c44-f752-43d0-b2af-949cf057df32" name="velo-process-api-interface-test-suite-setpayload-Sub_Flow"/>
+			<munit:set-event doc:name="Set Event" doc:id="006f63a8-16f3-4806-8939-a823aba693b3" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+<http:request method="PATCH" doc:name="Process API Request" doc:id="25562345-a70e-49b9-999c-99abbab7dc8a" config-ref="HTTP_MunitTest_Request_configuration" path="${http.listener.basePath}/unknown" responseTimeout="120000">
+				<http:response-validator >
+					<http:success-status-code-validator values="200, 501" />
+				</http:response-validator>
+			</http:request>		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert API execution success" doc:id="8b3234d2-6467-401b-bab5-019f39bb9c0d" expression='#[attributes.statusCode]' is='#[MunitTools::equalTo(501)]' message="Api Execution was not Success"/>
+		</munit:validation>		
+	</munit:test>
+
+	<munit:test name="velo-process-api-interface-test-suite-bad-request-Test" description="Test" doc:id="87e137d5-5dfe-42e6-b55c-41beb1fa2ff5">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="velo-process-api-main" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Not Implemented response" doc:id="0c2eb8e7-5440-4787-ba8f-3f55f46249bb" processor="apikit:router">
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST"/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>		
+		<munit:execution >	
+			<flow-ref doc:name="velo-process-api-interface-test-suite-setpayload-Sub_Flow" doc:id="ada69363-b349-4ffd-8305-fd760310372d" name="velo-process-api-interface-test-suite-setpayload-Sub_Flow"/>
+			<munit:set-event doc:name="Set Event" doc:id="0e281df6-1e11-46d7-854f-cdd8206276d0" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+			<http:request method="POST" doc:name="Process API Request" doc:id="b2b7664f-ce13-42a6-9607-88998f96a49d" config-ref="HTTP_MunitTest_Request_configuration" path="${http.listener.basePath}/process/partner/account/update" responseTimeout="120000">
+				<http:response-validator >
+					<http:success-status-code-validator values="400" />
+				</http:response-validator>
+			</http:request>		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Bad Request" doc:id="104c5bc7-24db-4447-b0b5-0197c9f9710c" expression='#[attributes.statusCode]' is='#[MunitTools::equalTo(400)]' message="Api Execution was not Success"/>
+		</munit:validation>		
+	</munit:test>
+
+	<munit:test name="velo-process-api-interface-test-suite-not-found-Test" description="Test" doc:id="704b469e-d973-4822-a683-65b98db6b929">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="velo-process-api-main" />
+		</munit:enable-flow-sources>
+		<munit:execution >	
+			<flow-ref doc:name="velo-process-api-interface-test-suite-setpayload-Sub_Flow" doc:id="fa8c3f02-6dd7-4fbc-8af7-c47a202f0e06" name="velo-process-api-interface-test-suite-setpayload-Sub_Flow"/>
+			<munit:set-event doc:name="Set Event" doc:id="8b1e6493-2dae-479c-8f12-b4f79756f693" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+			<http:request method="POST" doc:name="Process API Request" doc:id="4768b0d0-2439-4f5b-8533-769e30677b1c" config-ref="HTTP_MunitTest_Request_configuration" path="${http.listener.basePath}/unknown" responseTimeout="120000">
+				<http:response-validator >
+					<http:success-status-code-validator values="404" />
+				</http:response-validator>
+			</http:request>		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Status Code" doc:id="1fcda3dd-1491-4c53-83f3-274ee187cdef" expression='#[attributes.statusCode]' is='#[MunitTools::equalTo(404)]' message="Api Execution was not Success"/>
+		</munit:validation>		
+	</munit:test>
+
+	<munit:test name="velo-process-api-interface-test-suite-method-not-allowed-Test" description="Test" doc:id="7e00b690-242b-4e1a-b330-380a62dd8799">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="velo-process-api-main" />
+		</munit:enable-flow-sources>
+		<munit:execution >	
+			<flow-ref doc:name="velo-process-api-interface-test-suite-setpayload-Sub_Flow" doc:id="77d1c09f-c85d-4127-bb6d-5a386729e59c" name="velo-process-api-interface-test-suite-setpayload-Sub_Flow"/>
+			<munit:set-event doc:name="Set Event" doc:id="90762825-3e4e-4009-bc38-3bb04ae33ab4" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+			<http:request method="GET" doc:name="Process API Request" doc:id="7c6c0e7b-524e-49e2-bb5b-2fc719db44cf" config-ref="HTTP_MunitTest_Request_configuration" path="${http.listener.basePath}/process/partner/account/update" responseTimeout="120000">
+				<http:response-validator >
+					<http:success-status-code-validator values="405" />
+				</http:response-validator>
+			</http:request>		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Status Code" doc:id="105af110-a5ad-42a8-b52d-9a9e5bc9e2d9" expression='#[attributes.statusCode]' is='#[MunitTools::equalTo(405)]' message="Api Execution was not Success"/>
+		</munit:validation>		
+	</munit:test>
+	<munit:test name="velo-process-api-interface-test-suite-not-acceptable-Test" description="Test" doc:id="3cfac237-ee63-49af-bd6d-2277f855ac5f">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="velo-process-api-main" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Response" doc:id="3e4511a0-c9d1-4cb9-86bc-8f0a4e5a3541" processor="apikit:router">
+				<munit-tools:with-attributes >
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >	
+			<flow-ref doc:name="velo-process-api-interface-test-suite-setpayload-Sub_Flow" doc:id="b92036b6-ed07-4a7c-8a7b-d48610c808ac" name="velo-process-api-interface-test-suite-setpayload-Sub_Flow"/>
+			<munit:set-event doc:name="Set Event" doc:id="6e7e38f7-027f-4cde-9305-a473a0fa6402" >
+				<munit:payload value="#[payload]" mediaType="application/json" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+			<http:request method="POST" doc:name="Process API Request" doc:id="8b782f59-cc7c-4587-8775-9db3ee3faf1a" config-ref="HTTP_MunitTest_Request_configuration" path="${http.listener.basePath}/process/partner/account/update" responseTimeout="120000">
+				<http:response-validator >
+					<http:success-status-code-validator values="406" />
+				</http:response-validator>
+			</http:request>		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Status Code" doc:id="d1254356-8b52-4932-8454-c593e8b09d71" expression='#[attributes.statusCode]' is='#[MunitTools::equalTo(406)]' message="Api Execution was not Success"/>
+		</munit:validation>		
+	</munit:test>	
+	<munit:test name="velo-process-api-interface-test-suite-unsupported-media-type-Test" description="Test" doc:id="aaa5b20f-791a-49ae-9efe-e865befd8ff2">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="velo-process-api-main" />
+		</munit:enable-flow-sources>
+		<munit:execution >	
+			<flow-ref doc:name="velo-process-api-interface-test-suite-setpayload-Sub_Flow" doc:id="354b98b2-a649-4c11-912a-05da1c1bbf93" name="velo-process-api-interface-test-suite-setpayload-Sub_Flow"/>
+			<munit:set-event doc:name="Set Event" doc:id="253e3ca1-46be-4b43-b390-0af2239ba020" >
+				<munit:payload value="#[payload]" mediaType="application/xml" />
+				<munit:attributes value="#[vars.attributesMap]" />
+			</munit:set-event>
+			<http:request method="POST" doc:name="Process API Request" doc:id="53ec9dae-ba58-40ad-b246-e305007360d2" config-ref="HTTP_MunitTest_Request_configuration" path="${http.listener.basePath}/process/partner/account/update" responseTimeout="120000">
+				<http:response-validator >
+					<http:success-status-code-validator values="415" />
+				</http:response-validator>
+			</http:request>		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Status Code" doc:id="627596a9-102c-4b99-a783-ea600477a6ff" expression='#[attributes.statusCode]' is='#[MunitTools::equalTo(415)]' message="Api Execution was not Success"/>
+		</munit:validation>		
+	</munit:test>	
+	<munit:test name="velo-process-api-interface-test-suite-console-Test" description="Test" doc:id="54bede43-13d8-4cb7-8979-42ba2f69860c">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="velo-process-api-console" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Console NOT found response" doc:id="3ea96153-58e9-4b11-85a6-1fa4d3c617b6" processor="apikit:console">
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND"/>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<http:request method="GET" doc:name="Invoke Console Request" doc:id="54e51fe5-fb84-41e8-bcf8-b35dbe855a33" config-ref="HTTP_MunitTest_Request_configuration" path="/console" responseTimeout="120000">
+				<http:response-validator >
+					<http:success-status-code-validator values="404" />
+				</http:response-validator>
+			</http:request>		
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Status Code" doc:id="438d6e5a-19b1-4c62-b373-c83e5387971e" expression='#[attributes.statusCode]' is='#[MunitTools::equalTo(404)]' message="Console was found"/>
+		</munit:validation>		
+	</munit:test>		
+</mule>

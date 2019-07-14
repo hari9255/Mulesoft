@@ -1,0 +1,10 @@
+{
+  "data": "payload",
+   "result": [
+    {
+      "success": "true",
+      "code": "200",
+      "message": "case request has been created"
+    }
+  ]
+}

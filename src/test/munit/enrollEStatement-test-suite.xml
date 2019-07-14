@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="enrollEStatement-test-suite.xml" />
+	<sub-flow name="enrollEStatement-common-payload-and-variables-sub_Flow"
+		doc:id="e76c1c23-141f-4b50-aae5-474e2b27a500">
+		<set-payload
+			value='#[output application/json --- {
+  "ApplicantType": "NonNRA",
+  "IsPartnerRequest": true,
+  "IdVerificationRequest": null,
+  "IdAuthenticationResponse": null,
+  "RequestUUID": "5163a4fa-9898-4302-8473-ae530728a6a8",
+  "ApplicationId": "APP-M-14040",
+  "AccountInformation": {
+    "AccountType": "CHK_I_VELO",
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": null,
+      "NumberOfStatementCopies": null,
+      "AddressLineOfTINOwner": null
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptConfirmed",
+      "UserCode": "W",
+      "StatusCodes": null,
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+      "NameOnCard": null,
+      "CardDesign": "Black"
+    }
+  },
+  "CustomerInformation": {
+    "DateOfBirth": "1962-01-27",
+    "FirstName": "WebullEnglish",
+    "LastName": "Decline",
+    "MiddleName": null,
+    "PEP": "Yes",
+    "Address": {
+      "IsForeignAddress": false,
+      "StreetAddress1": "6640 FORJVWRQ ZDB",
+      "StreetAddress2": "",
+      "City": "MODESTO",
+      "State": "CA",
+      "Zip": "95354"
+    },
+    "MailingAddress": {
+      "IsForeignAddress": false,
+      "StreetAddress1": "6640 FORJVWRQ ZDB",
+      "StreetAddress2": "",
+      "City": "MODESTO",
+      "State": "CA",
+      "Zip": "95354"
+    },
+    "GivenAddresses": [
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": false,
+        "StreetAddress1": "6640 FORJVWRQ ZDB",
+        "StreetAddress2": "",
+        "StreetAddress3": "",
+        "City": "MODESTO",
+        "State": "CA",
+        "Zip": "95354",
+        "CountryCode": "USA",
+        "Country": "United States"
+      },
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": false,
+        "StreetAddress1": "6640 FORJVWRQ ZDB",
+        "StreetAddress2": "",
+        "StreetAddress3": "",
+        "City": "MODESTO",
+        "State": "CA",
+        "Zip": "95354",
+        "CountryCode": "USA",
+        "Country": "United States"
+      }
+    ],
+    "CountryCode": null,
+    "MobilePhoneNumber": null,
+    "CISNumber": null,
+    "TaxNumber": "100000054",
+    "TaxIdType": "SocialSecurityNumber",
+    "CitizenshipCode": "USA",
+    "CountryofDualCitizenship": null,
+    "BranchNumber": "8161",
+    "CostCenterNumber": "161",
+    "CategoryCode1": "903",
+    "CategoryCode2": "822",
+    "Occupation": "Student",
+    "Gender": "Male",
+    "Identification": {
+      "Status": null,
+      "NonDocumentaryIdentificationInformation": null
+    },
+    "EmailAddress": "rahul.kumar@brillio.com",
+    "EmploymentOrSchool": "Employed",
+    "EmploymentStatus": "Beautiful",
+    "RequestUUID": "5163a4fa-9898-4302-8473-ae530728a6a8",
+    "NonResidentAccountInformation": null,
+    "MaritalStatus": "Single",
+    "CountryOfBirth": null,
+    "Position": "Sales",
+    "NationalID": null,
+    "YearOfEmployment": "1",
+    "TenPercentShareHolder": "No",
+    "AnnualIncome": "UnderFiftyThousand",
+    "TotalNetWorth": "0-50000 USD",
+    "PrimaryBanking": "Fjg",
+    "PrimaryLanguage": "English",
+    "EStatementAccepted": "Yes",
+    "EStatementAcceptedDate": "Yes",
+    "EStatementAcceptedTime": "02:37:59-08:00"
+  },
+  "Documents": null,
+  "Partner": {
+    "PartnerId": "31000112989176",
+    "PartnerName": "WEBULL",
+    "ApplicationIp": "223.186.78.236",
+    "Channel": "Mobile",
+    "VerificationResults": "Approved"
+  }
+}]'
+			doc:name="Set Payload" doc:id="bd1989c5-ba82-41d3-994a-1ccf875feedb"
+			mimeType="application/json" />
+		<set-variable
+			value='#[output application/json ---{
+  "data": {
+    "CustomerNumber": "00000068392",
+
+    "CardNumber": 0,
+    "RequestUUID": "21c3268a-505c-11e9-8647-d663bd873d93",
+    "ErrorMessageList": [
+      {
+        "ErrorMessageNumber": null,
+        "ErrorMessageText": null
+      }
+    ]
+  },
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": null
+  }
+}]'
+			doc:name="FISResponse" doc:id="33ec600f-b925-46cb-8b13-1c96d15a852b"
+			variableName="FISResponse" mimeType="application/json" />
+		<set-variable value="#[2161479256]" doc:name="AccountNumber"
+			doc:id="747eda3b-6ea0-46f3-a99f-2ee36edca16c" variableName="AccountNumber" />
+		<set-variable value='#["Checking - US Checking"]'
+			doc:name="AccountName" doc:id="5e51af4f-ddcb-48db-a2b9-4b6fca645c32"
+			variableName="AccountName" />
+	</sub-flow>
+	<sub-flow name="enrollEStatement-common-failure-payload-and-variables-sub_Flow" doc:id="534873c4-34b7-40da-82d8-65ecfe8227ea">
+		<set-payload value='#[output application/json --- {
+  "ApplicantType": "NonNRA",
+  "IsPartnerRequest": true,
+  "IdVerificationRequest": null,
+  "IdAuthenticationResponse": null,
+  "RequestUUID": "5163a4fa-9898-4302-8473-ae530728a6a8",
+  "ApplicationId": "APP-M-14040",
+  "AccountInformation": {
+    "AccountType": "CHK_I_VELO",
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": null,
+      "NumberOfStatementCopies": null,
+      "AddressLineOfTINOwner": null
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptConfirmed",
+      "UserCode": "W",
+      "StatusCodes": null,
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+      "NameOnCard": null,
+      "CardDesign": "Black"
+    }
+  },
+  "CustomerInformation": {
+    "DateOfBirth": "1962-01-27",
+    "FirstName": "WebullEnglish",
+    "LastName": "Decline",
+    "MiddleName": null,
+    "PEP": "Yes",
+    "Address": {
+      "IsForeignAddress": false,
+      "StreetAddress1": "6640 FORJVWRQ ZDB",
+      "StreetAddress2": "",
+      "City": "MODESTO",
+      "State": "CA",
+      "Zip": "95354"
+    },
+    "MailingAddress": {
+      "IsForeignAddress": false,
+      "StreetAddress1": "6640 FORJVWRQ ZDB",
+      "StreetAddress2": "",
+      "City": "MODESTO",
+      "State": "CA",
+      "Zip": "95354"
+    },
+    "GivenAddresses": [
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": false,
+        "StreetAddress1": "6640 FORJVWRQ ZDB",
+        "StreetAddress2": "",
+        "StreetAddress3": "",
+        "City": "MODESTO",
+        "State": "CA",
+        "Zip": "95354",
+        "CountryCode": "USA",
+        "Country": "United States"
+      },
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": false,
+        "StreetAddress1": "6640 FORJVWRQ ZDB",
+        "StreetAddress2": "",
+        "StreetAddress3": "",
+        "City": "MODESTO",
+        "State": "CA",
+        "Zip": "95354",
+        "CountryCode": "USA",
+        "Country": "United States"
+      }
+    ],
+    "CountryCode": null,
+    "MobilePhoneNumber": null,
+    "CISNumber": null,
+    "TaxNumber": "100000054",
+    "TaxIdType": "SocialSecurityNumber",
+    "CitizenshipCode": "USA",
+    "CountryofDualCitizenship": null,
+    "BranchNumber": "8161",
+    "CostCenterNumber": "161",
+    "CategoryCode1": "903",
+    "CategoryCode2": "822",
+    "Occupation": "Student",
+    "Gender": "Male",
+    "Identification": {
+      "Status": null,
+      "NonDocumentaryIdentificationInformation": null
+    },
+    "EmailAddress": "rahul.kumar@brillio.com",
+    "EmploymentOrSchool": "Employed",
+    "EmploymentStatus": "Beautiful",
+    "RequestUUID": "5163a4fa-9898-4302-8473-ae530728a6a8",
+    "NonResidentAccountInformation": null,
+    "MaritalStatus": "Single",
+    "CountryOfBirth": null,
+    "Position": "Sales",
+    "NationalID": null,
+    "YearOfEmployment": "1",
+    "TenPercentShareHolder": "No",
+    "AnnualIncome": "UnderFiftyThousand",
+    "TotalNetWorth": "0-50000 USD",
+    "PrimaryBanking": "Fjg",
+    "PrimaryLanguage": "English",
+    "EStatementAccepted": "Yes",
+    "EStatementAcceptedDate": "Yes",
+    "EStatementAcceptedTime": "02:37:59-08:00"
+  },
+  "Documents": null,
+  "Partner": {
+    "PartnerId": "31000112989176",
+    "PartnerName": "WEBULL",
+    "ApplicationIp": "223.186.78.236",
+    "Channel": "Mobile",
+    "VerificationResults": "Approved"
+  }
+}]' doc:name="Set Payload" doc:id="48090297-91a4-40c2-afe3-091f1abd44f7" mimeType="application/json"/>
+		<set-variable
+			value='#[output application/json ---{
+  "data": {
+    "CustomerNumber": "00000068392",
+
+    "CardNumber": 0,
+    "RequestUUID": "21c3268a-505c-11e9-8647-d663bd873d93",
+    "ErrorMessageList": [
+      {
+        "ErrorMessageNumber": null,
+        "ErrorMessageText": null
+      }
+    ]
+  },
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": null
+  }
+}]'
+			doc:name="FIS Response" doc:id="2c056b81-0ecc-4c31-bd7c-ed0a0b4b3d32"
+			variableName="FISResponse" />
+		<set-variable value="2161479256" doc:name="AccountNumber" doc:id="c4131908-8f01-4601-8c0a-739c1689c0ac" variableName="AccountNumber"/>
+		<set-variable value='#["Checking - US Checking"]' doc:name="AccountName" doc:id="65279c4e-6430-4acb-9fbd-428193303abf" variableName="AccountName"/>
+	</sub-flow>
+
+	<sub-flow name="NewUserInCIFExceptionMock_Sub_Flow" doc:id="a4ac56b6-f4be-45db-8532-a34a2ecc4471">
+		<munit-tools:mock-when doc:name="Mock New User in CIF Response"
+			doc:id="a9511ec3-9acd-421f-a2e1-4e11d6d8f5de" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute
+					attributeName="doc:id" whereValue="725a680a-eb4c-4d68-9abb-0d5cb132ccbe" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return>
+				<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+
+	<sub-flow name="EnrollUserExceptionMock_Sub_Flow" doc:id="652f1ec0-a1a0-41cd-8739-a24035d2bfd2">
+		<munit-tools:mock-when doc:name="Enroll User Response"
+			doc:id="97c0889e-5072-4098-9e14-d878f4cd872d" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute
+					attributeName="doc:id" whereValue="128d17a4-2ede-4c2b-9a47-530e3c146d0e" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return>
+				<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<munit:test
+		name="enrollEStatement-test-suite-enrollEStatementProcess-Success-Test"
+		description="Test" doc:id="f244230a-c9c8-4769-8512-e883ad2cf851">
+		<munit:behavior>
+			<flow-ref doc:name="NewUserInCIFMock_Sub_Flow" doc:id="fc3ecf67-297b-407e-86e3-fc8275b9d901"
+				name="NewUserInCIFMock_Sub_Flow" />
+			<flow-ref doc:name="EnrollUserMock_Sub_Flow" doc:id="bc70b315-e41c-46df-80ae-a1c102aed693"
+				name="EnrollUserMock_Sub_Flow" />
+		</munit:behavior>
+		<munit:execution>
+			<flow-ref
+				doc:name="Flow ref to enrollEStatement-common-payload-and-variables-sub_Flow"
+				doc:id="3286ddde-032d-4c31-baec-51bb0ca72d42" name="enrollEStatement-common-payload-and-variables-sub_Flow" />
+			<flow-ref doc:name="Flow-ref to enrollEstatementcheck_sub_flow"
+				doc:id="9c0d6dd3-ffdf-48c8-9bea-4d11ebd91f12" name="enrollEstatementcheck_sub_flow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert New User CIF response"
+				doc:id="797cb8e4-c736-4929-9b27-c7870b29a827" expression="#[vars.createUserInCIF]"
+				is='#[MunitTools::equalTo({"RequestUUID":"21c3268a-505c-11e9-8647-d663bd873d93","ErrorMessageList":[]})]'
+				message="Create User Response is incorrect" />
+			<munit-tools:assert-that doc:name="Assert EnrollStatementResponse"
+				doc:id="2603e548-4721-478b-8702-b815cc91d022" expression="#[vars.enrollUserResponse.ErrorMessageList]"
+				is="#[MunitTools::equalTo([])]" message="Enroll Statement Response is incorrect" />
+		</munit:validation>
+	</munit:test>
+	<munit:test
+		name="enrollEStatement-test-suite-enrollEStatementProcess-enrollCheckFalse-Test"
+		description="MUnit Test" doc:id="18cd276a-945f-4633-9b6c-1abbb9d14cfd">
+		<munit:execution>
+			<flow-ref
+				doc:name="Flow Reference to enrollEStatement-common-payload-and-variables-sub_Flow"
+				doc:id="0dddbb90-5747-4045-abf4-fbc175488752" name="enrollEStatement-common-payload-and-variables-sub_Flow" />
+			<ee:transform doc:name="Set FIS Response"
+				doc:id="206770b1-10e0-411e-831f-db56e36c1626">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="FISResponse"><![CDATA[%dw 2.0
+output application/json ---{
+  "data": {
+    "CustomerNumber": null,
+    "AccountNumber": 2161479256,
+    "CardNumber": 0,
+    "RequestUUID": "21c3268a-505c-11e9-8647-d663bd873d93",
+    "ErrorMessageList": [
+      {
+        "ErrorMessageNumber": null,
+        "ErrorMessageText": null
+      }
+    ]
+  },
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": null
+  }
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow Reference to enrollEstatementcheck_sub_flow"
+				doc:id="58a2ee92-a994-45be-a3b0-3694bac1fd20" name="enrollEstatementcheck_sub_flow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:verify-call doc:name="Verify call to Appropriate Choice branch"
+				doc:id="c3294567-06db-4475-9223-7788c6ea1e17" processor="mule:logger">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute
+						attributeName="doc:id" whereValue="f879afaa-a1ef-4962-9f04-406ce3b08654" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="enrollEStatement-test-suite-enrollEStatementProcess-Failure-Test" description="MUnit Test" doc:id="6bd3bafd-b287-448b-8a55-32f4994d94e0">
+		<munit:behavior >
+			<flow-ref doc:name="Flow Reference to NewUserInCIFFailureMock_Sub_Flow" doc:id="0993eada-487a-4341-bfdc-94fea1ee9067" name="NewUserInCIFFailureMock_Sub_Flow"/>
+			<flow-ref doc:name="Flow Reference to EnrollUserFailureMock_Sub_Flow" doc:id="9a69e758-67f4-485e-825f-2c9900266e1f" name="EnrollUserFailureMock_Sub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference to enrollEStatement-common-failure-payload-and-variables-sub_Flow" doc:id="8e103b3f-38fc-4733-bfa9-1e10324a6331" name="enrollEStatement-common-failure-payload-and-variables-sub_Flow"/>
+			<flow-ref doc:name="Flow Reference to enrollEstatementcheck_sub_flow" doc:id="94528efa-bbbf-4c17-b4ee-a7d9d62c1ba9" name="enrollEstatementcheck_sub_flow"/>
+			<logger level="INFO" doc:name="Logger" doc:id="e87df7e7-5172-4c46-bdee-fd8f67d21ba6" message="#[vars.enrollUserResponse]"/>
+			<logger level="INFO" doc:name="Logger" doc:id="6355a38d-072b-46cc-97f8-a9034f1dd8c4" message="#[vars.createUserInCIF]"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert New User CIF response"
+				doc:id="1aead3c8-6a3a-4a59-bbf3-ce3b6e4c265a" expression="#[sizeOf(vars.createUserInCIF.ErrorMessageList default [] ) &gt; 0]"
+				is='#[MunitTools::equalTo(true)]'
+				message="Create user CIF Response should have Errors" />
+			<munit-tools:assert-that doc:name="Assert EnrollStatementResponse"
+				doc:id="738d8b76-e766-4efb-b25d-c01dac383319" expression="#[sizeOf(vars.enrollUserResponse.ErrorMessageList default []) &gt; 0]"
+				is="#[MunitTools::equalTo(true)]" message="Enroll Statement Response should have Errors" />
+		</munit:validation>
+	</munit:test>
+	<munit:test
+		name="enrollEStatement-test-suite-enrollEStatementProcess-Exception-Test"
+		description="Test" doc:id="ee51e28d-405c-42f8-a33f-5fdfdd7ddeae" expectedErrorType="HTTP:INTERNAL_SERVER_ERROR">
+		<munit:behavior>
+			<flow-ref doc:name="NewUserInCIFExceptionMock_Sub_Flow"
+				doc:id="719606a7-b9cc-43dc-955c-6f1d98adf54c" name="NewUserInCIFExceptionMock_Sub_Flow" />
+			<flow-ref doc:name="EnrollUserExceptionMock_Sub_Flow" doc:id="fdefaab5-1616-42a1-8a8d-a0d1aa7f028e" name="EnrollUserExceptionMock_Sub_Flow" />
+		
+</munit:behavior>
+		<munit:execution>
+			<flow-ref
+				doc:name="Flow ref to enrollEStatement-common-payload-and-variables-sub_Flow"
+				doc:id="32273c7d-6b6a-4212-b164-dd14878f817c" name="enrollEStatement-common-payload-and-variables-sub_Flow" />
+			<flow-ref doc:name="Flow-ref to enrollEstatementcheck_sub_flow"
+				doc:id="e9dbcc57-99b5-46ec-b194-d972b12bf063" name="enrollEstatementcheck_sub_flow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert New User CIF response"
+				doc:id="938ac0d7-f153-4abd-81e2-be875fbf3343" expression="#[vars.createUserInCIF]"
+				is='#[MunitTools::nullValue()]'
+				message="Create User Response is incorrect" />
+			<munit-tools:assert-that doc:name="Assert EnrollStatementResponse"
+				doc:id="551fb4b8-62c1-4f9b-bbfc-1cc61ea97556" expression="#[vars.enrollUserResponse]"
+				is="#[MunitTools::nullValue()]" message="Enroll User Response is incorrect" />
+		</munit:validation>
+	</munit:test>
+</mule>

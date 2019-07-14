@@ -1,0 +1,14 @@
+{
+  "data": [
+      {
+          "ApplicationID": 100022,
+          "CustomerNumber": "0010E0002934",
+          "AccountNumber": "0010E0002934"
+      }
+  ],
+  "result": {
+      "success": true,
+      "code": 200,
+      "message": "Success Message"        
+  }
+}

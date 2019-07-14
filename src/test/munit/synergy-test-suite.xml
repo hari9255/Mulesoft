@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="synergy-test-suite.xml" />
+	<sub-flow name="SynergyFailureMockSub_Flow" doc:id="d46e0ac8-c9f8-4827-a3a7-306431ad17ae" >
+			<munit-tools:mock-when doc:name="Mock Synergy Failure Response" doc:id="40dc8e81-5391-42f4-a66b-c451910a07e9" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>	
+	<munit:test name="synergy-test-suite-synergy-success-Test" description="Test" doc:id="902df891-8495-4bbf-b7e8-01cf62abce95" >
+		<munit:behavior >
+			<flow-ref doc:name="Flow Reference to SynergySuccessMockSub_Flow" doc:id="71f8b90e-2094-45b4-92b7-99d30ee0ef48" name="SynergySuccessMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "DocumentExtension": "JPG",
+  "DocumentSource": "Deposit",
+  "DocumentContent": "111000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011100000000000000000000000000000000000111110010000000000000000000010000000000010111011000111111111111111111111110110111011101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+  "DocumentType": "DriversLicense",
+  "SourceIdentifierId": "tererwerwere",
+  "RequestUUID": "YYYYYYY",
+  "AccountNumber": "1234",
+  "CustomerNumber": "5678",
+  "DocumentDate": "2018-02-28T16:41:41-07:00",
+  "OfficerCode": "Jonh Doe"
+}]' doc:name="Set Payload" doc:id="dd7830ab-b5c4-4a42-8b23-c366a93b68b4" mimeType="application/json"/>
+			<set-variable value="eyJraWQiOiJGSE1jTWJIUlpMd01QSXgweDlGM1lESDlUenVXdy1QNHJ6eFl6LTREc2xnIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULnRQRFJ0cUdlb1AzYXdmcFo1dkZMaV9HMXVzNTcxc1RRa25QLWJQR0ZaZWMiLCJpc3MiOiJodHRwczovL3Nzby10ZXN0LnZlbG9iYW5rLmNvbS9vYXV0aDIvYXVzZjJjMThxcXRtR0h5WDgwaDciLCJhdWQiOiJodHRwczovL2Rldm9wZW5hcGkudmVsb2JhbmsuY29tLyIsImlhdCI6MTU0ODg1MTUyNiwiZXhwIjoxNTQ4ODU1MTI2LCJjaWQiOiIwb2FnbG9kY25kandoWW5CdzBoNyIsInNjcCI6WyJhcGk6cmVhZCJdLCJzdWIiOiIwb2FnbG9kY25kandoWW5CdzBoNyJ9.E-Zh4zMwqCaJ3QW0Md28oQJNU3QKiEZuv3o2VxEGvWLYIuc07X-nGX7rSeE-NBJ8mk1TWyWltpCexFDXX8cuna6s5jXemWidBxPynNE5o8k4by541Nqxk257mxZPXTN19VbdF7YXmoWbeWP3UndKod52TfKHWu-x9SAmdpFQ2Z5GTC33JBCkGiX2ClkKLyP5ECSqiZUDK8Vphwbeg0g2qLkVzDWemEv3-yisZXsYsIE9VjqvB503K1KWWLwwivX9WliOUqrKhSJoGwJHXXBRf-t4wt_zZvVGP2Vc6mtG6JMhBXimy1CaXbZohhRqFD8GRpgPX6tTiOPGEf0Bnp7f4A" doc:name="Set Token" doc:id="a8c7d3e6-a6a4-4d47-bb44-bfbe923173f4" variableName="token"/>
+			<flow-ref doc:name="Flow-ref to synergy-flow" doc:id="973e2693-a160-4cf3-8f4d-d6ac9d2d2e79" name="synergy-flow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Synergy Response" doc:id="c2684e39-70f5-4ce9-8d32-bf48a01e93eb" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Synergy Request Failed"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="synergy-test-suite-synergy-failure-Test" description="Test" doc:id="9ffd24a5-9a50-4d51-952c-e0e3452feb51" >
+		<munit:behavior >
+			<flow-ref doc:name="Flow Reference to SynergyFailureMockSub_Flow" doc:id="f1396d16-abee-46ca-8a7c-36d5aff8817c" name="SynergyFailureMockSub_Flow"/>
+
+
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "DocumentExtension": "JPG",
+  "DocumentSource": "Deposit",
+  "DocumentContent": "111000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011100000000000000000000000000000000000111110010000000000000000000010000000000010111011000111111111111111111111110110111011101111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+  "DocumentType": "DriversLicense",
+  "SourceIdentifierId": "tererwerwere",
+  "RequestUUID": "YYYYYYY",
+  "AccountNumber": "1234",
+  "CustomerNumber": "5678",
+  "DocumentDate": "2018-02-28T16:41:41-07:00",
+  "OfficerCode": "Jonh Doe"
+}]' doc:name="Set Payload" doc:id="85ea26bd-4a77-403e-8713-7204a7242302" mimeType="application/json"/>
+			<set-variable value="eyJraWQiOiJGSE1jTWJIUlpMd01QSXgweDlGM1lESDlUenVXdy1QNHJ6eFl6LTREc2xnIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULnRQRFJ0cUdlb1AzYXdmcFo1dkZMaV9HMXVzNTcxc1RRa25QLWJQR0ZaZWMiLCJpc3MiOiJodHRwczovL3Nzby10ZXN0LnZlbG9iYW5rLmNvbS9vYXV0aDIvYXVzZjJjMThxcXRtR0h5WDgwaDciLCJhdWQiOiJodHRwczovL2Rldm9wZW5hcGkudmVsb2JhbmsuY29tLyIsImlhdCI6MTU0ODg1MTUyNiwiZXhwIjoxNTQ4ODU1MTI2LCJjaWQiOiIwb2FnbG9kY25kandoWW5CdzBoNyIsInNjcCI6WyJhcGk6cmVhZCJdLCJzdWIiOiIwb2FnbG9kY25kandoWW5CdzBoNyJ9.E-Zh4zMwqCaJ3QW0Md28oQJNU3QKiEZuv3o2VxEGvWLYIuc07X-nGX7rSeE-NBJ8mk1TWyWltpCexFDXX8cuna6s5jXemWidBxPynNE5o8k4by541Nqxk257mxZPXTN19VbdF7YXmoWbeWP3UndKod52TfKHWu-x9SAmdpFQ2Z5GTC33JBCkGiX2ClkKLyP5ECSqiZUDK8Vphwbeg0g2qLkVzDWemEv3-yisZXsYsIE9VjqvB503K1KWWLwwivX9WliOUqrKhSJoGwJHXXBRf-t4wt_zZvVGP2Vc6mtG6JMhBXimy1CaXbZohhRqFD8GRpgPX6tTiOPGEf0Bnp7f4A" doc:name="Set Token" doc:id="fee9424d-a3f8-4ad9-a1b4-ed488257db44" variableName="token"/>
+			<flow-ref doc:name="Flow-ref to synergy-flow" doc:id="cf07094f-beb9-4147-83ee-a6775d1cc32c" name="synergy-flow"/>
+
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Synergy Response" doc:id="7999879a-c724-4e2b-8aa1-0e4557fdb4a2" expression="#[payload.result.success]" is="#[MunitTools::equalTo(false)]" message="Synergy Request Failed"/>
+			<munit-tools:assert-that doc:name="Assert Bad Request" doc:id="7f03c7a2-fa13-4320-8656-c7f6c21c7227" expression='#[payload.result.message.errorType.namespace ++ ":" ++ payload.result.message.errorType.identifier]' is='#[MunitTools::equalTo("HTTP:BAD_REQUEST")]' message="Not a Bad Request"/>
+		
+</munit:validation>
+	</munit:test>
+
+</mule>

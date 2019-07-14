@@ -1,0 +1,8 @@
+{
+	"Message": "success",
+	"ResponseCode": 202,
+	"Reasons": {
+    	"ReasonCode": 202,
+    	"ReasonDescription": "Notification Initiated"
+  	}
+}

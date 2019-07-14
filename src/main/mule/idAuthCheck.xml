@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="idauthcheckFlow" doc:id="222f558e-4c50-49a3-b8ae-5d41b641517a" >
+		             <set-variable value="#[if(payload.IdAuthenticationResponse == null) 0 else sizeOf(payload.IdAuthenticationResponse)]" doc:name="Set Variable" doc:id="ea274f44-70e8-4d28-960b-e77be01e9bce" variableName="arraySize"/>
+             <logger level="INFO" doc:name="Logger" doc:id="d84b9d66-15bc-41ed-a14d-e4ca41397dd7" message="#[vars.arraySize] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+             <choice doc:name="Choice" doc:id="2584a8e0-5be5-457f-8530-fce7318b6f91" >
+                    <when expression="vars.arraySize == 0" >
+                           <logger level="INFO" doc:name="Logger" doc:id="f390debf-1f0d-4a73-bbfb-919c0e13dd94" message="Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<set-variable value="Passed" doc:name="Set Variable" doc:id="5d6d0e56-029f-4c91-bfe6-de8ec822ddb3" variableName="docAuthResultFlag"/>
+				<!-- <set-variable value="true" doc:name="Set SkipTrueIDResponse" doc:id="e53f0459-5527-4949-a7b4-d07cff89014c" variableName="skipTrueIDResponse"/> -->
+				<ee:transform doc:name="SetSkipTrueIDResponse" doc:id="045f71ce-ec87-408b-b802-44e029d0e97d" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="skipTrueIDResponse" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.IsPartnerRequest == "false") 
+"false"
+else
+"true"]]></ee:set-variable>
+						<ee:set-variable variableName="docAuthResultSkipped" ><![CDATA[%dw 2.0
+output application/json
+---
+"Skipped"]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+                    
+
+</when>
+                    <otherwise >
+                           <set-variable value="#[vars.arraySize - 1]" doc:name="Set Variable" doc:id="b0303fc6-0bc0-4004-9333-96884504938b" variableName="arrayIndex"/>
+				<ee:transform doc:name="Transform Message" doc:id="be77ff82-1a27-405a-a624-1b30a40ecf1e">
+                                 <ee:message>
+                                 </ee:message>
+                                 <ee:variables >
+                                        <ee:set-variable variableName="idAuthPassThroughVar" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+       PassThroughs: payload.IdAuthenticationResponse[vars.arrayIndex].PassThroughs map ( passThrough , indexOfPassThrough ) -> {
+             Data: read(passThrough.Data, "application/json")
+       }
+}]]></ee:set-variable>
+                                 </ee:variables>
+                           </ee:transform>
+                           <set-variable value="#[vars.idAuthPassThroughVar..DocAuthResult[0]]" doc:name="Set Variable" doc:id="491fb341-c3f0-4342-a38f-73d59de23b3f" variableName="docAuthResultFlag" />
+                           <logger level="INFO" doc:name="Logger" doc:id="2c5ffcd3-b704-4649-a2d1-12a02405f714" message="#[vars.docAuthResultFlag] Request UUID #[correlationId] Flow Name #[flow.name]" />
+                           <logger level="INFO" doc:name="Logger" doc:id="d342b0fb-8567-4e28-86e6-a2130072f77e" message="#[vars.idAuthPassThroughVar] Request UUID #[correlationId] Flow Name #[flow.name]" />
+                    
+</otherwise>
+             </choice>
+	</flow>
+	<flow name="getIdAuthDocResultFlow" doc:id="78eb2e3c-bcc9-4643-a626-1c4ec061ee09" >
+	<try doc:name="Try" doc:id="cdcc742e-105a-49c0-9fab-ea4d434e99df" >
+			<ee:transform doc:name="Transform Message" doc:id="af2d29cf-dd9f-4cd9-ba68-2e696066da5c">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="IdAuthenticationResponseVar"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	IdAuthenticationResponse: payload.IdAuthenticationResponse map ( idAuthenticationResponse , indexOfIdAuthenticationResponse ) -> {
+		PassThroughs: idAuthenticationResponse.PassThroughs map ( passThrough , indexOfPassThrough ) -> {
+			Data: read(passThrough.Data, "application/json")
+		}		
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+			<ee:transform doc:name="Transform Message" doc:id="4fe06c36-2938-412f-9e7c-73cecf7c3f08">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+					<ee:set-variable variableName="docAuthResult" ><![CDATA[%dw 2.0
+output application/json
+---
+
+if(null!=vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1])
+	vars.IdAuthenticationResponseVar.IdAuthenticationResponse[1].PassThroughs[0].Data.IDAuthResultResponse.AuthenticationResult.DocAuthResult 
+else 
+	vars.IdAuthenticationResponseVar.IdAuthenticationResponse[0].PassThroughs[0].Data.IDAuthResultResponse.AuthenticationResult.DocAuthResult
+]]></ee:set-variable>
+			
+</ee:variables>
+		</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="cb9c2d5d-9fc3-403c-8cc6-7dcdc01447ac" message="#[vars.docAuthResult] Request UUID #[correlationId] Flow Name #[flow.name]" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1d872144-1531-43d1-a115-4becf8608975" >
+					<set-variable value="null" doc:name="Set Variable" doc:id="a837580f-b7e1-41ca-89d6-8a6ef730e4ca" variableName="docAuthResult"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</flow>
+	<flow name="idvalidator-flow" doc:id="6325b976-c507-4800-b8e3-59ab002fc927">
+	<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Request Body #[payload] Request UUID #[correlationId] Flow Name #[flow.name]" /> -->
+		<json-logger:logger doc:name="TrueId Verification Request Payload" doc:id="82609e43-4ee2-4b4a-8abb-5c42077c73cb" config-ref="JSON_Logger_Config" priority="DEBUG" tracePoint="PRINT" endpoint="POST:/${customerVerificationFlow.trueid.path}" message="TrueId Verification Request">
+			<json-logger:content ><![CDATA[#[payload]]]></json-logger:content>
+		</json-logger:logger>
+		<json-logger:logger doc:name="True Id Verification Before Request" doc:id="b2797091-969a-4e01-91b6-d6672cbf3547" config-ref="JSON_Logger_Config" message="TrueId Verification Request" endpoint="POST:/${customerVerificationFlow.trueid.path}" tracePoint="BEFORE_REQUEST">
+			<json-logger:content><![CDATA[#[output application/json ---
+{
+ 	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<ee:transform doc:name="Transform Message" doc:id="19e31948-fe1c-42ee-a846-7c8487d6293a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload - "Settings"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="99f1c4f8-84fc-454d-a799-c9fcb2be5f30" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="idAuthSetting" ><![CDATA[%dw 2.0
+output application/json
+---
+"Settings": {
+        "AccountNumber": p('IDAUTH.SETTINGS.ACCOUNT'),
+        "Workflow": p('IDAUTH.SETTINGS.WORKFLOW'),
+        "Mode": p('IDAUTH.SETTINGS.MODE'),
+        "Reference": "payload.RequestUUID",
+        "Locale": "en_US",
+        "Venue": "online"
+    }]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="1a1af259-03e5-44bd-a1a9-37fdb024ccc3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ++ vars.idAuthSetting]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="4a8ab995-a3e0-4fae-ab2b-e1323de3a33d" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request"
+			doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" config-ref="HTTP_Request_customerVerificationFlow"
+			path="/${customerVerificationFlow.trueid.path}" target="trueIDResponse"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+		<json-logger:logger doc:name="True Id Verification After Request" doc:id="83a60dbe-9f6e-4236-9062-439285be0cb8" config-ref="JSON_Logger_Config" message="TrueId Verification Response" endpoint="POST:/${customerVerificationFlow.trueid.path}" status="#[vars.'httpStatus']" tracePoint="AFTER_REQUEST">
+			<json-logger:content><![CDATA[#[output application/json ---
+{
+ 	trueIDResponse: vars.trueIDResponse
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<logger level="INFO" doc:name="Logger"
+			doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Response : #[vars.trueIDResponse] Request UUID #[correlationId] Flow Name #[flow.name]" />
+		<set-payload value="#[vars.trueIDResponse]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<flow-ref doc:name="global-return-response-build" doc:id="464485ff-6096-4846-aaa8-be4b67cd4675"
+			name="global-return-response-build" />
+	
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="8c6beeab-1a98-40e1-8a9b-df9d5991c4cb">
+				<flow-ref doc:name="generic-exception" doc:id="4a448bad-9e2c-4bff-afd5-674db8357757" name="generic-exception"/>
+
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

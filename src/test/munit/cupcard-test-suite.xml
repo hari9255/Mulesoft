@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<munit:config name="cupcard-test-suite.xml" />
+	<munit:test name="cupcard-test-suite-createCustomerNumberTest" description="Test" doc:id="1d6b8247-290f-47af-a598-f09225610e36">
+		<munit:behavior >
+			<!-- <set-payload value="#[MunitTools::getResourceAsString('examples\PinPointRequest.json')]" doc:name="Set Payload" doc:id="e69f4696-2e0e-4d05-a8cc-6dacd8c46f41" /> -->
+			<set-variable value='#[output application/json --- {"PinPointRequest":[{"handler":"session_info","customer_session_id":"L00OGJtFJ7GNoLctDq7ewvGZ0","remote_addr":"12.249.231.14","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36","result":"pass","channel":"online","new_account_data":{"new_account":true,"first_name":"Nageswara","last_name":"gun","phone_number":"16508479693","email":"n.g1@ewb1.com"}},{"handler":"pinpoint_eval","customer_session_id":"L00OGJtFJ7GNoLctDq7ewvGZ0","remote_addr":"12.249.231.14","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36","activity":"new_account","url":"https://dodev-eastwestbank.cs14.force.com/tf4sf__dsp#/get-started","timestamp":"2018-12-10 19:09:38"}],"IdVerificationRequest":{"Settings":{"AccountNumber":"45065","Workflow":"public.testing.redherrings.open","Mode":"testing","Reference":"Reference1","Locale":"en_US","Venue":"online"},"Person":{"Name":{"FirstName":"Nageswara","LastName":"gun"},"Addresses":[{"StreetAddress1":"417 University Ave","City":"Palo Alto","State":"CA","Zip5":"94301-1813","Country":"US","Context":"primary"}],"SSN":{"Number":"674654564","Type":"ssn9"},"DateOfBirth":{"Year":"1987","Month":"11","Day":"6"},"Phones":[{"Number":"6508479693","Context":"mobile"}]}},"IdAuthenticationResponse":[],"RequestUUID":"a04c0000009piESAAY","CaseId":"","CaseStatus":"","ApplicationId":"APP-M-03350","ApplicantType":"NONNRA","Settings":{"AccountNumber":"45065","Workflow":"public.testing.redherrings.open","Mode":"testing","Reference":"Reference1","Locale":"en_US","ConversationId":"31000095253376","Venue":"online"},"Promotions":{"Status":"Finished","PromoCode":"UATP449","OnboardingInvitation":{"EmailAddress":"n.g1@ewb1.com","PhoneNumber":"6508479693"}},"AccountInformation":{"AccountType":"CUP_CARD","DepositAccount":{"WithholdingIndicator":"ExemptConfirmed","UserCode":"D","StatusCodes":["NeverClose"],"BulkFileType":"ImageFile"},"CustomerToAccountRelationship":{"Customer1AccountRelationshipCode":"000","Customer1AccountAssociationType":"Primary","Address":{"StreetAddress1":"417 University Ave","City":"Palo Alto","State":"CA","Zip":"94301","IsForeignAddress":false},"NumberOfStatementCopies":1,"AddressLineOfTINOwner":1}},"CustomerInformation":{"DateOfBirth":"1987-11-06","FirstName":"Nageswara","MiddleInitial":"S","LastName":"gun","Gender":null,"VisaType":null,"ForeignTaxID":null,"PrimaryPurposeofAccOpening":null,"SourceofFunds":{"Source":null,"MiscDemographic":2,"CustomerIntentforIntWireTransfer":{"TransferServices":false,"ForeignOutActivity":{"OutgoingWiresAmount":null,"OutgoingWires":null,"ForeignOutgoingActivity":false},"ForeignInActivity":{"IncomingWiresAmount":null,"IncomingWires":null,"ForeignIncomingActivity":false}}},"CISNumber":"","PEP":"No","Address":{"StreetAddress1":"417 University Ave","CountryCode":"USA","IsForeignAddress":false,"City":"Palo Alto","State":"CA","Zip":"94301"},"CountryCode":"+1","MobilePhoneNumber":"6508479693","TaxNumber":"674654564","TaxIdType":"SocialSecurityNumber","CitizenshipCode":"ASM","BranchNumber":"8088","CostCenterNumber":"88","CategoryCode1":"903","Occupation":"ArchitectureOrEngineering","Identification":{"Status":"NonDocVerification","NonDocumentaryIdentificationInformation1":"VLN"},"EmailAddress":"n.g1@ewb1.com","RequestUUID":"a04c0000009piESAAY"},"Documents":[]}]' doc:name="Original Payload - No CIS" doc:id="4cdbc94e-7327-4ee8-88ae-73bd9c8c82ac" variableName="originalPayload"/>
+			<set-variable doc:name="CIS Response Mock" doc:id="5bd5375d-9299-436a-99b2-a342256d0cd9" variableName="CISResponse" value='#[output application/json --- {"data":{"CreateCustomerResponse":{"CustomerNumber":"00000063579","ApplicationCode":"CUST"},"RequestUUID":"123456","ErrorMessageList":[]},"result":{"success":true,"code":"200","message":null}}]'/>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8ed7bd65-7903-45fc-8b55-ab3de035304d" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="0d33f98e-7929-4236-af5f-bddd4b14c6c1" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return />
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to createCustomerNumber" doc:id="4e6d6cab-8045-4ff5-a3e5-e792e63e902b" name="createCustomerNumber"/>
+		</munit:execution>
+		<munit:validation>
+			<logger level="INFO" doc:name="Logger" doc:id="9ec13532-f368-4f3b-83f0-b167f54aac7c" message='#[payload]'/>
+			<munit-tools:assert-that doc:name="CIS Request" doc:id="7fcc6575-be58-4ec1-8c62-11225a0695be" expression="#[vars.CIS]" is='#[MunitTools::equalTo({"CreateCustomerRequest":{"CustomerInformation":{"DateOfBirth":"1987-11-06","FirstName":"Nageswara","LastName":"gun","MiddleInitial":"S","Title":null,"Address":null,"MailingAddress":null,"PrimaryPhoneNumber":"6508479693","FaxPhoneNumber":null,"SecondaryPhoneNumber":null,"MobilePhoneNumber":"6508479693","TaxNumber":"674654564","TaxIdType":"SocialSecurityNumber","CitizenshipCode":"ASM","W8CertificateType":null,"PrimaryID":null,"BranchNumber":"8088","CostCenterNumber":"88","MailCode":null,"PrimaryLanguage":null,"PrimaryOfficerNumber":null,"SecondaryOfficerNumber":null,"Gender":null,"CategoryCode1":"903","CountryofDualCitizenship":null,"EmploymentDate":null,"EmploymentOrSchool":null,"Ethnicity":null,"MaritalStatus":null,"MothersMaidenName":null,"Occupation":"ArchitectureOrEngineering","W8CertificateDate":null,"Identification":{"Status":"NonDocVerification","NonDocumentaryIdentificationInformation1":{"Type":"VLN"}},"EmailAddress":"n.g1@ewb1.com","IsPoliticallyExposedPerson":false}}})]' message="Payload not null" />
+			<munit-tools:assert-that doc:name="CIS Response" doc:id="3870a96d-51f9-4c4f-b21d-a6f2bc070767" expression="#[vars.CISResponse]" is='#[MunitTools::equalTo({"data":{"CreateCustomerResponse":{"CustomerNumber":"00000063579","ApplicationCode":"CUST"},"RequestUUID":"123456","ErrorMessageList":[]},"result":{"success":true,"code":"200","message":null}})]' message="Payload not null"/>
+			<munit-tools:assert-that doc:name="CIS Number" doc:id="b8a6dda7-4450-427b-b89b-cc6b44287a07" expression="#[vars.CISNumber]" message="Payload not null" is='#[MunitTools::equalTo("00000063579")]'/>
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="cupcard-test-suite-exitingCustomerNumberTest" description="Test" doc:id="c1598a76-7030-4437-bafb-04c2fea45e0e">
+		<munit:behavior >
+			<set-variable doc:name="Set Variable" doc:id="012fd338-1f5c-4b9c-8c1c-cb500ae1c2f5" variableName="CISNumber" value="#['12121']"/>
+			<!-- <set-payload value="#[MunitTools::getResourceAsString('examples\PinPointRequest.json')]" doc:name="Set Payload" doc:id="250e16ee-fbb9-4405-92c4-246a640b00b8" /> -->
+		
+</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to createCustomerNumber" doc:id="e97244d1-fed5-4a6a-8610-f76e65166bf0" name="createCustomerNumber"/>
+		</munit:execution>
+		<munit:validation>
+			<logger level="INFO" doc:name="Logger" doc:id="3b2133a7-b9ef-4e23-ad94-7f1f7597edb0" message='#[payload]'/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d1874dc1-a579-4f93-9f4f-b111b8003767" expression="#[payload]" is='#[MunitTools::notNullValue()]' message="Payload not null"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="cupcard-test-suite-errorTest" description="Test" doc:id="739ba3de-4c3c-47e0-8350-9d6d6352e016">
+		<munit:behavior >
+			<set-variable value='#[""]' doc:name="Set Variable" doc:id="66db1260-d451-48d1-9aa7-2685a57b940e" variableName="CISNumber"/>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d95028f0-0d5a-4f5a-945f-1b4b839289c1" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="0d33f98e-7929-4236-af5f-bddd4b14c6c1" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="CISResponse" value="#[output application/json --- {&quot;RequestUuid&quot;:&quot;4b6b8d90-ff4b-11e8-a3b6-02749b50682e&quot;,&quot;Status&quot;:400,&quot;Type&quot;:&quot;BAD_REQUEST&quot;,&quot;Error&quot;:{&quot;CreateCustomerResponse&quot;:{&quot;CustomerNumber&quot;:&quot;00000000000000000000&quot;,&quot;ApplicationCode&quot;:&quot;CUST&quot;},&quot;RequestUUID&quot;:null,&quot;ErrorMessageList&quot;:[{&quot;ErrorMessageNumber&quot;:&quot;00228&quot;,&quot;ErrorMessageText&quot;:&quot;CI00228 - WARNING, TAXPAYER NUMBER ALREADY EXISTS&quot;},{&quot;ErrorMessageNumber&quot;:&quot;09044&quot;,&quot;ErrorMessageText&quot;:&quot;Function not processed due to previous function error.&quot;}]},&quot;Message&quot;:&quot;HTTP POST on resource 'https://openapiservices.eastwestbank.com:443/CustomerService/api/customers/create' failed: bad request (400).&quot;}]" mediaType="application/json"/>
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<!-- <set-payload value="#[MunitTools::getResourceAsString('examples\PinPointRequest.json')]" doc:name="Set Payload" doc:id="965ebfb1-7c3d-4622-a1bf-28e2216735b2" /> -->
+		
+</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="fdfbd7f2-f03c-45ea-9ae7-daf16c8f63a3" >
+				<flow-ref doc:name="Flow-ref to createCustomerNumber" doc:id="d2863050-d037-4d6d-b756-71d74724c675" name="createCustomerNumber" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d05c7785-f049-4484-8d62-baa619339c08" >
+						<logger level="INFO" doc:name="Logger" doc:id="41ecd9ab-b8bc-403e-8f0f-7d6e1c33b818" message="***Error Test Payload is" />
+						<logger level="INFO" doc:name="Logger" doc:id="59d5ac63-761a-43dd-beb8-61bac9ddde7c" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="ab5f4d19-573d-4cc8-aea7-3ca43f046d3d" expression="#[vars.cupCardFailure.Source]" is='#[MunitTools::equalTo("CISCreate")]' message="Case Status is Pending"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="cupcard-test-createCupCard" description="MUnit Test" doc:id="78bd727a-bae7-458d-a59e-c4af06a5f396">
+		<munit:behavior >
+			<set-variable value='#[output application/json --- {"PinPointRequest":[{"handler":"session_info","customer_session_id":"L00OGJtFJ7GNoLctDq7ewvGZ0","remote_addr":"12.249.231.14","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36","result":"pass","channel":"online","new_account_data":{"new_account":true,"first_name":"Nageswara","last_name":"gun","phone_number":"16508479693","email":"n.g1@ewb1.com"}},{"handler":"pinpoint_eval","customer_session_id":"L00OGJtFJ7GNoLctDq7ewvGZ0","remote_addr":"12.249.231.14","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36","activity":"new_account","url":"https://dodev-eastwestbank.cs14.force.com/tf4sf__dsp#/get-started","timestamp":"2018-12-10 19:09:38"}],"IdVerificationRequest":{"Settings":{"AccountNumber":"45065","Workflow":"public.testing.redherrings.open","Mode":"testing","Reference":"Reference1","Locale":"en_US","Venue":"online"},"Person":{"Name":{"FirstName":"Nageswara","LastName":"gun"},"Addresses":[{"StreetAddress1":"417 University Ave","City":"Palo Alto","State":"CA","Zip5":"94301-1813","Country":"US","Context":"primary"}],"SSN":{"Number":"674654564","Type":"ssn9"},"DateOfBirth":{"Year":"1987","Month":"11","Day":"6"},"Phones":[{"Number":"6508479693","Context":"mobile"}]}},"IdAuthenticationResponse":[],"RequestUUID":"a04c0000009piESAAY","CaseId":"","CaseStatus":"","ApplicationId":"APP-M-03350","ApplicantType":"NONNRA","Settings":{"AccountNumber":"45065","Workflow":"public.testing.redherrings.open","Mode":"testing","Reference":"Reference1","Locale":"en_US","ConversationId":"31000095253376","Venue":"online"},"Promotions":{"Status":"Finished","PromoCode":"UATP449","OnboardingInvitation":{"EmailAddress":"n.g1@ewb1.com","PhoneNumber":"6508479693"}},"AccountInformation":{"AccountType":"CUP_CARD","DepositAccount":{"WithholdingIndicator":"ExemptConfirmed","UserCode":"D","StatusCodes":["NeverClose"],"BulkFileType":"ImageFile"},"CustomerToAccountRelationship":{"Customer1AccountRelationshipCode":"000","Customer1AccountAssociationType":"Primary","Address":{"StreetAddress1":"417 University Ave","City":"Palo Alto","State":"CA","Zip":"94301","IsForeignAddress":false},"NumberOfStatementCopies":1,"AddressLineOfTINOwner":1}},"CustomerInformation":{"DateOfBirth":"1987-11-06","FirstName":"Nageswara","MiddleInitial":"S","LastName":"gun","Gender":null,"VisaType":null,"ForeignTaxID":null,"PrimaryPurposeofAccOpening":null,"SourceofFunds":{"Source":null,"MiscDemographic":2,"CustomerIntentforIntWireTransfer":{"TransferServices":false,"ForeignOutActivity":{"OutgoingWiresAmount":null,"OutgoingWires":null,"ForeignOutgoingActivity":false},"ForeignInActivity":{"IncomingWiresAmount":null,"IncomingWires":null,"ForeignIncomingActivity":false}}},"CISNumber":"","PEP":"No","Address":{"StreetAddress1":"417 University Ave","CountryCode":"USA","IsForeignAddress":false,"City":"Palo Alto","State":"CA","Zip":"94301"},"CountryCode":"+1","MobilePhoneNumber":"6508479693","TaxNumber":"674654564","TaxIdType":"SocialSecurityNumber","CitizenshipCode":"ASM","BranchNumber":"8088","CostCenterNumber":"88","CategoryCode1":"903","Occupation":"ArchitectureOrEngineering","Identification":{"Status":"NonDocVerification","NonDocumentaryIdentificationInformation1":"VLN"},"EmailAddress":"n.g1@ewb1.com","RequestUUID":"a04c0000009piESAAY"},"Documents":[]}]' doc:name="Original Payload - No CIS" doc:id="a8dd5124-462b-408b-ab19-ef3d30b68747" variableName="originalPayload" />
+			<set-variable value='#[output application/json --- {"data":{"ResponseCode":"00","ResponseDescription":"New Card Purchase","NewCardNumber":6019990000142909,"Balance":0,"TransactionId":"F137585004","CustomerId":"110000000005202578","Fee":0,"ReferenceId":"110520257848","NameOnCard":"Maomao Mai","RequestUUID":"e7c359e8-accd-411b-a7ca-561743d194d4","ErrorMessageList":[]},"result":{"success":true,"code":200,"message":null}}]' doc:name="Cup Card Response Mock" doc:id="9d168379-7540-4519-b971-a912de713098" variableName="cupCardResponse" />
+			<set-variable value='#[output application/json --- {"IsForeignAddress":false,"StreetAddress1":"417 University Ave","StreetAddress2":"","City":"Palo Alto","State":"CA","Zip":"94301"}]' doc:name="Mailing Address" doc:id="b8d21d41-a734-4393-a490-856c9eaa7497" variableName="mailingAddress"/>
+			<set-variable value='#[output application/json --- {"IsForeignAddress":false,"StreetAddress1":"2000 Walnut Ave","StreetAddress2":"","City":"Fremont","State":"CA","Zip":"94538"}]' doc:name="Primary Address" doc:id="78a83adc-c69f-401e-b836-064586896a83" variableName="primaryAddress" />
+			<munit-tools:mock-when doc:name="Mock when" doc:id="06df5d79-2041-4974-b58e-5ffe2b07ce20" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="61e3267d-7c66-402c-a678-8358fe01936b" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Create Cup Card Flow Reference" doc:id="197fbd28-ed53-4428-b1f4-0689c551e132" name="createCupCardNumber"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Cup Card Request" doc:id="091600ab-4b6c-4375-9349-5728736accfe" expression="#[vars.cupCardRequest]" is='#[MunitTools::equalTo({"CISNumber":null,"CustomerInformation":{"FirstName":"Nageswara","MiddleInitial":"S","LastName":"gun","DateOfBirth":"1987-11-06","MailingAddress":{"IsForeignAddress":false,"StreetAddress1":"417 University Ave","StreetAddress2":"","City":"Palo Alto","State":"CA","Zip":"94301"},"CellNumber":"6508479693","Email":"n.g1@ewb1.com","Gender":null,"SocialSecurityNumber":"674654564","BillingAddress":{"IsForeignAddress":false,"StreetAddress1":"417 University Ave","StreetAddress2":"","City":"Palo Alto","State":"CA","Zip":"94301"},"IsUSCitizen":false,"ShippingAddressOption":"MailingAddress"}})]' message="Payload not null" />
+			<munit-tools:assert-that doc:name="Account Reference Number" doc:id="310d2f1f-08f5-4166-afcd-eaab8c0504be" expression="#[vars.cupCardResponse.data.ReferenceId]" is='#[MunitTools::equalTo("110520257848")]' message="Payload not null" />
+		</munit:validation>
+	</munit:test>
+		<munit:test name="cupcard-test-error-miscAccountCreation" description="MUnit Test" doc:id="5061a170-78d4-4cae-a945-841a5f42074c">
+			<munit:behavior >
+				<set-variable value='#[output application/json --- {"PinPointRequest":[{"handler":"session_info","customer_session_id":"L00OGJtFJ7GNoLctDq7ewvGZ0","remote_addr":"12.249.231.14","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36","result":"pass","channel":"online","new_account_data":{"new_account":true,"first_name":"Nageswara","last_name":"gun","phone_number":"16508479693","email":"n.g1@ewb1.com"}},{"handler":"pinpoint_eval","customer_session_id":"L00OGJtFJ7GNoLctDq7ewvGZ0","remote_addr":"12.249.231.14","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36","activity":"new_account","url":"https://dodev-eastwestbank.cs14.force.com/tf4sf__dsp#/get-started","timestamp":"2018-12-10 19:09:38"}],"IdVerificationRequest":{"Settings":{"AccountNumber":"45065","Workflow":"public.testing.redherrings.open","Mode":"testing","Reference":"Reference1","Locale":"en_US","Venue":"online"},"Person":{"Name":{"FirstName":"Nageswara","LastName":"gun"},"Addresses":[{"StreetAddress1":"417 University Ave","City":"Palo Alto","State":"CA","Zip5":"94301-1813","Country":"US","Context":"primary"}],"SSN":{"Number":"674654564","Type":"ssn9"},"DateOfBirth":{"Year":"1987","Month":"11","Day":"6"},"Phones":[{"Number":"6508479693","Context":"mobile"}]}},"IdAuthenticationResponse":[],"RequestUUID":"a04c0000009piESAAY","CaseId":"","CaseStatus":"","ApplicationId":"APP-M-03350","ApplicantType":"NONNRA","Settings":{"AccountNumber":"45065","Workflow":"public.testing.redherrings.open","Mode":"testing","Reference":"Reference1","Locale":"en_US","ConversationId":"31000095253376","Venue":"online"},"Promotions":{"Status":"Finished","PromoCode":"UATP449","OnboardingInvitation":{"EmailAddress":"n.g1@ewb1.com","PhoneNumber":"6508479693"}},"AccountInformation":{"AccountType":"CUP_CARD","DepositAccount":{"WithholdingIndicator":"ExemptConfirmed","UserCode":"D","StatusCodes":["NeverClose"],"BulkFileType":"ImageFile"},"CustomerToAccountRelationship":{"Customer1AccountRelationshipCode":"000","Customer1AccountAssociationType":"Primary","Address":{"StreetAddress1":"417 University Ave","City":"Palo Alto","State":"CA","Zip":"94301","IsForeignAddress":false},"NumberOfStatementCopies":1,"AddressLineOfTINOwner":1}},"CustomerInformation":{"DateOfBirth":"1987-11-06","FirstName":"Nageswara","MiddleInitial":"S","LastName":"gun","Gender":null,"VisaType":null,"ForeignTaxID":null,"PrimaryPurposeofAccOpening":null,"SourceofFunds":{"Source":null,"MiscDemographic":2,"CustomerIntentforIntWireTransfer":{"TransferServices":false,"ForeignOutActivity":{"OutgoingWiresAmount":null,"OutgoingWires":null,"ForeignOutgoingActivity":false},"ForeignInActivity":{"IncomingWiresAmount":null,"IncomingWires":null,"ForeignIncomingActivity":false}}},"CISNumber":"","PEP":"No","Address":{"StreetAddress1":"417 University Ave","CountryCode":"USA","IsForeignAddress":false,"City":"Palo Alto","State":"CA","Zip":"94301"},"CountryCode":"+1","MobilePhoneNumber":"6508479693","TaxNumber":"674654564","TaxIdType":"SocialSecurityNumber","CitizenshipCode":"ASM","BranchNumber":"8088","CostCenterNumber":"88","CategoryCode1":"903","Occupation":"ArchitectureOrEngineering","Identification":{"Status":"NonDocVerification","NonDocumentaryIdentificationInformation1":"VLN"},"EmailAddress":"n.g1@ewb1.com","RequestUUID":"a04c0000009piESAAY"},"Documents":[]}]' doc:name="Original Payload - No CIS" doc:id="21a2b2f4-f28c-467d-ac69-77b0a9e04c7e" variableName="originalPayload" />
+				<set-variable value='#["00000063914"]' doc:name="CIS Number" doc:id="e95e5782-9618-411b-86dc-ce35e91f4c97" variableName="CISNumber"/>
+			<set-variable value='#[output application/json --- {"data":{"CustomerNumber":"00000063912","AccountApplicationCode":"CUP","AccountNumber":"110520265222","AccountOpenDate":"2019-01-02","RequestUUID":null,"ErrorMessageList":[]},"result":{"success":true,"code":200,"message":null}}]' doc:name="Misc Response Mock" doc:id="326e9826-fa92-4124-8a07-db4e1fbda599" variableName="FISResponse" />
+				<set-variable value='#[output application/json --- {"IsForeignAddress":false,"StreetAddress1":"417 University Ave","StreetAddress2":"","City":"Palo Alto","State":"CA","Zip":"94301"}]' doc:name="Mailing Address" doc:id="04a58f8f-500b-4ad0-8427-d2ce065056a1" variableName="mailingAddress" />
+				<set-variable value='#[output application/json --- {"IsForeignAddress":false,"StreetAddress1":"2000 Walnut Ave","StreetAddress2":"","City":"Fremont","State":"CA","Zip":"94538"}]' doc:name="Primary Address" doc:id="98a10176-dc39-47e9-8423-aa74d16740b2" variableName="primaryAddress" />
+				<munit-tools:mock-when doc:name="FIS Misc System API" doc:id="91d888aa-dbb9-4d3a-ac21-e8a927a58dde" processor="http:request" >
+					<munit-tools:with-attributes >
+						<munit-tools:with-attribute attributeName="doc:id" whereValue="b39bd6d8-2d64-4d62-9fe3-ebccfe3665e2" />
+					</munit-tools:with-attributes>
+					<munit-tools:then-return />
+				</munit-tools:mock-when>
+			</munit:behavior>
+			<munit:execution >
+				<flow-ref doc:name="Create Misc Account Flow Reference" doc:id="8b7e3366-2175-4702-ab93-7cf14762d751" name="createCupCardAccount" />
+			</munit:execution>
+			<munit:validation >
+				<munit-tools:assert-that doc:name="FIS Misc Request" doc:id="4660bd05-e362-41d9-be1f-e50bfcf6424a" expression="#[vars.fismisc]" is='#[MunitTools::equalTo({"CustomerNumber":"00000063914","CustomerToAccountRelationshipCode":"000","CustomerAccountAssociationType":"Primary","FirstName":"Nageswara","LastName":"gun","MiddleInitial":"S","Title":null,"Address":{"IsForeignAddress":false,"StreetAddress1":"2000 Walnut Ave","StreetAddress2":"","City":"Fremont","State":"CA","Zip":"94538"},"AccountNumber":null,"AccountBranchNumber":"8088","AccountCostCenter":"88","AccountTaxCode":"SocialSecurityNumber","AccountTaxNumber":"674654564","AccountWithholdingIndicator":"ExemptConfirmed","MobileNumber":"6508479693","FaxNumber":""})]' message="FIS Request matched" />
+				<munit-tools:assert-that doc:name="Account Open Date" doc:id="aead7ff6-133f-47a5-9c87-41c13ac91f1c" expression="#[vars.FISResponse.data.AccountOpenDate]" is='#[MunitTools::equalTo("2019-01-02")]' message="Account Date Matched" />
+			</munit:validation>
+		</munit:test>
+
+
+</mule>

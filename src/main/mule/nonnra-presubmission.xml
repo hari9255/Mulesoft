@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+
+	<flow name="nonnra-presubmission-flow" doc:id="a47f3512-2a50-42bf-ae96-da09404988ba">
+		<logger level="INFO" doc:name="LogApplication Id"
+			doc:id="0d64db2b-316d-49f6-981f-82c6d2eadf50" message="Application Id #[vars.ApplicationId]" />
+		<set-variable value="${variables.ofac.ENTITY_TYPE}"
+			doc:name="SetOfacEntityType" doc:id="55fb4809-ecf9-4acb-8d88-c8eb0365ed9c"
+			variableName="ofacEntityType" />
+		<set-variable value="${variables.ofac.SEARCH_NAME}"
+			doc:name="SetOfacSearchName" doc:id="2ad4e0d9-cff9-4e04-9204-a899f78ddb51"
+			variableName="ofacSearchName" />
+		<ee:transform doc:name="Transform Message"
+			doc:id="a10d11cf-0749-484d-8352-6f330b30b74f">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="instantIdRequest"><![CDATA[%dw 2.0
+output application/json
+---
+payload.IdVerificationRequest]]></ee:set-variable>
+				<ee:set-variable variableName="pinpointRequest"><![CDATA[%dw 2.0
+output application/json
+---
+[
+	{
+	"RequestUUID": payload.RequestUUID,
+	"handler": payload.PinPointRequest[0].handler,
+	"customer_session_id": payload.PinPointRequest[0].customer_session_id,
+	"remote_addr": payload.PinPointRequest[0].remote_addr,
+	"user_agent": payload.PinPointRequest[0].user_agent,
+	"result": payload.PinPointRequest[0].result,
+	"channel": payload.PinPointRequest[0].channel,
+	"new_account_data": {
+						"new_account": payload.PinPointRequest[0].new_account_data.new_account,
+						 "first_name": payload.PinPointRequest[0].new_account_data.first_name,
+						 "last_name": payload.PinPointRequest[0].new_account_data.last_name,
+						 "phone_number": payload.PinPointRequest[0].new_account_data.phone_number,
+						 "email": payload.PinPointRequest[0].new_account_data.email,
+	    }
+	},
+	{
+      "handler": payload.PinPointRequest[1].handler,
+      "customer_session_id": payload.PinPointRequest[1].customer_session_id,
+      "remote_addr": payload.PinPointRequest[1].remote_addr,
+      "user_agent": payload.PinPointRequest[1].user_agent,
+      "activity": payload.PinPointRequest[1].activity,
+      "url": payload.PinPointRequest[1].url,
+      "timestamp":  payload.PinPointRequest[1].timestamp
+  }
+]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<!-- <flow-ref doc:name="BuildPrimaryAndMailingAddressWebUI" doc:id="800954b0-f3f6-43a8-875d-5a631fa91962" name="BuildPrimaryAndMailingAddressWebUI"/> -->
+		<flow-ref doc:name="pinPointFlow" doc:id="dad6ba17-048d-460c-a935-765362b4f0ef"
+			name="pinPointFlow" />
+
+		<!-- <try doc:name="Try" doc:id="b698f8d6-1b14-470b-a0a1-89923132f83c" 
+			> <http:request method="POST" doc:name="PinpointRequest" doc:id="bad45c7e-8314-43ad-893e-ace9630a5536" 
+			config-ref="HTTP_Request_configuration_pinpoint" path="/${pinpoint.trust.path}" 
+			target="pinpointResponse"> <http:body><![CDATA[#[vars.pinpointRequest]]]></http:body> 
+			</http:request> <error-handler > <on-error-continue enableNotifications="true" 
+			logException="true" doc:name="On Error Continue" doc:id="96f300c6-db09-482e-9c2b-b86e19fa7ec5" 
+			> <flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" 
+			name="api-exceptions-response-build"/> <set-variable value="#[vars.tempApiExceptionVar]" 
+			doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="pinPointException"/> 
+			<logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" 
+			message="Exception Found in Pinpoint:::::::: #[vars.pinPointException]"/> 
+			</on-error-continue> </error-handler> </try> <logger level="INFO" doc:name="Pinpoint 
+			Response" doc:id="69f82737-72db-4fcd-ac28-8730eec48958" message=' ApplicationId 
+			#[vars.ApplicationId] Pinpoint recommendation: #[vars.pinpointResponse]'/> -->
+		<set-variable value="#[vars.pinpointResponse.data[1].status]"
+			doc:name="SetPinPointStatus" doc:id="59e2a825-4e98-4e16-9cf1-7cb80db1c2e2"
+			variableName="pinPointStatus" />
+		<choice doc:name="Choice" doc:id="4a879b5f-ea26-4eb4-bf74-9790c1f71b18">
+			<when expression='vars.pinPointStatus == "ok"'>
+				<ee:transform doc:name="Transform Message"
+					doc:id="7701f0be-013a-4ea7-bee8-0529de6afec4">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="pinpointRecommendationInfo"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	recommendation: if ( (vars.pinpointResponse.data[1].message) is Object) ({
+		recommendation: vars.pinpointResponse.data[1].message.recommendation.recommendation,
+		resolution_id: vars.pinpointResponse.data[1].message.recommendation.resolution_id,
+		reason_id: vars.pinpointResponse.data[1].message.recommendation.reason_id,
+		reason: vars.pinpointResponse.data[1].message.recommendation.reason,
+		risk_score: vars.pinpointResponse.data[1].message.recommendation.risk_score
+	})  else null,
+	risk_engine_recommendation: if ( (vars.pinpointResponse.data[1].message) is Object) ({
+		risk_score: vars.pinpointResponse.data[1].message.risk_engine_recommendation.risk_score,
+		reason_id: vars.pinpointResponse.data[1].message.risk_engine_recommendation.reason_id,
+		recommendation: vars.pinpointResponse.data[1].message.risk_engine_recommendation.recommendation,
+		reason: vars.pinpointResponse.data[1].message.risk_engine_recommendation.reason
+	}) else null,
+	customer_session_id: if ( (vars.pinpointResponse.data[1].message) is Object) vars.pinpointResponse.data[1].message.customer_session_id else null
+}]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="getIdAuthDocResultFlow" doc:id="26601961-bb2e-40f4-87cd-a496241adfc2"
+					name="getIdAuthDocResultFlow" />
+				<choice doc:name="Choice" doc:id="0f803128-ad93-46a6-9927-b90429714181">
+					<when expression="vars.docAuthResult == 'Failed'">
+						<logger level="INFO" doc:name="Trueid Failed"
+							doc:id="7583b37c-89ee-4fc7-9430-793abf449d77"
+							message="Application declined. TrueID Verification Failed. Case Created with declined status. Request UUID #[correlationId] Flow Name #[flow.name]" />
+						<set-variable value="${variables.caseStatus.PENDING}"
+							doc:name="caseStatus" doc:id="f1bd231f-d273-4a4b-880a-2fb745bb9074"
+							variableName="caseStatus" />
+						<set-variable
+							value="Application declined. TrueID Verification Failed. Case Created with declined status."
+							doc:name="Set Variable" doc:id="19417c7c-8c09-4255-b1dc-78a1d6419a0b"
+							variableName="retSuccMes" />
+						<flow-ref doc:name="ofacCallSubFlow" doc:id="e64a74c9-3bff-4bd5-9120-5cb15a601739"
+							name="ofacCallSubFlow" />
+						<flow-ref doc:name="caseCreationFlow" doc:id="930ce606-abd6-461e-a223-f8b1ca8d5210"
+							name="caseCreationFlow" />
+						<ee:transform doc:name="Transform Message"
+							doc:id="a56352cf-a516-429b-a9ae-5628da1da8aa">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	ApplicationId: vars.ApplicationId,
+	ApplicationStatus: vars.caseStatus,	
+	CaseNumber: payload.data.CaseNumber,
+	Error: payload.data.Error
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<flow-ref doc:name="global-return-response-build" doc:id="46891daa-9aa9-4723-8a1b-dc0321aaf1de"
+							name="global-return-response-build" />
+
+					</when>
+					<when
+						expression='vars.THREAT_INTELLIGENCE_PASS_REASONS contains vars.pinpointRecommendationInfo.recommendation.recommendation'>
+						<flow-ref doc:name="idverificationFlow" doc:id="dad6ba17-048d-460c-a935-765362b4f0ef"
+							name="idverificationFlow" />
+						<!-- <logger level="INFO" doc:name="IdVerificationRequest " doc:id="c8babce7-d4c1-4f8e-a884-025505aa30c3" 
+							message='ApplicationId #[vars.ApplicationId] "IdVerificationRequest \n" ++ 
+							#[vars.instantIdRequest]' /> <try doc:name="Try" doc:id="02d85166-c119-4a78-8a21-2a5715cb3cbd"> 
+							<http:request method="POST" doc:id="8d942902-ff89-4d70-9586-5817c0052dd5" 
+							target="instantIdResponse" config-ref="HTTP_Request_customerVerificationFlow" 
+							path="/${customerVerificationFlow.getinstantid.path}" doc:name="IdVerification 
+							(InstantId)"> <http:body><![CDATA[#[vars.instantIdRequest]]]></http:body> 
+							</http:request> <error-handler> <on-error-continue enableNotifications="true" 
+							logException="true" doc:name="On Error Continue" doc:id="3093dd02-31f4-4dae-bb50-a072671f7f0d"> 
+							<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" 
+							name="api-exceptions-response-build" /> <set-variable value="#[vars.tempApiExceptionVar]" 
+							doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="instantIdException" 
+							/> <logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" 
+							message="Exception Found in InstantId Call:::::::: #[vars.instantIdException]" 
+							/> </on-error-continue> </error-handler> </try> <logger level="INFO" doc:name="IdVerificationResponse 
+							" doc:id="506bdded-7f09-4dc3-87f6-2e40b68383df" message=" ApplicationId #[vars.ApplicationId] 
+							IdVerificationResponse #[vars.instantIdResponse]" /> -->
+						<set-variable value="#[vars.docAuthResult]" doc:name="SetDocAuthResult"
+							doc:id="817e6211-fdde-4937-9617-4f853600b969" variableName="docAuthResult" />
+						<ee:transform doc:name="InstantIdResponse" doc:id="f3dee878-ac8c-4ff9-85b7-2946dee04b88">
+							<ee:message>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="instantIdCaseResponse" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.ApplicantType == "NONNRA" and vars.isCaseApprovedFlow == "false" and null != vars.instantIdResponse) {
+		Status: {
+			ConversationId: vars.instantIdResponse.Status.ConversationId default null,
+			RequestId: vars.instantIdResponse.Status.RequestId default null,
+			TransactionStatus:   if(vars.instantIdResponse.Status.TransactionStatus == "passed" and vars.instantIdResponse.Status.TransactionReasonCode.Description == "PASS")
+									"Passed"
+								else if (vars.instantIdResponse.Status.TransactionStatus == "passed" and vars.instantIdResponse.Status.TransactionReasonCode.Description == "PENDING")
+									"Passed"
+								else if (vars.instantIdResponse.Status.TransactionStatus == "passed" and vars.instantIdResponse.Status.TransactionReasonCode.Description == "FAIL")
+									"Passed"
+								else if (vars.instantIdResponse.Status.TransactionStatus == "failed" and vars.instantIdResponse.Status.TransactionReasonCode.Description == "FAIL")
+									"Failed"
+								else if (vars.instantIdResponse.Status.TransactionStatus == "passed" and null == vars.instantIdResponse.Status.TransactionReasonCode.Description)
+									"Passed"
+								else vars.instantIdResponse.Status.TransactionStatus,
+			Reference: vars.instantIdResponse.Reference	,
+			KBA:  if(null != vars.instantIdResponse.Status.TransactionReasonCode.Description)
+					vars.instantIdResponse.Status.TransactionReasonCode.Description
+				  else
+				  	"Unknown"
+			
+		},		
+		Products: vars.instantIdResponse.Products map ( product , indexOfProduct ) -> product,
+		PassThroughs: [
+		  {
+			"Type": if (null != vars.instantIdResponse.PassThroughs[0].Type)
+						vars.instantIdResponse.PassThroughs[0].Type 
+					else "",
+			"Data": if (null != vars.instantIdResponse.PassThroughs[0].Data)
+						read(vars.instantIdResponse.PassThroughs[0].Data, "application/json")
+					else ""	    		 
+			}
+		]
+  }
+  else {}]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+						<set-variable value="#[vars.instantIdResponse.Status.TransactionStatus]"
+							doc:name="SetInstantIDtransactionStatus" doc:id="e8fcacc7-8a93-46b8-8520-e6cfc1ff5ca5"
+							variableName="instantIDtransactionStatus" />
+
+						<set-variable value="#[vars.instantIdResponse.Status.TransactionReasonCode.Description]" doc:name="SetInstantIDtransactionReasonCode" doc:id="88ee6574-f8bb-45e9-a147-2e627486f185" variableName="instantIDtransactionReasonCode"/>
+						<choice doc:name="Choice" doc:id="0b2e005c-837a-4511-ba50-a5ec47340e29">
+  
+  
+  <when expression='#[vars.instantIDtransactionStatus=="pending"]'>
+								<logger level="INFO" doc:name="Pending Logger"
+									doc:id="739ea33f-95c2-4715-8e69-627dfb064115" message= "Instant ID returned Pending Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<ee:transform doc:name="Transform Message"
+									doc:id="0024b21f-18c4-41fa-af73-d31119ab6903">
+									<ee:message>
+									</ee:message>
+									<ee:variables>
+										<ee:set-variable variableName="preSubmitResponse"><![CDATA[%dw 2.0
+output application/json
+---
+{
+	ApplicationId: payload.ApplicationId,
+	ApplicationStatus: "Pending",
+	InstantIdResponse: vars.instantIdResponse,
+	//PinpointRecommendationInfo: vars.pinpointRecommendationInfo,
+	PinpointResponse : vars.pinpointResponse.data[1]
+}]]></ee:set-variable>
+									</ee:variables>
+
+								</ee:transform>
+								<set-payload value="#[vars.preSubmitResponse]"
+									doc:name="Set Payload" doc:id="ff344097-d582-41ae-8524-fe914ed65aa0" />
+								<flow-ref doc:name="global-return-response-build"
+									doc:id="5aef1c99-af0e-4858-9606-92dd5de0b9d8" name="global-return-response-build" />
+								<logger level="INFO" doc:name="Logger"
+									doc:id="0504e21d-25d9-4974-913b-b3b0a4ebcef9" message ="PreSubmit Response :::::::: #[payload] Request UUID #[correlationId] Flow Name #[flow.name]" />
+
+							</when>
+
+							<when expression='#[vars.instantIDtransactionStatus=="passed" and vars.instantIDtransactionReasonCode=="PASS"]'>
+								<logger level="INFO" doc:name="Passed Logger"
+									doc:id="f021eeac-c86b-491e-8990-dfc7ca7fac09"
+									message="Instant ID returned Passed Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<ee:transform doc:name="Transform Message"
+									doc:id="948e2450-c77a-4c24-b163-7909684fb38a">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[{
+},
+payload
+]]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+								<flow-ref doc:name="NonNRASubmission" doc:id="9a9af165-d78c-4b94-8c12-5bbacfd16067" name="NonNRASubmission"/>
+					
+</when>
+							<!-- <when expression='vars.instantIDtransactionStatus=="decline"'>
+								<logger level="INFO" doc:name="Decline Flow"
+									doc:id="3ba63bb7-c61c-4a04-a831-8841438632d4"
+									message="Instant ID returned Decline Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<set-variable value="${variables.caseStatus.DECLINE}"
+									doc:name="caseStatus" doc:id="f1bd231f-d273-4a4b-880a-2fb745bb9074"
+									variableName="caseStatus" />
+								<set-variable
+									value="Application declined. InstantID returned transaction status as decline. Case Created with declined status."
+									doc:name="Set Variable" doc:id="19417c7c-8c09-4255-b1dc-78a1d6419a0b"
+									variableName="retSuccMes" />
+								<logger level="INFO" doc:name="Logger"
+									doc:id="419f1a11-9363-43f0-80aa-e1365da36ec1"
+									message="#[payload] Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<logger level="INFO" doc:name="Logger"
+									doc:id="d380fe8c-f7d2-41a2-9439-774f9ba9335c" message="Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<flow-ref doc:name="caseCreationFlow"
+									doc:id="930ce606-abd6-461e-a223-f8b1ca8d5210" name="caseCreationFlow" />
+								<ee:transform doc:name="Transform Message"
+									doc:id="a56352cf-a516-429b-a9ae-5628da1da8aa">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+{	
+	ApplicationId: vars.ApplicationId,
+	ApplicationStatus: "Declined",	
+	CaseNumber: payload.data.CaseNumber,
+	Error: payload.data.Error
+}]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+								<flow-ref doc:name="global-return-response-build"
+									doc:id="a0a66713-b88b-4e7e-bb39-c4a7d657ba7e" name="global-return-response-build" />
+
+							</when> -->
+							<when expression='#[vars.instantIDtransactionStatus=="passed" and vars.instantIDtransactionReasonCode=="PENDING"]'>
+								<logger level="INFO" doc:name="Pending Flow"
+									doc:id="e74657fa-3dd6-4231-9413-9eb22cd24cfb" message="Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<set-variable value="${variables.caseStatus.PENDING}"
+									doc:name="caseStatus" doc:id="085f520d-f2a5-4f35-acaf-1828369adbeb" variableName="caseStatus"  />
+								<set-variable
+									value="Application Pending. InstantID returned transaction status as passed. Case Created with pending status."
+									doc:name="Set Variable" doc:id="2bf94097-0371-4aa4-9c98-22df0feb7625" variableName="retSuccMes" />
+								<flow-ref doc:name="ofacCallSubFlow"
+									doc:id="b724759f-7470-4258-955e-5aea1dad07a8" name="ofacCallSubFlow" />
+								<flow-ref doc:name="caseCreationFlow"
+									doc:id="33c598da-467f-4b45-aba6-02de21e660fb" name="caseCreationFlow" />
+								<ee:transform doc:name="Transform Message"
+									doc:id="07b386fb-5a6b-434f-83d2-8f8c90e84050">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	ApplicationId: vars.ApplicationId,
+	ApplicationStatus: vars.caseStatus,	
+	CaseNumber: payload.data.CaseNumber,
+	Error: payload.data.Error
+}]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+								<flow-ref doc:name="global-return-response-build"
+									doc:id="369484d2-1eb4-4d30-9118-a0130f053cb8" name="global-return-response-build" />
+									
+
+							</when>
+							<when expression='#[vars.instantIDtransactionStatus=="passed" and vars.instantIDtransactionReasonCode=="FAIL"]'>
+								<logger level="INFO" doc:name="Declined Flow"
+									doc:id="cb13de66-eef9-43a6-8a9d-7ab10257819e" message="Instant ID trasanction status returned Failed Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<set-variable value="${variables.caseStatus.DECLINE}"
+									doc:name="caseStatus" doc:id="f1bd231f-d273-4a4b-880a-2fb745bb9074"
+									variableName="caseStatus" />
+								<set-variable
+									value="Application declined. InstantID returned transaction status as failed. Case Created with declined status."
+									doc:name="Set Variable" doc:id="19417c7c-8c09-4255-b1dc-78a1d6419a0b"
+									variableName="retSuccMes" />
+								<flow-ref doc:name="ofacCallSubFlow"
+									doc:id="176ea7f8-5409-4d91-8e1e-420c324a32f2" name="ofacCallSubFlow" />
+								<set-variable value="InstantIDFailed" doc:name="Set Variable"
+									doc:id="f1658150-dd18-4b50-9bdc-a0bcb4da8852" variableName="instantIdFailedException" />
+								<flow-ref doc:name="caseCreationFlow"
+									doc:id="930ce606-abd6-461e-a223-f8b1ca8d5210" name="caseCreationFlow" />
+								<ee:transform doc:name="Transform Message"
+									doc:id="a56352cf-a516-429b-a9ae-5628da1da8aa">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	ApplicationId: vars.ApplicationId,
+	ApplicationStatus: vars.caseStatus,	
+	CaseNumber: payload.data.CaseNumber,
+	Error: payload.data.Error
+}]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+								<flow-ref doc:name="global-return-response-build"
+									doc:id="64243689-d530-41e2-98cc-8025e53c220e" name="global-return-response-build" />
+
+							</when>			
+							<when expression='#[vars.instantIDtransactionStatus=="failed" and ((vars.instantIDtransactionReasonCode==null) or (vars.instantIDtransactionReasonCode=="FAIL") )]'>
+								<logger level="INFO" doc:name="Pending Flow"
+									doc:id="0e2f4d9f-9d04-4ff1-b918-7c17578ed947" message="Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<set-variable value="${variables.caseStatus.PENDING}"
+									doc:name="caseStatus" doc:id="b4843049-cea4-4f53-8a7b-87210e2383d8" variableName="caseStatus" />
+								<set-variable
+									value="Application Pending. InstantID returned transaction status as failed. Case Created with pending status."
+									doc:name="Set Variable" doc:id="bac37fed-c20c-4bcb-a15a-be8bc6adb684" variableName="retSuccMes" />
+								<flow-ref doc:name="ofacCallSubFlow"
+									doc:id="d4598ab9-681c-4e0b-8fff-a2710267cb5e" name="ofacCallSubFlow" />
+								<flow-ref doc:name="caseCreationFlow"
+									doc:id="7b4c4a99-0af5-4138-94a6-4abae5d88f35" name="caseCreationFlow" />
+								<ee:transform doc:name="Transform Message"
+									doc:id="a56352cf-a516-429b-a9ae-5628da1da8aa">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	ApplicationId: vars.ApplicationId,
+	ApplicationStatus: vars.caseStatus,	
+	CaseNumber: payload.data.CaseNumber,
+	Error: payload.data.Error
+}]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+								<flow-ref doc:name="global-return-response-build"
+									doc:id="c32e86db-8ed0-43a6-97a4-732e9f39266b" name="global-return-response-build" />
+
+							</when>	
+							<when expression='#[vars.instantIDtransactionStatus=="passed" and ((vars.instantIDtransactionReasonCode==null) or (vars.instantIDtransactionReasonCode==""))]'>
+								<logger level="INFO" doc:name="Pending Flow"
+									doc:id="8669f7c8-937e-4f6c-9d6b-36b362bad959" message="Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<set-variable value="${variables.caseStatus.PENDING}"
+									doc:name="caseStatus" doc:id="891ca9ef-60c9-41b6-82eb-659d97d1a27b" variableName="caseStatus"  />
+								<set-variable
+									value="Application Pending. InstantID returned transaction status as passed. Case Created with pending status."
+									doc:name="Set Variable" doc:id="5e4c2c14-2e1d-426c-b613-1b300619ea0d" variableName="retSuccMes" />
+								<flow-ref doc:name="ofacCallSubFlow"
+									doc:id="34c746ba-077f-4a4d-948a-29091a040cba" name="ofacCallSubFlow" />
+								<flow-ref doc:name="caseCreationFlow"
+									doc:id="71d2986a-d95f-4432-98b6-678326500327" name="caseCreationFlow" />
+								<ee:transform doc:name="Transform Message"
+									doc:id="d6b1b9c1-2cb0-4443-9e85-23ec0885816d">
+									<ee:message>
+										<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	ApplicationId: vars.ApplicationId,
+	ApplicationStatus: vars.caseStatus,	
+	CaseNumber: payload.data.CaseNumber,
+	Error: payload.data.Error
+}]]></ee:set-payload>
+									</ee:message>
+								</ee:transform>
+								<flow-ref doc:name="global-return-response-build"
+									doc:id="d4c7183b-5458-4dae-b340-295ffc8f03c6" name="global-return-response-build" />
+								<logger level="INFO" doc:name="Logger"
+									doc:id="0f4d33a5-3b6c-4a8e-afd6-49abee78543c"
+									message="PreSubmit Response :::::::: #[payload] Request UUID #[correlationId] Flow Name #[flow.name]" />
+
+							</when>																				
+							
+							
+							<otherwise>
+								<logger level="INFO" doc:name="Default Logger"
+									doc:id="d1fac862-931d-40eb-8432-9cccf5d763c8"
+									message="Default Logger ###### Request UUID #[correlationId] Flow Name #[flow.name]" />
+								<flow-ref doc:name="ofacCallSubFlow"
+									doc:id="f5749279-a57b-4b8f-9dd2-3dbcdfd31baf" name="ofacCallSubFlow" />
+								<set-variable value="InstantIDFailed" doc:name="Set Variable"
+									doc:id="3b584869-b88b-4811-a7be-92148f79f954" variableName="instantIdFailedException" />
+								<set-variable value="${variables.caseStatus.PENDING}"
+									doc:name="Set Case Status" doc:id="fa679746-fdcb-4996-8dd0-63ceb18efc26"
+									variableName="caseStatus" />
+								<flow-ref doc:name="caseCreationFlow"
+									doc:id="a08fd33d-03e9-48b8-818e-e351db78d805" name="caseCreationFlow" />
+
+							</otherwise>
+						</choice>
+
+
+					</when>
+					<when
+						expression='vars.THREAT_INTELLIGENCE_FAIL_REASONS contains vars.pinpointRecommendationInfo.recommendation.recommendation'>
+						<set-variable value="${variables.caseStatus.DECLINE}"
+							doc:name="caseStatus" doc:id="f1bd231f-d273-4a4b-880a-2fb745bb9074"
+							variableName="caseStatus" />
+						<set-variable
+							value="Application declined. Pinpoint Authentication Failed. Case Created with declined status."
+							doc:name="Set Variable" doc:id="19417c7c-8c09-4255-b1dc-78a1d6419a0b"
+							variableName="retSuccMes" />
+						<flow-ref doc:name="ofacCallSubFlow" doc:id="e64a74c9-3bff-4bd5-9120-5cb15a601739"
+							name="ofacCallSubFlow" />
+						<flow-ref doc:name="caseCreationFlow" doc:id="930ce606-abd6-461e-a223-f8b1ca8d5210"
+							name="caseCreationFlow" />
+						<ee:transform doc:name="Transform Message"
+							doc:id="a56352cf-a516-429b-a9ae-5628da1da8aa">
+							<ee:message>
+								<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	ApplicationId: vars.ApplicationId,
+	ApplicationStatus: vars.caseStatus,	
+	CaseNumber: payload.data.CaseNumber,
+	Error: payload.data.Error
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<flow-ref doc:name="global-return-response-build" doc:id="7de2cf72-f1d2-4b09-be8d-a7ac8d7bf6ec"
+							name="global-return-response-build" />
+
+					</when>
+					<otherwise>
+						<set-variable value="${variables.caseStatus.PENDING}"
+							doc:name="caseStatus" doc:id="5b2f4606-a780-4a39-811d-94d6e865fdf4"
+							variableName="caseStatus" />
+						<flow-ref doc:name="ofacCallSubFlow" doc:id="e64a74c9-3bff-4bd5-9120-5cb15a601739"
+							name="ofacCallSubFlow" />
+						<flow-ref doc:name="caseCreationFlow" doc:id="02d7ecf1-2fab-448b-82ba-8108678dc0b3"
+							name="caseCreationFlow" />
+
+					</otherwise>
+				</choice>
+
+
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger"
+					doc:id="93efba95-f12e-4922-b230-555f0d3c3709"
+					message="PinPoint Session Not Found or PinPoint Server is unavailable Request UUID #[correlationId] Flow Name #[flow.name]" />
+				<set-variable value="${variables.caseStatus.PENDING}"
+					doc:name="SetCaseStatus" doc:id="fdbf8962-e5c0-48f8-a359-449c4c85d913"
+					variableName="caseStatus" />
+				<set-variable value="#[vars.pinpointResponse.data[1].message]"
+					doc:name="SetPinPointSessionExpired" doc:id="8850eef1-3785-4b83-b41a-64bc94eaad0f"
+					variableName="pinPointSessionExpired" />
+				<flow-ref doc:name="ofacCallSubFlow" doc:id="e64a74c9-3bff-4bd5-9120-5cb15a601739"
+					name="ofacCallSubFlow" />
+				<flow-ref doc:name="caseCreationFlow" doc:id="005ea6ab-8c5e-487e-b44f-fd40f28cd43d"
+					name="caseCreationFlow" />
+				<logger level="INFO" doc:name="Logger"
+					doc:id="9f9ff13a-2281-4926-8bba-18c2a65cb013"
+					message="Pre Submit Response :::::::::::::::::::::: #[payload] Request UUID #[correlationId] Flow Name #[flow.name]" />
+
+			</otherwise>
+		</choice>
+		<logger doc:name="Logger"
+			message="PreSubmit Response for Application Id #[vars.ApplicationId] ::::::::::::::::::::::::::::::: #[payload]"
+			level="INFO"></logger>
+		<!-- <ee:cache doc:name="Cache" doc:id="146622f4-e66d-4b03-8ab1-70c8f64064d5" 
+			cachingStrategy-ref="Caching_Strategy"> <flow-ref doc:name="cacheCustomerVerificationDataFlow" 
+			doc:id="1ce2390b-374d-469b-b6da-a0d68b0884bf" name="cacheCustomerVerificationDataFlow"/> 
+			</ee:cache> -->
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="2d2674f9-285c-42dc-94c2-592b0e51e7a4">
+				<flow-ref doc:name="generic-exception" doc:id="f509ec5a-6126-4d91-acff-c748dc54338d"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<sub-flow name="BuildPrimaryAndMailingAddressWebUI" doc:id="088cf691-ff1b-4a19-b2e3-c75ef167e350">
+		<choice doc:name="Choice" doc:id="c30281af-738c-4169-b256-43e01aab9285" >
+			<when expression="#[vars.IsPartnerRequest == 'false']">
+				<ee:transform doc:name="BuildAddress" doc:id="84281d0a-8d40-42bb-8738-689a759ac425">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="CustomerMailingAddress"><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.CustomerInformation.MailingAddress==null) 
+	null
+else if (payload.CustomerInformation.MailingAddress.IsForeignAddress == true) 
+	{
+		"IsForeignAddress": payload.CustomerInformation.MailingAddress.IsForeignAddress,
+		"Type": "MailingAddress",
+	    "StreetAddress1": payload.CustomerInformation.MailingAddress.StreetAddress1 default "",
+	    "StreetAddress2": payload.CustomerInformation.MailingAddress.StreetAddress2 default "",
+	    "StreetAddress3": payload.CustomerInformation.MailingAddress.StreetAddress3 default "",
+	    "City": payload.CustomerInformation.MailingAddress.City default "",
+		"State": payload.CustomerInformation.MailingAddress.State default "",
+		"Zip": payload.CustomerInformation.MailingAddress.Zip default "",
+		"CountryCode": payload.CustomerInformation.MailingAddress.CountryCode default "",
+	    "Country": payload.CustomerInformation.MailingAddress.Country default ""
+	} 
+else 
+	{
+		"Type": "MailingAddress",
+		"IsForeignAddress": payload.CustomerInformation.MailingAddress.IsForeignAddress default "",
+		"StreetAddress1": payload.CustomerInformation.MailingAddress.StreetAddress1 default "",
+		"StreetAddress2": payload.CustomerInformation.MailingAddress.StreetAddress2 default "",
+		"City": payload.CustomerInformation.MailingAddress.City default "",
+		"State": payload.CustomerInformation.MailingAddress.State default "",
+		"Zip": payload.CustomerInformation.MailingAddress.Zip default "",
+		"CountryCode": payload.CustomerInformation.MailingAddress.CountryCode default "",
+	    "Country": payload.CustomerInformation.MailingAddress.Country default ""
+	}	]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerPrimaryAddress"><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.CustomerInformation.Address==null) 
+	null
+else if (payload.CustomerInformation.Address.IsForeignAddress == true) 
+	{
+		"IsForeignAddress": payload.CustomerInformation.Address.IsForeignAddress,
+		"Type": "PrimaryAddress",
+	    "StreetAddress1": payload.CustomerInformation.Address.StreetAddress1 default "",
+	    "StreetAddress2": payload.CustomerInformation.Address.StreetAddress2 default "",
+	    "StreetAddress3": payload.CustomerInformation.Address.StreetAddress3 default "",
+	    "City": payload.CustomerInformation.Address.City default "",
+		"State": payload.CustomerInformation.Address.State default "",
+		"Zip": payload.CustomerInformation.Address.Zip default "",
+		"CountryCode": payload.CustomerInformation.Address.CountryCode default "",
+	    "Country": payload.CustomerInformation.Address.Country default ""
+	} 
+else 
+	{
+		"Type": "PrimaryAddress",
+		"IsForeignAddress": payload.CustomerInformation.Address.IsForeignAddress default "",
+		"StreetAddress1": payload.CustomerInformation.Address.StreetAddress1 default "",
+		"StreetAddress2": payload.CustomerInformation.Address.StreetAddress2 default "",
+		"City": payload.CustomerInformation.Address.City default "",
+		"State": payload.CustomerInformation.Address.State default "",
+		"Zip": payload.CustomerInformation.Address.Zip default "",
+		"CountryCode": payload.CustomerInformation.Address.CountryCode default "",
+	    "Country": payload.CustomerInformation.Address.Country default ""
+	}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<ee:transform doc:name="Transform Message" doc:id="0abf6492-bbb5-4c35-b8d0-fabca1bf8d29">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="customerWebAddress"><![CDATA[%dw 2.0
+output application/json skipNullOn="everywhere"
+---
+[
+	
+	vars.CustomerPrimaryAddress default null , 
+	vars.CustomerMailingAddress default null
+
+]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="9f2e3753-3197-4fa1-b2c6-98470ebe0f33" message="Partner Request "/>
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

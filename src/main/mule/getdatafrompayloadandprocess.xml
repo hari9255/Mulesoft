@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<sub-flow name="getDataFromPayloadAndProcessSub_Flow" doc:id="075de275-793e-481f-8f5c-64074aa088cf" >
+		<set-variable value="#[payload[0].Pass]" doc:name="Set Variable" doc:id="a77a5092-e688-45d1-9e0d-cbf85bbbff31" variableName="tmpPass" />
+		<ee:transform doc:name="Transform Message" doc:id="aaa5b8cd-ba17-4538-a8da-26a1cb285f19" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="kbaRequestPayload" ><![CDATA[%dw 2.0
+output application/json
+var AccountNumber = "${Settings.AccountNumber}"
+var Mode = "${Settings.Mode}"
+var ConversationId = "${Settings.ConversationId}"
+var Locale = "${Settings.Locale}"
+---
+{
+	"Settings": {
+		"AccountNumber" : AccountNumber,
+		"ConversationId": payload[0].Settings.ConversationId,
+		"Mode": Mode,
+		"Locale":Locale
+	},
+	"Answers": payload[0].Answers
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-payload value="#[payload[1]]" doc:name="Set Payload" doc:id="30485ebc-c0e9-4686-8d14-35ac662e9955" />
+		<set-variable value="${variables.ofac.ENTITY_TYPE}" doc:name="SetOfacEntityType" doc:id="55fb4809-ecf9-4acb-8d88-c8eb0365ed9c" variableName="ofacEntityType"/>
+		<set-variable value="${variables.ofac.SEARCH_NAME}" doc:name="SetOfacSearchName" doc:id="2ad4e0d9-cff9-4e04-9204-a899f78ddb51" variableName="ofacSearchName"/>
+		<set-variable value="#[payload.CustomerInformation.CISNumber]" doc:name="SetCISNumber" doc:id="6270d040-1fe1-4df6-963a-20ed1dcf1a34" variableName="CISNumber"/>
+	</sub-flow>
+</mule>

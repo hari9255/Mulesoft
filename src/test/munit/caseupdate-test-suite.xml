@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="caseupdate-test-suite.xml" />
+	<sub-flow name="ExpAPICallCaseUpdateBBAEMockSub_Flow" doc:id="0c006206-7ab4-4ee7-bafd-9b6610754580" >
+		<munit-tools:mock-when doc:name="Mock Exp API Call for Case Update BBAE" doc:id="ce4655f8-901d-4162-9ebe-2c4a8687a571" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="c88b7b9a-d75a-412f-8a67-1d2fd4b6fe91" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="expAprResp" value="#[output application/json --- {}]" mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="TokenGenerationMockSub_Flow" doc:id="6f935a0f-9f74-4646-ad28-1b8609779394" >
+		<munit-tools:mock-when doc:name="Mock Token Generation" doc:id="07fdac7d-ba0f-4529-b1f5-5ba3df919b02" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="e2d61cfd-7a3e-423f-8b07-1033e72a8a90" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="internalToken" value='#[output application/json --- {"access_token":"eyJraWQiOiJGSE1jTWJIUlpMd01QSXgweDlGM1lESDlUenVXdy1QNHJ6eFl6LTREc2xnIiwiYWxnIjoiUlMyNTYifQ.eyJ2ZXIiOjEsImp0aSI6IkFULjZSUEZndlNONDkyWDJUZVpKbzV2aTVmandJTXd4VkVYeWh0SmJWc2NPTnciLCJpc3MiOiJodHRwczovL3Nzby10ZXN0LnZlbG9iYW5rLmNvbS9vYXV0aDIvYXVzZjJjMThxcXRtR0h5WDgwaDciLCJhdWQiOiJodHRwczovL2Rldm9wZW5hcGkudmVsb2JhbmsuY29tLyIsImlhdCI6MTU0OTQ1NDQ3MCwiZXhwIjoxNTQ5NDU4MDcwLCJjaWQiOiIwb2FnbG9kY25kandoWW5CdzBoNyIsInNjcCI6WyJhcGk6cmVhZCJdLCJzdWIiOiIwb2FnbG9kY25kandoWW5CdzBoNyJ9.SjifbsHyUdKpLa7pMyjFCf7pFqSuxvj3l4tMpcoS--Qp-vn57o3kPlT2Wlph3CxpEgFqEVMGvhresi7b5XyuzYCAW6Tc6OzYPRpEzrobPDjd6teBRWcXLDM2RQodV24x8coaHLZjA2y90om-v8W_Vpy98RjkDMhvALhxZyhyO5QZVexClifxlmM44shcZW71Zgk-E-Pk0bTOizxvV9IwLZ_2sOQKdStPNj-ZObgGID-iEaawuroqIVXZKZNGlDg-p1z5KAIZN5uDeiAW4bhBXdhD_eJV_OO6Exeo5BsYickGpmt3__ftOKU05dWLUBUeajd_knQsY3J6JxJwKOJd4Q","token_type":"Bearer","expires_in":3600,"scope":"api:read"}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="CaseUpdateFailureMockSub_Flow" doc:id="3dbdd142-7f32-4c07-b524-c0a6a6db8859" >
+		<munit-tools:mock-when doc:name="Mock Case Update Failure Response" doc:id="e87bda92-788a-4e08-9566-657fedb0e7e9" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="7e65af25-59d3-4dbd-abe5-f8a61291ec43" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:payload value='#[output application/json --- {"Case Update":"Falied","Message":"Case Not Found"}]' mediaType="application/json" />
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<munit:test name="case-update-test" description="Test" doc:id="aad239b4-595d-4d67-891a-dae38ba1e368">
+		<munit:behavior >
+			<flow-ref doc:name="Flow Reference to oauthResponseMockSub_Flow" doc:id="78239f7f-324c-45ef-8f77-c6c55ff58bf9" name="oauthResponseMockSub_Flow"/>
+			<flow-ref doc:name="Flow Reference to CaseUpdateMockSub_Flow" doc:id="9d24b200-48a2-4c02-8a65-7b63e3159345" name="CaseUpdateMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Attributes" doc:id="9594982e-aa09-451b-af69-4d3af0722e04" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="uriParamstmp" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"uriParams" : {
+		"caseId" : "23456767"
+	}
+}
+
+]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<munit:set-event doc:name="Set Event" doc:id="f8f549ab-3473-46de-9019-29f866f8c85d" >
+				<munit:payload value='#[output application/json --- {"CaseStatus":" Close &amp; Proceed","DoNotBank":true,"PoliticalExposedPerson":true,"ApplicationId":"ABC-1234567","CaseNumber":"23456767"}]' mediaType="application/json" />
+				<munit:attributes value="#[vars.uriParamstmp]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to put:\process\crm\(caseId)\update:velo-process-api-config" doc:id="f5ada105-5255-4800-978d-544f5c74ffa0" name="put:\process\crm\(caseId)\update:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Update Response" doc:id="e30742e0-179d-4d7d-b498-d25af5a3819e" expression='#[payload.data."Case Update"]' is='#[MunitTools::equalTo("Success")]' message="Update Failed"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="case-update-failure-test" description="Test" doc:id="5dd46e29-ff47-49b6-8108-fb4c7fbb23cc">
+		<munit:behavior >
+			<flow-ref doc:name="Flow Reference to oauthResponseMockSub_Flow" doc:id="e92fde7b-00b4-4630-a860-a605405054fb" name="oauthResponseMockSub_Flow"/>
+			<flow-ref doc:name="Flow Reference to CaseUpdateFailureMockSub_Flow" doc:id="61d46731-0e35-403f-8e3a-b3824535c52a" name="CaseUpdateFailureMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Attributes" doc:id="da9d8885-9081-4b70-9f57-eecc4791262b" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="uriParamstmp" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"uriParams" : {
+		"caseId" : "23456767"
+	}
+}
+
+]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<munit:set-event doc:name="Set Event" doc:id="ce087b54-2268-4887-a62a-a8b636520c8b" >
+				<munit:payload value='#[output application/json --- {"CaseStatus":" Close &amp; Proceed","DoNotBank":true,"PoliticalExposedPerson":true,"ApplicationId":"ABC-1234567","CaseNumber":"23456767"}]' mediaType="application/json" />
+				<munit:attributes value="#[vars.uriParamstmp]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to put:\process\crm\(caseId)\update:velo-process-api-config" doc:id="522ddd49-a8e1-4b70-80ef-ed48a0aabf17" name="put:\process\crm\(caseId)\update:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Update Response" doc:id="ae0c4e59-4443-44b8-82b0-6d473b5a649c" expression='#[payload.data."Case Update"]' is='#[MunitTools::equalTo("Falied")]' message="Update was not a failure"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="case-update-BBAE-test" description="Test" doc:id="f1f06be6-df64-4fa0-b36a-8d72c56081e7" >
+		<munit:behavior >
+			<flow-ref doc:name="Flow Reference to TokenGenerationMockSub_Flow" doc:id="63553098-2996-4c5c-90d9-5167caac0ad9" name="TokenGenerationMockSub_Flow" />
+			<flow-ref doc:name="Flow Reference to ExpAPICallCaseUpdateBBAEMockSub_Flow" doc:id="0e8bb31a-822a-4dbd-9408-ea0747c6e9fc" name="ExpAPICallCaseUpdateBBAEMockSub_Flow" />
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Attributes" doc:id="3ad1a1ce-5f52-4064-b0a5-7bdd70ab4836" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="uriParamstmp" ><![CDATA[%dw 2.0
+output application/java
+---
+{
+	"uriParams" : {
+		"caseId" : "23456767"
+	}
+}
+
+]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<munit:set-event doc:name="Set Event" doc:id="337d4333-2938-4c55-bd19-eda24fbc9627" >
+				<munit:payload value='#[output application/json --- {"ApplicationId":"APP-M-05965","CaseNumber":"CAS-01335-F0L2Y7","CaseStatus":"Close &amp; Proceed","DoNotBank":false,"PartnerId":"31000112989076","PoliticalExposedPerson":false}]' mediaType="application/json" />
+				<munit:attributes value="#[vars.uriParamstmp]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to put:\process\crm\(caseId)\update:velo-process-api-config" doc:id="624f2927-df3b-4cd2-9dc5-493b24eb66ea" name="put:\process\crm\(caseId)\update:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Update Response" doc:id="d588f974-1527-418e-953c-f1c348d395cb" expression='#[payload.result.success]' is='#[MunitTools::equalTo(true)]' message="Update Failed"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="trulioo-idverification-system-api-callFlow" doc:id="4af74735-1f96-4b5a-98cc-f5715e204af7">
+		<set-variable value="#[vars.TruliooIdVerificationRequest]"
+			doc:name="Set Variable" doc:id="ea8b81f7-1d58-4fe5-8076-fce264bbe87b"
+			variableName="idVerificationReq" encoding="UTF-8" mimeType="application/json" />
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="080be5e4-c0b9-4572-b332-f8227ae6fdaf"
+			message="Request UUID #[correlationId] Flow Name #[flow.name]::Trulio Id Verification request for Application Id #[vars.ApplicationId] ::::::::::::::::::::::: #[vars.idVerificationReq]" /> -->
+		<json-logger:logger doc:name="Trulio Id Verification Request Payload" doc:id="8281481c-ea19-42b3-941c-6c3b3bf5cdbe" config-ref="JSON_Logger_Config" message="Trulio Id Verification Request Payload" priority="DEBUG" tracePoint="PRINT" endpoint="POST:${customerVerificationFlow.truliooIdVerification.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	ApplicationId: vars.ApplicationId,
+ 	idVerificationReq: vars.idVerificationReq
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<try doc:name="Try" doc:id="d12ba45e-6772-48de-9ff4-593dd631bf2b">
+			<json-logger:logger doc:name="Trulioo Id Verification Before Request" doc:id="e686085b-8aed-42b2-b63c-12605919533a" tracePoint="BEFORE_REQUEST" message="Trulioo Id Verification Before Request" endpoint="POST:${customerVerificationFlow.truliooIdVerification.path}" config-ref="JSON_Logger_Config"/>
+			<http:request method="POST" doc:name="TruliooIdVerification" doc:id="5785fa3e-9a0f-4de8-94f8-174ec528e4a8" config-ref="HTTPS_System_API_Config" path="${customerVerificationFlow.truliooIdVerification.path}" target="idVerificationResp" responseTimeout="${http.request.timeout}">
+			<http:body><![CDATA[#[vars.idVerificationReq]]]></http:body>
+				<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		</http:request>
+		<json-logger:logger doc:name="Trulioo Id Verification After Request" doc:id="4fe850f1-b09a-4d3e-9f05-d4cc3a2690ee" endpoint="POST:${customerVerificationFlow.truliooIdVerification.path}" status="#[vars.'httpStatus']" message="Trulioo Id Verification After Request" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST"/>
+			<ee:transform doc:name="Transform Message"
+					doc:id="096e0163-6124-427e-90c4-c6957d89b919">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="idVerificationRecordStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+if (vars.idVerificationResp..RecordStatus contains "match")
+	"Pass"
+else 
+	"Fail"	]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="72585937-a8da-4ac9-ac72-8c5e2d7416df" >
+				<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build" />
+					<set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Exception Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="truliooIdVerificationException" />
+					<!-- <logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Request UUID #[correlationId] Flow Name #[flow.name]::Exception Found in ofacException :::::::: #[vars.ofacException]" /> -->
+					<json-logger:logger doc:name="Exception Found in ofacException" doc:id="78073eac-20fa-4e29-aeeb-21d94190a394" config-ref="JSON_Logger_Config" message="Exception Found in Truilioo ID Verification" priority="DEBUG" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	ofacException: vars.ofacException
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<set-variable value="true" doc:name="SetExceptionFlag" doc:id="ca234502-c9dd-4d8f-a6d0-c66f8bebaafb" variableName="exceptionFlag"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="1dd357c2-564e-4b81-87ed-65fc9cb76f00" message="Request UUID #[correlationId] Flow Name #[flow.name]::Trulioo Id Verification response for application id #[vars.ApplicationId] :::::::::::::::::: #[vars.idVerificationResp]"/> -->
+		<json-logger:logger doc:name="Trulioo Id Verification Response" doc:id="c51e24dc-aba7-40b9-98ae-a449ea04147f" config-ref="JSON_Logger_Config" message="Trulioo Id Verification Response" priority="DEBUG" tracePoint="PRINT" endpoint="POST:${customerVerificationFlow.truliooIdVerification.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	idVerificationResp: vars.idVerificationResp,
+ 	ApplicationId: vars.ApplicationId
+}]]]></json-logger:content>
+		</json-logger:logger>
+	</flow>
+</mule>

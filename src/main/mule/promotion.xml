@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="updatePromotionCodeFlow" doc:id="44c85283-8313-41a0-8367-5ba344fa1d81">
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Request UUID #[correlationId] Flow Name #[flow.name] Request Body #[payload]" /> -->
+
+		<json-logger:logger doc:name="Promotion Request Body " doc:id="daf9e914-1b8f-4398-b178-ff2826099d1f" config-ref="JSON_Logger_Config" message="Promotion Request Body " tracePoint="PRINT" priority="DEBUG" endpoint="PUT:/${promotion.update.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+	payload: payload
+	 
+}]]]></json-logger:content>
+		</json-logger:logger>
+
+		<json-logger:logger doc:name="Promotion Before Request" doc:id="ba0d7556-47cf-4d0a-9f0b-61adba9600a0" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="PUT:/${promotion.update.path}" message="Promotion Before Request"/>
+		<http:request method="PUT" doc:name="Request"
+			doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" config-ref="HTTP_Request_PromoCode"
+			path="/${promotion.update.path}" target="resPromoUpdate"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output applicaton/java
+---
+{
+	"promocode" : attributes.uriParams.promocode
+}]]]></http:uri-params>
+		</http:request>
+		<!-- <logger level="INFO" doc:name="Logger"
+			doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Response : #[vars.resPromoUpdate] Request UUID #[correlationId] Flow Name #[flow.name]" /> -->
+		<json-logger:logger doc:name="Promotion After Request" doc:id="12813a48-306f-410e-8964-6d07bcd96f21" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="PUT:/${promotion.update.path}" status="#[vars.'httpStatus']" message="Promotion After Request"/>
+		<json-logger:logger doc:name="Promotion Response " doc:id="7e71a9dc-c0ee-45d1-b9c1-2bbc1619e7d1" config-ref="JSON_Logger_Config" message="Promotion Response " tracePoint="PRINT" endpoint="PUT:/${promotion.update.path}" priority="DEBUG">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	resPromoUpdate: vars.resPromoUpdate
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.resPromoUpdate]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<flow-ref doc:name="global-return-response-build" doc:id="464485ff-6096-4846-aaa8-be4b67cd4675"
+			name="global-return-response-build" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="da29db40-90c9-43ea-8d1f-732a552b01eb">
+				<flow-ref doc:name="generic-exception" doc:id="5de70371-edf7-4457-bcd9-680cf8aac5da"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="getPromoCodeDetailFlow" doc:id="19a2468b-167d-4133-8b12-581191c6361d" >
+	<!-- <logger level="INFO" doc:name="Logger"
+	doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Request UUID #[correlationId] Flow Name #[flow.name] Request Body #[payload] " /> -->
+	<logger level="INFO" doc:name="Client Ip Address Logger" doc:id="fad3f0f3-b9e5-41b3-994b-d2058e914b1a" message="IP Address Of Client#[attributes.remoteAddress] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+		<json-logger:logger doc:name="Get PromoCode Before Request" doc:id="ceb1deb8-c577-4a78-b098-63699255f5d6" config-ref="JSON_Logger_Config" message="Get PromoCode  Before Request" tracePoint="BEFORE_REQUEST" endpoint="GET:/${promotion.verify.path}">
+			<json-logger:content><![CDATA[#[output application/json ---
+{
+	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="GET" doc:name="Request"
+		doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" config-ref="HTTP_Request_PromoCode"
+		path="/${promotion.verify.path}" target="promoDetails"
+		targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+		<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+		<http:uri-params><![CDATA[#[output applicaton/java
+---
+{
+	"promocode" : attributes.uriParams.promocode
+}]]]></http:uri-params>
+
+	</http:request>
+	<!-- <logger level="INFO" doc:name="Logger"
+		doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Response : #[vars.promoDetails] Request UUID #[correlationId] Flow Name #[flow.name]" /> -->
+	<json-logger:logger doc:name="Get PromoCode After Request" doc:id="4bd74426-26e9-4e88-bbe0-a8e379e7f79d" config-ref="JSON_Logger_Config" endpoint="GET:/${promotion.verify.path}" tracePoint="AFTER_REQUEST" message="Get PromoCode After Request" status="#[vars.'httpStatus']"/>
+		<json-logger:logger doc:name="Promotion Response " doc:id="93617edd-ceae-431a-95da-3b7032f6e8be" config-ref="JSON_Logger_Config" message="Promotion Response " tracePoint="PRINT" priority="DEBUG">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	promoDetails: vars.promoDetails
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-payload value="#[vars.promoDetails]" doc:name="Set Payload"
+		doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+	<flow-ref doc:name="global-return-response-build" doc:id="464485ff-6096-4846-aaa8-be4b67cd4675"
+		name="global-return-response-build" />
+	
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b5933cdb-0c2c-4542-a8e6-e2bea0ef17f5" >
+				<flow-ref doc:name="generic-exception" doc:id="967b9066-6c21-4a4e-9141-f86305be0a2a" name="generic-exception"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

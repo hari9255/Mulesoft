@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="fis-system-api-call-test-suite.xml" />
+	<munit:test name="fis-system-api-call-test-suite-for-checking-account" description="Test" doc:id="b449d410-2ddd-4985-8da5-54f61b51c85d" >
+		<munit:behavior >
+			<flow-ref doc:name="FISCheckingAccountMock" doc:id="771038fb-3ea1-48e6-97d2-d6b2e6759dea" name="FISCheckingAccountMock"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="66a6e509-c170-4002-a37e-58aa65304736" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "ApplicationId": "APP-M-03751",
+  "ApplicantType": "NRA-CHN",
+  "RequestUUID": "f39fe79a-be5e-48cb-b041-170dfdad7a9a",
+  "CaseNumber": "CAS-02128-G7B3Y9",
+  "AccountInformation": {
+    "AccountType": "CHK_I_VELO",
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": null,
+      "NumberOfStatementCopies": 0,
+      "AddressLineOfTINOwner": null
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptForeignAccount",
+      "UserCode": "B",
+      "StatusCodes": null,
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+      "NameOnCard": "srihkr",
+      "CardDesign": "Black"
+    }
+  },
+  "CustomerInformation": {
+    "Address": {
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "er dao jiang qu dong tong hua jie tong",
+        "AddressLine2": "gang wei jiu zu tong hua shi ji lin",
+        "AddressLine3": "sheng 100000",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    },
+    "MailingAddress": {
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "Haidianqusuzhoujieweiyadasha Beijingshi",
+        "AddressLine2": "bei jing shi",
+        "AddressLine3": "",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    },
+    "GivenAddresses": [
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "Haidianqusuzhoujieweiyadasha Beijingshi",
+        "StreetAddress2": "bei jing shi",
+        "StreetAddress3": null,
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "Country": "China",
+        "CountryCode": "CHN"
+      },
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "er dao jiang qu dong tong hua jie tong",
+        "StreetAddress2": "gang wei jiu zu tong hua shi ji lin",
+        "StreetAddress3": "sheng 100000",
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "PrimaryChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": "StreetAddress1 PCA",
+        "StreetAddress2": "StreetAddress2 PCA",
+        "StreetAddress3": "StreetAddress3 PCA",
+        "City": "City",
+        "State": "State",
+        "Zip": "12345",
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "MailingChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": "StreetAddress1 MCA",
+        "StreetAddress2": "StreetAddress2 MCA",
+        "StreetAddress3": "StreetAddress3 MCA",
+        "City": "city",
+        "State": "state",
+        "Zip": "12300",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    ],
+    "VisaType": null,
+    "BranchNumber": "8161",
+    "CitizenshipCode": "CHN",
+    "CountryofDualCitizenship": "CHN",
+    "AnnualIncome": "UnderFiftyThousand",
+    "CostCenterNumber": "161",
+    "DateOfBirth": "1990-10-26",
+    "EmailAddress": "sriharsha.r@brillio.com",
+    "EmploymentDate": null,
+    "EmploymentOrSchool": null,
+    "EmploymentStatus": null,
+    "Ethnicity": null,
+    "FirstName": "sri",
+    "LastName": "KR",
+    "MiddleName": null,
+    "Gender": "Female",
+    "CategoryCode1": "903",
+    "CategoryCode2": "821",
+    "Identification": {
+      "IdentificationInformation1": null,
+      "IdentificationInformation2": null,
+      "IsTINAppliedFor": null,
+      "Status": null
+    },
+    "MailCode": null,
+    "MaritalStatus": "Single",
+    "MothersMaidenName": null,
+    "Occupation": "ScienceOrTechnology",
+    "CISNumber": "",
+    "PrimaryID": null,
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": null,
+    "MobilePhoneNumber": "17600590000",
+    "CountryCode": "+86",
+    "SecondaryOfficerNumber": null,
+    "TaxIdType": "",
+    "PEP": "No",
+    "W8CertificateType": "W8BenNoCert",
+    "W8CertificateDate": "2018-12-14",
+    "TaxNumber": "",
+    "ForeignTaxID": "220503199010260526",
+    "ForeignTaxNumber": "220503199010260526",
+    "Title": null,
+    "NonResidentAccountInformation": {
+      "SourceOfWealth": "Employment",
+      "PurposeOfAccount": "Investment",
+      "IntendInternationalWires": null,
+      "IntendIncomingWires": null,
+      "IncomingWiresLimit": "ZeroToThreeThousand",
+      "IntendOutgoingWires": null,
+      "OutgoingWiresLimit": "ZeroToThreeThousand",
+      "VisaType": "None",
+      "ForeignTaxNumber": "220503199010260526",
+      "PreferredName": null
+    }
+  }
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to fis-system-api-callFlow" doc:id="48dda8cb-3fa4-48c9-ba00-3b22c0bba818" name="fis-system-api-callFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="77741de5-16db-486c-889d-0bd8826c1bd2" message="#[vars.FisResponse]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="2467b997-64a1-4c73-9cea-440c814d6305" expression="#[vars.FisResponse.data.CustomerNumber]" is='#[MunitTools::equalTo("00000061099")]' message="Test for FIS Checking Account Creation System API call failed"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="fis-system-api-call-test-suite-for-savings-account" description="Test" doc:id="4e4ac7c4-677e-4112-87ae-50b29723de4a" >
+		<munit:behavior >
+			<flow-ref doc:name="FISSavingAccountMock" doc:id="19231940-9ab6-4a4b-8436-12e254f410d4" name="FISSavingAccountMock"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="2fd273b3-12c9-439e-bf41-d01ee2ffbbfc" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "ApplicationId": "APP-M-03751",
+  "ApplicantType": "NRA-CHN",
+  "RequestUUID": "f39fe79a-be5e-48cb-b041-170dfdad7a9a",
+  "CaseNumber": "CAS-02128-G7B3Y9",
+  "AccountInformation": {
+    "AccountType": "SVG_PERS_PREM_SAVINGS_STMT",
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": null,
+      "NumberOfStatementCopies": 0,
+      "AddressLineOfTINOwner": null
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptForeignAccount",
+      "UserCode": "B",
+      "StatusCodes": null,
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+      "NameOnCard": "srihkr",
+      "CardDesign": "Black"
+    }
+  },
+  "CustomerInformation": {
+    "Address": {
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "er dao jiang qu dong tong hua jie tong",
+        "AddressLine2": "gang wei jiu zu tong hua shi ji lin",
+        "AddressLine3": "sheng 100000",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    },
+    "MailingAddress": {
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "Haidianqusuzhoujieweiyadasha Beijingshi",
+        "AddressLine2": "bei jing shi",
+        "AddressLine3": "",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    },
+    "GivenAddresses": [
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "Haidianqusuzhoujieweiyadasha Beijingshi",
+        "StreetAddress2": "bei jing shi",
+        "StreetAddress3": null,
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "Country": "China",
+        "CountryCode": "CHN"
+      },
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "er dao jiang qu dong tong hua jie tong",
+        "StreetAddress2": "gang wei jiu zu tong hua shi ji lin",
+        "StreetAddress3": "sheng 100000",
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "PrimaryChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": "StreetAddress1 PCA",
+        "StreetAddress2": "StreetAddress2 PCA",
+        "StreetAddress3": "StreetAddress3 PCA",
+        "City": "City",
+        "State": "State",
+        "Zip": "12345",
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "MailingChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": "StreetAddress1 MCA",
+        "StreetAddress2": "StreetAddress2 MCA",
+        "StreetAddress3": "StreetAddress3 MCA",
+        "City": "city",
+        "State": "state",
+        "Zip": "12300",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    ],
+    "VisaType": null,
+    "BranchNumber": "8161",
+    "CitizenshipCode": "CHN",
+    "CountryofDualCitizenship": "CHN",
+    "AnnualIncome": "UnderFiftyThousand",
+    "CostCenterNumber": "161",
+    "DateOfBirth": "1990-10-26",
+    "EmailAddress": "sriharsha.r@brillio.com",
+    "EmploymentDate": null,
+    "EmploymentOrSchool": null,
+    "EmploymentStatus": null,
+    "Ethnicity": null,
+    "FirstName": "sri",
+    "LastName": "KR",
+    "MiddleName": null,
+    "Gender": "Female",
+    "CategoryCode1": "903",
+    "CategoryCode2": "821",
+    "Identification": {
+      "IdentificationInformation1": null,
+      "IdentificationInformation2": null,
+      "IsTINAppliedFor": null,
+      "Status": null
+    },
+    "MailCode": null,
+    "MaritalStatus": "Single",
+    "MothersMaidenName": null,
+    "Occupation": "ScienceOrTechnology",
+    "CISNumber": "",
+    "PrimaryID": null,
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": null,
+    "MobilePhoneNumber": "17600590000",
+    "CountryCode": "+86",
+    "SecondaryOfficerNumber": null,
+    "TaxIdType": "",
+    "PEP": "No",
+    "W8CertificateType": "W8BenNoCert",
+    "W8CertificateDate": "2018-12-14",
+    "TaxNumber": "",
+    "ForeignTaxID": "220503199010260526",
+    "ForeignTaxNumber": "220503199010260526",
+    "Title": null,
+    "NonResidentAccountInformation": {
+      "SourceOfWealth": "Employment",
+      "PurposeOfAccount": "Investment",
+      "IntendInternationalWires": null,
+      "IntendIncomingWires": null,
+      "IncomingWiresLimit": "ZeroToThreeThousand",
+      "IntendOutgoingWires": null,
+      "OutgoingWiresLimit": "ZeroToThreeThousand",
+      "VisaType": "None",
+      "ForeignTaxNumber": "220503199010260526",
+      "PreferredName": null
+    }
+  }
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to fis-system-api-callFlow" doc:id="b3cc6362-f254-4fa8-a118-eff73f4ad4ca" name="fis-system-api-callFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="0a712548-4b4a-4799-9536-d1669bfcc8e2" message="#[vars.FisResponse]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="10b0ee75-68f8-4921-b969-6029f0d81a08" expression="#[vars.FisResponse.data.CustomerNumber]" is='#[MunitTools::equalTo("00000061099")]' message="Test for FIS Savings Account Creation System API call failed"/>
+		
+</munit:validation>
+	</munit:test>
+	<munit:test name="fis-system-api-call-test-suite-for-unknown-account-type" description="Test" doc:id="661f08be-3683-475c-876e-7734b34fc5e5" >
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="536d41c3-2014-49b9-99d9-47df42d0e804" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "ApplicationId": "APP-M-03751",
+  "ApplicantType": "NRA-CHN",
+  "RequestUUID": "f39fe79a-be5e-48cb-b041-170dfdad7a9a",
+  "CaseNumber": "CAS-02128-G7B3Y9",
+  "AccountInformation": {
+    "AccountType": "UNKNOWN_ACCOUNY_TYPE",
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": null,
+      "NumberOfStatementCopies": 0,
+      "AddressLineOfTINOwner": null
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptForeignAccount",
+      "UserCode": "B",
+      "StatusCodes": null,
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+      "NameOnCard": "srihkr",
+      "CardDesign": "Black"
+    }
+  },
+  "CustomerInformation": {
+    "Address": {
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "er dao jiang qu dong tong hua jie tong",
+        "AddressLine2": "gang wei jiu zu tong hua shi ji lin",
+        "AddressLine3": "sheng 100000",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    },
+    "MailingAddress": {
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "Haidianqusuzhoujieweiyadasha Beijingshi",
+        "AddressLine2": "bei jing shi",
+        "AddressLine3": "",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    },
+    "GivenAddresses": [
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "Haidianqusuzhoujieweiyadasha Beijingshi",
+        "StreetAddress2": "bei jing shi",
+        "StreetAddress3": null,
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "Country": "China",
+        "CountryCode": "CHN"
+      },
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "er dao jiang qu dong tong hua jie tong",
+        "StreetAddress2": "gang wei jiu zu tong hua shi ji lin",
+        "StreetAddress3": "sheng 100000",
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "PrimaryChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": "StreetAddress1 PCA",
+        "StreetAddress2": "StreetAddress2 PCA",
+        "StreetAddress3": "StreetAddress3 PCA",
+        "City": "City",
+        "State": "State",
+        "Zip": "12345",
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "MailingChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": "StreetAddress1 MCA",
+        "StreetAddress2": "StreetAddress2 MCA",
+        "StreetAddress3": "StreetAddress3 MCA",
+        "City": "city",
+        "State": "state",
+        "Zip": "12300",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    ],
+    "VisaType": null,
+    "BranchNumber": "8161",
+    "CitizenshipCode": "CHN",
+    "CountryofDualCitizenship": "CHN",
+    "AnnualIncome": "UnderFiftyThousand",
+    "CostCenterNumber": "161",
+    "DateOfBirth": "1990-10-26",
+    "EmailAddress": "sriharsha.r@brillio.com",
+    "EmploymentDate": null,
+    "EmploymentOrSchool": null,
+    "EmploymentStatus": null,
+    "Ethnicity": null,
+    "FirstName": "sri",
+    "LastName": "KR",
+    "MiddleName": null,
+    "Gender": "Female",
+    "CategoryCode1": "903",
+    "CategoryCode2": "821",
+    "Identification": {
+      "IdentificationInformation1": null,
+      "IdentificationInformation2": null,
+      "IsTINAppliedFor": null,
+      "Status": null
+    },
+    "MailCode": null,
+    "MaritalStatus": "Single",
+    "MothersMaidenName": null,
+    "Occupation": "ScienceOrTechnology",
+    "CISNumber": "",
+    "PrimaryID": null,
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": null,
+    "MobilePhoneNumber": "17600590000",
+    "CountryCode": "+86",
+    "SecondaryOfficerNumber": null,
+    "TaxIdType": "",
+    "PEP": "No",
+    "W8CertificateType": "W8BenNoCert",
+    "W8CertificateDate": "2018-12-14",
+    "TaxNumber": "",
+    "ForeignTaxID": "220503199010260526",
+    "ForeignTaxNumber": "220503199010260526",
+    "Title": null,
+    "NonResidentAccountInformation": {
+      "SourceOfWealth": "Employment",
+      "PurposeOfAccount": "Investment",
+      "IntendInternationalWires": null,
+      "IntendIncomingWires": null,
+      "IncomingWiresLimit": "ZeroToThreeThousand",
+      "IntendOutgoingWires": null,
+      "OutgoingWiresLimit": "ZeroToThreeThousand",
+      "VisaType": "None",
+      "ForeignTaxNumber": "220503199010260526",
+      "PreferredName": null
+    }
+  }
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to fis-system-api-callFlow" doc:id="d2688bf4-cc95-4005-acb9-c53064cbf1c8" name="fis-system-api-callFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="5e0d2afa-d5a3-4af6-8df2-a8d1aca68b41" message="#[vars.FisResponse]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="bf6598c5-1b18-4241-a617-28bf684b362e" expression="#[vars.FisResponse..ErrorMessageNumber[0]]" is='#[MunitTools::equalTo("99999")]' message="Test for FIS Unknown Account Type Creation System API call failed"/>
+		
+</munit:validation>
+	</munit:test>
+	<munit:test name="fis-system-api-call-test-suite-when-exception-foundin-system-api" description="Test" doc:id="b8934f39-a08e-4db9-b965-a06bb940c572" >
+		<munit:behavior >
+			<flow-ref doc:name="FISSavingAccountExceptionMock" doc:id="419283e0-85c1-4a5c-a544-1a559cad209f" name="FISSavingAccountExceptionMock"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="54afe391-82f2-4038-9925-5e924975aa7c" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "ApplicationId": "APP-M-03751",
+  "ApplicantType": "NRA-CHN",
+  "RequestUUID": "f39fe79a-be5e-48cb-b041-170dfdad7a9a",
+  "CaseNumber": "CAS-02128-G7B3Y9",
+  "AccountInformation": {
+    "AccountType": "SVG_PERS_PREM_SAVINGS_STMT",
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": null,
+      "NumberOfStatementCopies": 0,
+      "AddressLineOfTINOwner": null
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptForeignAccount",
+      "UserCode": "B",
+      "StatusCodes": null,
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+      "NameOnCard": "srihkr",
+      "CardDesign": "Black"
+    }
+  },
+  "CustomerInformation": {
+    "Address": {
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "er dao jiang qu dong tong hua jie tong",
+        "AddressLine2": "gang wei jiu zu tong hua shi ji lin",
+        "AddressLine3": "sheng 100000",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    },
+    "MailingAddress": {
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "Haidianqusuzhoujieweiyadasha Beijingshi",
+        "AddressLine2": "bei jing shi",
+        "AddressLine3": "",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    },
+    "GivenAddresses": [
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "Haidianqusuzhoujieweiyadasha Beijingshi",
+        "StreetAddress2": "bei jing shi",
+        "StreetAddress3": null,
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "Country": "China",
+        "CountryCode": "CHN"
+      },
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": true,
+        "StreetAddress1": "er dao jiang qu dong tong hua jie tong",
+        "StreetAddress2": "gang wei jiu zu tong hua shi ji lin",
+        "StreetAddress3": "sheng 100000",
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "PrimaryChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": "StreetAddress1 PCA",
+        "StreetAddress2": "StreetAddress2 PCA",
+        "StreetAddress3": "StreetAddress3 PCA",
+        "City": "City",
+        "State": "State",
+        "Zip": "12345",
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      {
+        "Type": "MailingChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": "StreetAddress1 MCA",
+        "StreetAddress2": "StreetAddress2 MCA",
+        "StreetAddress3": "StreetAddress3 MCA",
+        "City": "city",
+        "State": "state",
+        "Zip": "12300",
+        "CountryCode": "CHN",
+        "Country": "China"
+      }
+    ],
+    "VisaType": null,
+    "BranchNumber": "8161",
+    "CitizenshipCode": "CHN",
+    "CountryofDualCitizenship": "CHN",
+    "AnnualIncome": "UnderFiftyThousand",
+    "CostCenterNumber": "161",
+    "DateOfBirth": "1990-10-26",
+    "EmailAddress": "sriharsha.r@brillio.com",
+    "EmploymentDate": null,
+    "EmploymentOrSchool": null,
+    "EmploymentStatus": null,
+    "Ethnicity": null,
+    "FirstName": "sri",
+    "LastName": "KR",
+    "MiddleName": null,
+    "Gender": "Female",
+    "CategoryCode1": "903",
+    "CategoryCode2": "821",
+    "Identification": {
+      "IdentificationInformation1": null,
+      "IdentificationInformation2": null,
+      "IsTINAppliedFor": null,
+      "Status": null
+    },
+    "MailCode": null,
+    "MaritalStatus": "Single",
+    "MothersMaidenName": null,
+    "Occupation": "ScienceOrTechnology",
+    "CISNumber": "",
+    "PrimaryID": null,
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": null,
+    "MobilePhoneNumber": "17600590000",
+    "CountryCode": "+86",
+    "SecondaryOfficerNumber": null,
+    "TaxIdType": "",
+    "PEP": "No",
+    "W8CertificateType": "W8BenNoCert",
+    "W8CertificateDate": "2018-12-14",
+    "TaxNumber": "",
+    "ForeignTaxID": "220503199010260526",
+    "ForeignTaxNumber": "220503199010260526",
+    "Title": null,
+    "NonResidentAccountInformation": {
+      "SourceOfWealth": "Employment",
+      "PurposeOfAccount": "Investment",
+      "IntendInternationalWires": null,
+      "IntendIncomingWires": null,
+      "IncomingWiresLimit": "ZeroToThreeThousand",
+      "IntendOutgoingWires": null,
+      "OutgoingWiresLimit": "ZeroToThreeThousand",
+      "VisaType": "None",
+      "ForeignTaxNumber": "220503199010260526",
+      "PreferredName": null
+    }
+  }
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to fis-system-api-callFlow" doc:id="e0401167-dac8-48b7-a533-12c0d5b95d74" name="fis-system-api-callFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="8fb94964-64e2-4990-8912-cfb8646246d8" message="#[vars.FisResponse]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="5a89ac70-5170-46d3-9143-cfb857ef0822" expression="#[vars.FisResponse..ErrorMessageNumber[0]]" is='#[MunitTools::equalTo("99999")]' message="Test for FIS Unknown Account Type Creation System API call failed"/>
+		
+</munit:validation>
+	</munit:test>
+</mule>

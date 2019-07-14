@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<http:request-config name="HTTP_Request_configuration_sfdc" doc:name="HTTP Request configuration" doc:id="20fe53fa-4304-43d2-9790-ece1620bc5d9" >
+		<http:request-connection tlsContext="TLS_Context" protocol="HTTPS"/>
+	</http:request-config>
+	<flow name="caseupdateFlow" doc:id="7e1f0d53-428d-4c3d-bb00-d1f224d0b381" >
+		<ee:transform doc:name="Transform Message" doc:id="1b3dd6b4-44e9-4736-a80a-683f5490c680" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload mapObject {
+       ($$): if($$ as String == 'CaseStatus')
+                     $ replace "&amp;" with "&"
+              else $
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="f6cadda3-1a85-42cc-9dad-72ccb06575fe" >
+			<when expression="#[payload.CaseStatus == 'Close &amp; Reject']">
+				<logger level="INFO" doc:name="Logger" doc:id="c6c597b5-bfd3-4614-97e4-be36c695c3da" />
+				<ee:transform doc:name="Transform Message" doc:id="a8b06ccb-250a-4e36-bb14-a4efd698764c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "Close & Reject called. Check Proxy for interceptor"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>						
+			<when expression="payload.PartnerId != null" >
+				<logger level="INFO" doc:name="Logger" doc:id="0a70221b-f07f-4ce3-b4f0-606c0befe790" message="Call Experience API to Initiate the case Approved flow."/>
+				<flow-ref doc:name="caseupdateBBAEFlow" doc:id="14f29598-1940-4600-aa91-cd05d2fccf4c" name="caseupdateBBAEFlow"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="Oauth-token" doc:id="428811bb-f836-40b0-9d4b-7cb7286cdd00" name="oauth-token-cache-configFlow" target="oauth_access" targetValue="#[payload]" />
+				<json-logger:logger doc:name="Salesforce URL" doc:id="fb3dd547-29b5-4d22-9b45-58eb971d7bc0" config-ref="JSON_Logger_Config" message="Salesforce URL" tracePoint="PRINT" priority="DEBUG">
+			<json-logger:content><![CDATA[#[output application/json ---
+{
+ 	saleforceUrl: vars.'oauth_access'.saleforce_url,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+				<ee:transform doc:name="Transform Message" doc:id="432f6760-4665-4311-ad69-e93b73ebbe7c">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+	"CaseId": attributes.uriParams.caseId, 
+	"CaseStatus": payload.CaseStatus,
+	"DoNotBank" : payload.DoNotBank, 
+    "PoliticalExposedPerson" : payload.PoliticalExposedPerson,
+    "ApplicationId" : payload.ApplicationId,
+    "CaseNumber" : attributes.uriParams.caseId 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<json-logger:logger doc:name="Case Update Before Request" doc:id="9a6b989e-528c-4c72-821d-c590b04036ba" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="POST:/#[vars.'oauth_access'.saleforce_url]" message="Case Update Request"/>
+				<http:request method="POST" doc:name="Request" doc:id="7e65af25-59d3-4dbd-abe5-f8a61291ec43" config-ref="HTTP_Request_configuration_sfdc" url="#[vars.'oauth_access'.saleforce_url]" responseTimeout="${TIMEOUT.TWOMINUTE}">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"X-CORRELATION-ID" : correlationId,
+	"Authorization" : vars.'oauth_access'.access_token
+}]]]></http:headers>
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"Key" : "Value"
+}]]]></http:uri-params>
+					<http:response-validator >
+						<http:success-status-code-validator values="200,412,400,500" />
+					</http:response-validator>
+		</http:request>
+				<json-logger:logger doc:name="Case Update Before Request" doc:id="d43a5985-3fd9-4ba0-9fe5-2f508d8a87a0" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="POST:/#[vars.'oauth_access'.saleforce_url]" message="Case Update Response" status="#[vars.'httpStatus']"/>
+				<ee:transform doc:name="Transform Message" doc:id="dec87084-adce-4c8b-95fa-e8fe1ec270cb" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/json ---  
+
+attributes.statusCode]]></ee:set-variable>
+						<ee:set-variable variableName="retSuccMes" ><![CDATA[%dw 2.0
+output application/json
+---
+attributes.reasonPhrase]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="87a2891f-ac9b-4e6c-89cd-7fd37130a8ef" message="Case Update Response #[payload] Request UUID #[vars.Requestuuid] Flow Name #[flow.name]"/> -->
+		<flow-ref doc:name="global-return-response-build" doc:id="ffa552cf-5097-41e2-88aa-6dfe8b6e3901" name="global-return-response-build"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d7bdbba1-de0e-4003-8296-e49e63b1955b" >
+				<flow-ref doc:name="generic-exception" doc:id="3d3830e0-348b-4267-95b7-3d37b59668e3" name="generic-exception"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="caseupdateBBAEFlow" doc:id="9a55ee1c-2ac8-4db5-b57b-ed99e2c098db" >
+		<ee:transform doc:name="Transform Message" doc:id="7c25a3ed-6346-40a4-a7b2-fd781249a373" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="tokenBody" ><![CDATA[%dw 2.0
+output application/x-www-form-urlencoded
+---
+{
+	client_id: p('InternalOauth.client_id'),
+	client_secret: p('InternalOauth.client_secret'),
+	grant_type: p('InternalOauth.grant_type')
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="GenerateInternalToken" doc:id="e2d61cfd-7a3e-423f-8b07-1033e72a8a90" url="${InternalOauth.host}" target="internalToken" targetValue="#[output application/json --- payload]" config-ref="HTTP_Request_caseApproved">
+			<http:body ><![CDATA[#[vars.tokenBody]]]></http:body>
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/x-www-form-urlencoded"
+}]]]></http:headers>
+		</http:request>
+		<set-variable value='#[vars.internalToken.token_type ++ " " ++ vars.internalToken.access_token]' doc:name="Set Variable" doc:id="ee4954c0-63d3-41bf-8967-c5117ef43695" variableName="intToken"/>
+		<async doc:name="Async" doc:id="1882306e-6b84-4f2b-af97-b518b832eae4" >
+			<json-logger:logger doc:name="ExperienceAPI For Acc Create Before Request" doc:id="17e82d3e-4c4e-47c8-bbac-77acc31116e6" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" message="Account Create Request - Experience API" endpoint="POST:/api/experience/case/approved" />
+			<http:request method="POST" doc:name="CallExperienceAPIForAccCreate" doc:id="c88b7b9a-d75a-412f-8a67-1d2fd4b6fe91" path="/${partnerCaseUpdate.path}" config-ref="HTTP_Experience_API_Config" target="expAprResp" targetValue="#[output application/json --- payload]" responseTimeout="${TIMEOUT.TWOMINUTE}">
+			<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.intToken
+}]]]></http:headers>
+		</http:request>
+			<logger level="INFO" doc:name="Logger" doc:id="b6baf8a8-4fd4-413a-a96e-7393a250a972" message="Case update experience API response: #[vars.expAprResp]"/>
+			<json-logger:logger doc:name="ExperienceAPI For Acc Create After Request" doc:id="b301bfd4-23e3-4865-88c5-6bc9a3cb810b" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" message="Account Create Response -Experience API" endpoint="POST:/api/experience/case/approved" status="#[vars.'httpStatus']" />
+		
+</async>
+		<ee:transform doc:name="Transform Message" doc:id="97b4762b-e6b1-49c5-9293-b2fee6674b09">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Message": "Called Experience API,Please look for the log in experience API"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+	</flow>
+</mule>

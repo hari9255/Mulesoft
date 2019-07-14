@@ -1,0 +1,44 @@
+{
+  "RequestUUID": "0-233844f0-49d6-11e9-bbbc-068d31d21576",
+  "CorrelationId": "6312be64-1c52-4be0-b1c1-9cb3c4cae39f",
+  "Initiator": "Salesforce",
+  "ApplicationStatus": "Approved",
+  "AccountNumber": "2161274691",
+  "MID": "1689d87c3527e49714f0a684220ba17518129ecbe0d",
+  "Partner": {
+    "PartnerId": "31000112989176",
+    "PartnerName": "WEBULL",
+    "ApplicationIp": "220.169.30.114",
+    "Channel": "Mobile"
+  },
+  "ApplicationId": "APP-M-13254",
+  "ApplicantType": "NRA-CHN",
+  "Customer": {
+    "Names": [
+      {
+        "Type": "English",
+        "FirstName": "ENRAWBCHN",
+        "LastName": "EEnglish",
+        "MiddleInitial": null,
+        "Title": ""
+      }
+    ],
+    "ContactInformation": [
+      {
+        "Type": "Primary",
+        "CountryCode": "+86",
+        "Number": "17801219221",
+        "PhoneNumber": "+8617801219221"
+      }
+    ],
+    "Address": [
+      {
+        "Country": "China"
+      }
+    ],
+    "CampaignId": "W",
+    "CustomerNumber": "00000067455",
+    "PrimaryLanguage": "English",
+    "EmailAddress": "testcomm2@velo.com"
+	}
+}

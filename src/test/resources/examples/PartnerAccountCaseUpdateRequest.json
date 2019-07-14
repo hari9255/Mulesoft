@@ -1,0 +1,139 @@
+{
+  "RequestUUID": "3a68a84b-5178-46c9-8750-9267bb90ea56",
+  "MID": "cSXPX4wcr1/P8ay7b6UP0aORtWCRWx/xmOvuYmCvQHEldHxw/jvGGWoqeGlZoBTh",
+  "CaseId": null,
+  "CaseStatus": "Approved",
+  "Partner": {
+    "PartnerId": "31000112989176",
+    "PartnerName": "WEBULL",
+    "ApplicationIp": "223.186.78.236",
+    "Channel": "Mobile",
+    "VerificationResults": "Approved"
+  },
+  "CaseNumber": "CAS-09600-N5V6M6",
+  "ApplicationId": "APP-M-09221",
+  "ApplicantType": "NONNRA",
+  "Accounts": [
+    {
+      "AccountType": "CHK_I_VELO",
+      "AccountName": "Checking - US Checking",
+      "CardHolderName1": null,
+      "CardHolderName2": "",
+      "CustomerToAccountRelationship": [
+        {
+          "CustomerAccountRelationshipCode": "Individual",
+          "CustomerAccountAssociationType": "Primary",
+          "NumberOfStatementCopies": 1
+        }
+      ]
+    }
+  ],
+  "Customer": {
+    "Names": [
+      {
+        "Type": "English",
+        "FirstName": "THEODORE",
+        "LastName": "BLEEMER",
+        "MiddleInitial": null,
+        "Title": ""
+      }
+    ],
+    "DateOfBirth": "1961-02-27",
+    "Addresses": [
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": false,
+        "StreetAddress1": "6640 FORJVWRQ ZDB",
+        "StreetAddress2": null,
+        "StreetAddress3": null,
+        "City": "MODESTO",
+        "State": "CA",
+        "Zip": "95354",
+        "Country": "United States",
+        "CountryCode": "USA"
+      },
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": false,
+        "StreetAddress1": "6640 FORJVWRQ ZDB",
+        "StreetAddress2": null,
+        "StreetAddress3": null,
+        "City": "MODESTO",
+        "State": "CA",
+        "Zip": "95354",
+        "CountryCode": "USA",
+        "Country": "United States"
+      },
+      {
+        "Type": "PrimaryChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": null,
+        "StreetAddress2": null,
+        "StreetAddress3": null,
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "CountryCode": null,
+        "Country": null
+      },
+      {
+        "Type": "MailingChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": null,
+        "StreetAddress2": null,
+        "StreetAddress3": null,
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "CountryCode": null,
+        "Country": null
+      }
+    ],
+    "ContactInformation": [
+      {
+        "Type": "Primary",
+        "Number": "1085551212",
+        "CountryCode": "+1"
+      }
+    ],
+    "CampaignId": null,
+    "TaxNumber": "613416979",
+    "CISNumber": "",
+    "TaxIdType": "SocialSecurityNumber",
+    "BirthPlace": null,
+    "CitizenshipCode": "USA",
+    "W8CertificateType": null,
+    "PrimaryID": null,
+    "MailCode": null,
+    "PrimaryLanguage": "English",
+    "EmailAddress": "amruthasajjan.s14@brillio.com",
+    "Gender": "Male",
+    "CountryofDualCitizenship": "USA",
+    "EmploymentDate": null,
+    "EmploymentOrSchool": null,
+    "Ethnicity": null,
+    "MaritalStatus": "Single",
+    "MothersMaidenName": null,
+    "Occupation": "Student",
+    "TenPercentShareHolder": "No",
+    "YearEmployed ": "1.0",
+    "AnnualIncome": "UnderFiftyThousand",
+    "W8CertificateDate": null,
+    "IsPoliticallyExposedPerson": true,
+    "Identification": {
+      "IsTINAppliedFor": null
+    },
+    "NonResidentAccountInformation": {
+      "SourceOfWealth": null,
+      "PurposeOfAccount": null,
+      "IntendInternationalWires": null,
+      "IntendIncomingWires": null,
+      "IncomingWiresLimit": null,
+      "IntendOutgoingWires": null,
+      "OutgoingWiresLimit": null,
+      "VisaType": null,
+      "ForeignTaxNumber": "613416979",
+      "PreferredName": null
+    }
+  }
+}

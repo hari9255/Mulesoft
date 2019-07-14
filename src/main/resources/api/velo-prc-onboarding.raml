@@ -1,0 +1,721 @@
+#%RAML 1.0
+#baseUri: https://mocksvc.mulesoft.com/mocks/7bf3ed31-eaf9-4339-8827-fff13a9121c7 # baseUri: https://mocksvc.mulesoft.com/mocks/dc397fbb-f182-4c29-811e-c815e06422e9 # 
+
+title: Velo Bank - Process APIs
+version: 1.0
+securitySchemes:
+#  basic:
+#    type: Basic Authentication  
+
+types:
+  GetPromotionResponse: !include entities/promotions/getPromotionResponse.raml
+  PutPromotionRequest: !include entities/promotions/putPromotionRequest.raml
+  PutPromotionResponse: !include entities/promotions/putPromotionResponse.raml
+  GetProductsResponse: !include entities/products/getProductsResponse.raml
+  PostCaseApprovedSubmission: !include request/dataType/post-case-approved-submission.raml
+  
+/process:
+  /notification:
+    /retry:
+      displayName: Retry Communication
+      description: This API endpoint will acknowledge the notification retry request.
+      post:
+        body:
+          application/json: 
+            example: !include request/notificationRetry.json
+        responses:
+          200:
+            body:
+              application/json:
+                example : !include response/notificationRetryResponse.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                  {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}             
+  /partner:
+    /account:
+      /create:
+        displayName: Partner Create
+        description: This API endpoint will Call partner account creation .
+        post:
+          body:
+            application/json: 
+              example: !include request/partner-create-account-v2.json  
+          responses:
+            200:
+              body:
+                application/json:
+                   example : !include response/partner-create-account.json
+            400:
+              description: Returns bad request
+              body:
+                application/json:
+                  example:
+                    {"message":"Bad Request"}                
+            404:
+              description: Returns record not found
+              body:
+                application/json:
+                  example:
+                      {"message":"Resource not found"}
+            500:
+              description: Returns process failed error
+              body:
+                application/json:
+                  example:
+                    {"message":"Internal Server Error"}
+      /update:
+        displayName: Partner Update
+        description: This API endpoint will Call partner account update .
+        post:
+          body:
+            application/json: 
+              example: !include request/partner-update-account.json
+          responses:
+            200:
+              body:
+                application/json:
+                   example : !include response/partner-update-account.json
+            400:
+              description: Returns bad request
+              body:
+                application/json:
+                  example:
+                    {"message":"Bad Request"}                
+            404:
+              description: Returns record not found
+              body:
+                application/json:
+                  example:
+                      {"message":"Resource not found"}
+            500:
+              description: Returns process failed error
+              body:
+                application/json:
+                  example:
+                    {"message":"Internal Server Error"}
+      /case/update:
+        displayName: Create Partner Account
+        description: This API endpoint will Call partner account creation .
+        post:
+          body:
+            application/json: 
+              example: !include request/partnerCaseApproved.json
+          responses:
+            200:
+              body:
+                application/json:
+                  example : !include response/partnerCaseApproved.json
+            400:
+              description: Returns bad request
+              body:
+                application/json:
+                  example:
+                    {"message":"Bad Request"}                
+            404:
+              description: Returns record not found
+              body:
+                application/json:
+                  example:
+                    {"message":"Resource not found"}
+            500:
+              description: Returns process failed error
+              body:
+                application/json:
+                  example:
+                    {"message":"Internal Server Error"}
+        
+  /synergy:
+      displayName: Synergy
+      description: This API endpoint will Call the System Endpoint Of Synergy .
+      post:
+        body:
+          application/json: 
+            example: !include request/synergy-request.json  
+        responses:
+          200:
+            body:
+              application/json:
+                 example : !include response/synergy-response.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+  /crm:
+    /{caseId}/update:
+      displayName: Case Management
+      description: This API endpoint will update the status in Terafina from MSD .
+      put:
+        body:
+          application/json: 
+            example: !include request/caseUpdate-request-terafina.json  
+        responses:
+          200:
+            body:
+              application/json:
+                 example : !include response/caseUpdate-response-terafina.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+  /submit:
+              
+    /presubmission:
+      displayName: Pre Submit
+      description: This Pocess API does the IdVerification and brings back the KBA if requiredor else it will create the account
+      post:
+        body:
+          application/json:
+            #example: !include request/verify-customer-idverification-request.json
+            #example: !include request/pre-submit.json
+            example: !include request/pre-submit-nra.json
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include response/verify-customer-idverification-response.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}    
+    /submission:
+      displayName: Account Submission
+      description: Submit the application after answering KBA by user
+      post:
+        body:
+          application/json:
+            example: !include request/final-submission.json       
+        responses:
+          200:
+            body:
+              application/json:
+                example : !include response/checking-account-creation-response.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+    
+  /caseapproved:
+    /submission:
+      displayName: Case Approved Submission
+      description: Account creation request after case is being reviewd in MSD
+      post:
+        body:
+          application/json:
+            #type: PostCaseApprovedSubmission
+            #example: !include request/post-case-approved-submission.json
+            
+        responses:
+          200:
+            body:
+              application/json:
+                example : !include response/checking-account-creation-response.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+    
+  /iam:
+    /users:
+      displayName: create
+      description: This SYSTEM API is used Create User, uses OKTA service
+      post:
+        body:
+          application/json:
+            example : !include request/post-createuser-request.json
+                
+        responses:
+          200:
+            body:
+              application/json:
+                example : !include response/create-user-response.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+    /factors:
+      /sms:
+        displayName: Enroll SMS challenge
+        post:
+          body:
+            application/json:
+              example: !include request/okta-enroll-sms-challenge.json
+              
+          responses:
+            200:
+              body:              
+                application/json:
+                  example: !include response/okta-enroll-sms-challenge.json
+            400:
+              description: Returns bad request
+              body:
+                application/json:
+                  example:
+                    {"message":"Bad Request"}                
+            404:
+              description: Returns record not found
+              body:
+                application/json:
+                  example:
+                      {"message":"Resource not found"}
+            500:
+              description: Returns process failed error
+              body:
+                application/json:
+                  example:
+                    {"message":"Internal Server Error"}
+        /verify:
+          displayName: Verify SMS challenge registration
+          post:
+            body:
+              application/json:
+                example: !include request/okta-verify-sms-challenge.json
+                
+            responses:
+              200:
+                body:              
+                  application/json:
+                    example: !include response/okta-verify-sms-challenge.json
+              400:
+                description: Returns bad request
+                body:
+                  application/json:
+                    example:
+                      {"message":"Bad Request"}                
+              404:
+                description: Returns record not found
+                body:
+                  application/json:
+                    example:
+                        {"message":"Resource not found"}
+              500:
+                description: Returns process failed error
+                body:
+                  application/json:
+                    example:
+                      {"message":"Internal Server Error"}
+                    
+      
+      
+    /challenge:
+      displayName: Challenge
+      description: This SYSTEM API is used to challenge User, uses OKTA service
+      post:
+        body:
+          application/json:
+            example : !include request/post-challenge-request.json
+                
+        responses:
+          200:
+            body:
+              application/json:
+                example : !include response/okta-challenge.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+    /verify:
+      displayName: Verify
+      description: This SYSTEM API; Verifies the Promocode
+      post:
+        body:
+          application/json:
+            example : !include request/okta-verify.json                                   
+
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include response/okta-verify.json 
+                  
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example: !include response/get-verify-response.json
+                   
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+  
+                  
+  /customerverification:
+    /truliooauthentication:
+      displayName: Trulioo Id Authentication
+      description: Process layer to verify customer identity using Trulioo 
+      post: 
+        body: 
+          application/json:
+            example: !include request/trulioo-idauthentication.json
+        responses:
+          200:
+            body: 
+              application/json: 
+                example: !include response/trulioo-idauthentication.json           
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+    
+  /idverification:    
+    /trueid:
+      displayName: True ID (idauthentication)
+      description: This SYSTEM API is used to represent True ID, uses OKTA service
+      post:
+        body:
+          application/json:
+              example : !include request/post-trueID-request.json
+
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include response/post-trueID-response.json
+                
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+    
+    
+  /addressvalidator:
+    /addressverify:
+      displayName: addressverify
+      description: This SYSTEM API is used for submit Application bridger, uses OKTA service
+      post:
+        body:
+          application/json:
+            example : !include request/post-addressverify-request.json
+                
+        responses:
+          200:
+            body:
+              application/json:
+                example : !include response/post-addressverify-response.json
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}     
+  /mortgage:
+    /applications:
+      displayName: Mortgage Application
+      description: This API is used to submit the mortgage application
+      post:
+        body:
+          application/json:
+              example : !include request/post-submitapplication-request.json
+
+        responses:
+          200:
+            body:
+              application/json:
+                example: !include response/post-submitapplication-response.json
+                
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}            
+      /{applicationid}/coborrowers:
+        displayName: Update Co-Borrowers
+        description: Update co-borrower in exiting mortgate application
+        post:
+          body:
+            application/json:
+                example : !include request/post-submitapplication-request.json
+  
+          responses:
+            200:
+              body:
+                application/json:
+                  example: !include response/post-submitapplication-response.json
+                  
+            400:
+              description: Returns bad request
+              body:
+                application/json:
+                  example:
+                    {"message":"Bad Request"}                
+            404:
+              description: Returns record not found
+              body:
+                application/json:
+                  example:
+                      {"message":"Resource not found"}
+            500:
+              description: Returns process failed error
+              body:
+                application/json:
+                  example:
+                    {"message":"Internal Server Error"}
+  /products:
+      displayName: GetProduct
+      get:
+        description: Get products
+        responses: 
+          200:
+            body:
+              application/json:
+                type: GetProductsResponse
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}                
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}
+  /promotions:
+    /{promocode}/verify:
+      get:
+        description: Verify a promo code
+        responses:
+          200: 
+            body: 
+              application/json:
+                type: GetPromotionResponse
+          404:
+            body:
+              application/json:
+                example: 
+                  message: 'Not Found'   
+    /{promocode}:
+      description: Update the status and customer info for a promo code          
+      put:
+        body:
+          application/json:
+            type: PutPromotionRequest
+        responses: 
+          200:
+            body:
+              application/json:
+                type: PutPromotionResponse
+          400: 
+            body:
+              application/json:
+                example:
+                  message: 'Bad Request'
+          404:
+            body:
+              application/json:
+                example:
+                  message: 'Not Found' 
+  /initiatecomm:
+    displayName: Initiate communication
+    description: To Initiate communication
+    /send:
+      displayName: Send request
+      description: Send request to initiate notification
+      post:
+        body:
+          application/json:
+            example: !include request/initiate-communication-send-message.json
+        responses:
+          201:
+            body:
+              application/json:
+                  example: {"message":"The request for sending communication has been initiated"}
+          400:
+            description: Returns bad request
+            body:
+              application/json:
+                example:
+                  {"message":"Bad Request"}               
+          404:
+            description: Returns record not found
+            body:
+              application/json:
+                example:
+                    {"message":"Resource not found"}
+          500:
+            description: Returns process failed error
+            body:
+              application/json:
+                example:
+                  {"message":"Internal Server Error"}    

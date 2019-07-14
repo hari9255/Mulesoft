@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="okta-flow-test-suite.xml" />
+
+	<munit:test name="okta-factor-sms-Test" description="MUnit Test" doc:id="91586933-236b-4594-be65-8427a070afc5" >
+		<munit:behavior>
+			<flow-ref doc:name="OktaFactorSmsMockSub_Flow" doc:id="0c96eb2d-33a0-48ce-9505-c7fc369932a7" name="OktaFactorSmsMockSub_Flow"/>
+
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+	"userId" : "00uf2vr865w1YvxAJ0h7",
+	"factorId" : "mblf2wiy6cLuf76aM0h7",
+	"passCode": "627485" 
+}]' doc:name="Set Payload" doc:id="8ac03c1d-51d9-4800-af83-5629a845e2ad" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\factors\sms:velo-process-api-config" doc:id="6e090df8-7bfc-4a7d-b7c7-ec493c435675" name="post:\process\iam\factors\sms:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Factor" doc:id="c6229875-8da6-49b7-a622-2db99e6346b0" expression="#[payload.userId]" is='#[MunitTools::notNullValue()]' message="User verification was unsuccessfull"/>
+			<munit-tools:assert-that doc:name="Assert Factor Type" doc:id="5dcec586-58cc-4864-8c07-03f3d0264875" expression="#[payload.factorType]" is='#[MunitTools::equalTo("sms")]' message="Factor type is not SMS"/>
+		
+</munit:validation>
+	</munit:test>
+
+
+	<munit:test name="okta-factor-sms-verify-Test" description="MUnit Test" doc:id="d8acfbcf-f44e-41a0-b27c-7b9db8ee2afa" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to OktaFactorSmsVerifyMockSub_Flow" doc:id="01baa00e-f862-4890-a5d3-ea75a6b12140" name="OktaFactorSmsVerifyMockSub_Flow"/>
+
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+	"userId" : "00uf2vr865w1YvxAJ0h7",
+	"factorId" : "mblf2wiy6cLuf76aM0h7",
+	"passCode": "627485" 
+}]' doc:name="Set Payload" doc:id="64bcbb6b-e3f8-40e4-a4a3-b7d663bada66" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\factors\sms\verify:velo-process-api-config" doc:id="f5ff0f8d-492c-483c-a59c-5f052080c6b9" name="post:\process\iam\factors\sms\verify:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Successfull Verification" doc:id="4abccb89-f045-4b99-816d-5c13a9c75f74" expression="#[payload.passCode]" is='#[MunitTools::notNullValue()]' message="User verification was unsuccessfull"/>
+		</munit:validation>
+	</munit:test>
+
+
+	<munit:test name="okta-challenge-Test" description="MUnit Test" doc:id="a70d30c1-ce0c-4ee2-a3d3-8caf4e386171" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to OktaChallengeMockSub_Flow" doc:id="cd122a4f-4890-42a9-9920-2b243ae810d3" name="OktaChallengeMockSub_Flow"/>
+
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+    "userId" : "00uf2vr865w1YvxAJ0h7",
+    "factorId": "mblf2wiy6cLuf76aM0h7" 
+ }]' doc:name="Set Payload" doc:id="0643a127-f955-4360-bcd9-bbf825c395e9" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\challenge:velo-process-api-config" doc:id="b8d559f8-0d43-4a1c-9fae-c8a268f2db92" name="post:\process\iam\challenge:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Challenge Response" doc:id="d29aeb06-2645-4c67-affd-d77520512090" expression="#[payload.userId]" is='#[MunitTools::notNullValue()]' message="User verification was unsuccessfull"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="okta-user-verify-success-Test" description="MUnit Test" doc:id="08a6fc95-aeae-46df-a163-27a18864e491" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to OktaUserVerifyMockSub_Flow" doc:id="a3b2c8ae-66d1-4033-b60a-2da008911b96" name="OktaUserVerifyMockSub_Flow"/>
+
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+    "userId" : "00uf2vr865w1YvxAJ0h7",
+    "factorId": "mblf2wiy6cLuf76aM0h7",
+    "passCode": "627485"
+}]' doc:name="Set Payload" doc:id="fe6c1639-8dfe-4e8b-9996-5a56beb9aabb" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\verify:velo-process-api-config" doc:id="16dd3a09-25f6-49b6-acd8-86c1f14e7df8" name="post:\process\iam\verify:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Successfull Verification" doc:id="3caf5d30-139b-497e-bad9-8de7ff4a66e2" expression="#[payload.passCode]" is='#[MunitTools::notNullValue()]' message="User verification was unsuccessfull"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="okta-user-verify-not-found-Test" description="MUnit Test" doc:id="39e137da-7216-4a96-b998-7e4870d88f5b" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="aaaa7026-8a42-4304-9385-cb026e14efd6" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3b17ebd1-867f-415a-81bc-812669942434" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+    "userId" : "00uf2vr865w1YvxAJ0h7",
+    "factorId": "mblf2wiy6cLuf76aM0h7",
+    "passCode": "627485"
+}]' doc:name="Set Payload" doc:id="4ee55ff2-8f73-418d-b371-d37f5b9444e9" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\verify:velo-process-api-config" doc:id="f5259bc0-b43d-4cb4-819e-7b4f1750a2ab" name="post:\process\iam\verify:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Creation failure" doc:id="59e6dcfc-cacf-4899-b6be-f6d2be8270d5" expression="#[payload.result.success]" is="#[MunitTools::equalTo(false)]" message="User creation was successfull"/>
+			<munit-tools:assert-that doc:name="Assert for Bad Request" doc:id="88896f56-a7b0-4e80-b3ea-7d0e6a83d3b1" expression='#[payload.result.message.errorType.namespace ++ ":" ++ payload.result.message.errorType.identifier]' is='#[MunitTools::equalTo("HTTP:NOT_FOUND")]' message="User was found"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="okta-create-user-bad-request-Test" description="MUnit Test" doc:id="799e48a2-3661-4a85-bf58-87a8bb1e3e13" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b742b76b-2f48-4e16-9762-841b5ccdffe2" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="3b17ebd1-867f-415a-81bc-812669942434" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "profile": {
+    "firstName": "Isaac",
+    "lastName": "Brock",
+    "email": "abd11111@xyz.com",
+    "login": "abd11111@xyz.com",
+    "mobilePhone": "555-415-8888"
+  }
+}]' doc:name="Set Payload" doc:id="85996a24-2239-4629-8207-78888fb1b025" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\users:velo-process-api-config" doc:id="79dd92d1-e3a4-49b2-9435-131643f61b84" name="post:\process\iam\users:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Creation failure" doc:id="3ed85eb6-6d64-4504-8036-97c87fc59a12" expression="#[payload.result.success]" is="#[MunitTools::equalTo(false)]" message="User creation was successfull"/>
+			<munit-tools:assert-that doc:name="Assert for Bad Request" doc:id="d75e27ee-e49d-468a-8a48-f99593fdb5b0" expression="#[payload.result.message.errorType.identifier]" is='#[MunitTools::equalTo("BAD_REQUEST")]' message="Not a Bad Request"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="okta-user-success-Test" description="MUnit Test" doc:id="06116899-82f4-4be7-b355-c3676a9035ad" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to OktaUserSuccessMockSub_Flow" doc:id="6e57370a-99dd-4d20-8371-cb636e8f5feb" name="OktaUserSuccessMockSub_Flow"/>
+
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "profile": {
+    "firstName": "Isaac",
+    "lastName": "Brock",
+    "email": "abd11111@xyz.com",
+    "login": "abd11111@xyz.com",
+    "mobilePhone": "555-415-8888"
+  }
+}]' doc:name="Set Payload" doc:id="8466bdc6-0cd9-4a51-99d3-80b786d89c33" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to post:\process\iam\users:velo-process-api-config" doc:id="ff05221a-4ef1-48af-b28b-c2d8e76dab9f" name="post:\process\iam\users:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert User Creation" doc:id="8470ce0e-8843-4bdc-b906-9d1502305d75" expression="#[payload.id]" is="#[MunitTools::notNullValue()]" message="User was not created"/>
+		</munit:validation>
+	</munit:test>
+
+
+	<munit:test name="okta-create-user-success-Test" description="MUnit Test" doc:id="d208ed53-9e4d-4e37-a843-84ddc2aa109b" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to OktaCreateUserMockSub_Flow" doc:id="c1e16f9d-984d-420a-97d1-aba4c4c72cc1" name="OktaCreateUserMockSub_Flow"/>
+
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {
+  "profile": {
+    "firstName": "Isaac",
+    "lastName": "Brock",
+    "email": "abd11111@xyz.com",
+    "login": "abd11111@xyz.com",
+    "mobilePhone": "555-415-8888"
+  }
+}]' doc:name="Set Payload" doc:id="b2a2dc70-21a6-433e-8c33-7d95957a682a" mimeType="application/json"/>
+			<flow-ref doc:name="Flow Reference to okta-create-user" doc:id="2c26671f-cbbc-456d-a927-d16df27b2bcb" name="okta-create-user"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert User Creation" doc:id="fc688148-9faa-4cff-b4c5-fe3717125c0b" expression="#[vars.oktaCrtUsrResp.id]" is="#[MunitTools::notNullValue()]" message="User was not created"/>
+		</munit:validation>
+	</munit:test>
+	
+
+	<munit:test name="okta-Update-Userprofile-Test" description="MUnit Test" doc:id="b504bacc-f550-4d21-b2b3-c54f2e2bc1c0" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to OktaUpdateUserProfileMockSub_Flow" doc:id="1a696eaa-7aec-4d7c-8413-d359bf6c4e84" name="OktaUpdateUserProfileMockSub_Flow"/>
+
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Variables" doc:id="6cceaa8d-5063-4360-be51-ad343a4e89f6" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="oktaUserProfileRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+{"profile":{"firstName":"Naresh","lastName":"Shiwani","email":"nshiwani@appirio.com","login":"nshiwani@appirio.com","mobilePhone":"+19413764511","CIS_Number":"00000064594"}}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow Reference to OktaUpdateUserprofile" doc:id="4a867659-a517-47c9-b95c-236e6aa65438" name="OktaUpdateUserprofile"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Profile Update Response" doc:id="f7131bb5-3717-4ab7-bc35-337ddaf363c5" expression="#[vars.oktaUserProfileResponse]" is='#[MunitTools::equalTo({      "id": "00uj1q9e9fTIxNDaB0h7",      "status": "STAGED",      "created": "2019-01-21T09:12:11.000Z",      "activated": null,      "statusChanged": null,      "lastLogin": null,      "lastUpdated": "2019-01-23T10:39:33.000Z",      "passwordChanged": null,      "profile": {        "CIS_Number": "00000064594",        "firstName": "Naresh",        "lastName": "Shiwani",        "mobilePhone": "+19413764511",        "secondEmail": null,        "login": "nshiwani@appirio.com",        "email": "nshiwani@appirio.com"      },      "credentials": {        "provider": {          "type": "OKTA",          "name": "OKTA"        }      },      "_links": {        "activate": {          "href": "https://sso-test.velobank.com/api/v1/users/00uj1q9e9fTIxNDaB0h7/lifecycle/activate",          "method": "POST"        },        "self": {          "href": "https://sso-test.velobank.com/api/v1/users/00uj1q9e9fTIxNDaB0h7"        }      }    })]'/>
+		</munit:validation>
+	</munit:test>	
+
+</mule>

@@ -1,0 +1,12 @@
+{
+  "AcceptTruliooTermsAndConditions": true,
+  "ConfigurationName": "Identity Verification",
+  "CountryCode": "CN",
+  "DataFields": {
+    "Document": {
+      "DocumentFrontImage": "/9j/4QAYRXhpZgAASUk=",
+      "DocumentBackImage": "/9j/4QAYRXhpZgAASUk=",
+      "DocumentType": "Passport/DrivingLicence/IdentityCard"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:crypto="http://www.mulesoft.org/schema/mule/crypto"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/crypto http://www.mulesoft.org/schema/mule/crypto/current/mule-crypto.xsd">
+	 <crypto:jce-config name="Crypto_Jce" doc:name="Crypto Jce" doc:id="92112458-34d0-4d57-a04c-795ab93792c4" keystore="sample.jceks" type="JCEKS" password="password" >
+		<crypto:jce-key-infos >
+			<crypto:jce-symmetric-key-info keyId="sample" alias="sample" password="password" />
+		</crypto:jce-key-infos>
+	</crypto:jce-config> 
+	<flow name="encrypt-flow" doc:id="7ecf9224-97d6-414e-af77-dbfdb1a7729e" >
+		<logger level="INFO" doc:name="Logger" doc:id="05a168c1-c7a0-442a-af4b-c80fd7788192" message="#[vars.encryptValue]"/>
+		<crypto:jce-encrypt doc:name="Jce encrypt" doc:id="456704bb-b63e-422a-a093-f1a05b025233" config-ref="Crypto_Jce" algorithm="AES" keyId="sample" target="encryptedValue">
+			<crypto:content ><![CDATA[#[vars.encryptValue]]]></crypto:content>
+		</crypto:jce-encrypt>
+		<ee:transform doc:name="Transform Message" doc:id="265ed6ff-6fc2-4ffc-a30f-54f26a179156" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::core::Binaries
+output application/json
+---
+toBase64(vars.encryptedValue)]]></ee:set-payload>
+
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		
+</ee:transform>
+	</flow>
+	<!-- <flow name="decrypt-flow" doc:id="24192ed7-a1dd-4a0d-8de9-9184bf2baeb2" >
+		<logger level="INFO" doc:name="Logger" doc:id="e7fa4c3a-92e1-4ffd-aa19-e00375e8c96d" />
+		<ee:transform doc:name="Transform Message" doc:id="427ef26d-bb84-402f-b0f0-f2c33ac3451c" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="tmpVar" ><![CDATA[%dw 2.0
+import * from dw::core::Binaries
+output application/java
+-
+fromBase64(vars.decryptValue)]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+		<crypto:jce-decrypt doc:name="Jce decrypt" doc:id="59238263-b3c6-43ca-bbbc-32d8425f7c1e" config-ref="Crypto_Jce" algorithm="AES" keyId="sample" target="decryptedValue">
+			<crypto:content ><![CDATA[#[vars.tmpVar]]]></crypto:content>
+		</crypto:jce-decrypt>
+		<logger level="INFO" doc:name="Logger" doc:id="393d77fb-0043-47aa-896b-1d3643051ec9" message="#[vars.decryptedValue]"/>
+	</flow> -->
+</mule>

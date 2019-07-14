@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="createCustomerNumber" doc:id="82f81424-208a-4c40-9a56-2960c3cb017b">
+		<choice doc:name="Choice" doc:id="a90781fc-4ae4-452f-8a47-9f85253ba393">
+			<when expression='#[isEmpty(vars.CISNumber default "")]'>
+			<ee:transform doc:name="Transform Message" doc:id="99dc92f2-89f9-42eb-b165-0e97a93bef5b">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable resource="cisRequestTransformation.dwl" variableName="CIS" />
+				</ee:variables>
+			</ee:transform>
+
+			<json-logger:logger doc:name="CIS Before Request" doc:id="7a7bf9e4-e4b7-42ad-9bc2-9c855bd142a8" endpoint="POST:/${cis.create.path}" config-ref="JSON_Logger_Config" message="CIS Before Request" tracePoint="BEFORE_REQUEST" >
+					<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.CIS,
+ 	attributes: attributes
+}]]]></json-logger:content>
+				</json-logger:logger>
+				<http:request method="POST" doc:name="CIS" doc:id="0d33f98e-7929-4236-af5f-bddd4b14c6c1" config-ref="HTTP_Request_cis" path="/${cis.create.path}" target="CISResponse" responseTimeout="${TIMEOUT.ONEMINUTE}">
+					<http:body><![CDATA[#[vars.CIS]]]></http:body>
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+				<http:response-validator>
+					<http:success-status-code-validator values="200,400" />
+				</http:response-validator>
+
+			</http:request>
+			<json-logger:logger doc:name="CIS After Request" doc:id="dc4c890e-4c58-40b9-8a55-6c3818707630" message="CIS After Request" config-ref="JSON_Logger_Config" endpoint="POST:/${cis.create.path}" status="#[vars.'httpStatus']" tracePoint="AFTER_REQUEST" >
+					<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.CISResponse,
+ 	attributes: attributes
+}]]]></json-logger:content>
+				</json-logger:logger>
+				<logger level="INFO" doc:name="Logger" doc:id="1f759520-f886-4220-844e-b1924645230e" message="Create Customer Response is" />
+				<logger level="INFO" doc:name="Logger" doc:id="455ddeac-4c81-4465-a3f8-47c56dcc4f88" message="#[vars.CISResponse]"/>
+				<choice doc:name="Choice" doc:id="0a81133c-c675-45d7-ac1c-dc3eae3b16b6" >
+					<when expression="#[isEmpty(vars.CISResponse.Error)]">
+						<ee:transform doc:name="Transform Message" doc:id="39f6311e-5228-4c6e-82c1-0f7fc56c7008">
+					<ee:message>
+					</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="CISNumber"><![CDATA[%dw 2.0
+output application/java
+---
+vars.CISResponse.data.CreateCustomerResponse.CustomerNumber]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</when>
+					<otherwise>
+						<ee:transform doc:name="Transform Message" doc:id="7b575a05-11fc-4888-9e04-745e16294fec">
+			<ee:message>
+			</ee:message>
+					<ee:variables>
+								<ee:set-variable variableName="cupCardFailure" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Source: "CISCreate",
+	Error: vars.CISResponse.Error.ErrorMessageList.*ErrorMessageText joinBy " \r\n "
+}]]></ee:set-variable>
+					</ee:variables>
+		</ee:transform>
+						<raise-error doc:name="Raise error" doc:id="20c4c934-98bc-44ea-b604-bc14dcf4fb59" type="CUP:CREATE_CUSTOMER_FAILED" />
+			</otherwise>
+		</choice>
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="CISResponse" doc:id="b2258a90-93b1-443b-8935-1d1c919e66c3" message="Request UUID #[correlationId] Flow Name #[flow.name]:: ApplicationId #[vars.ApplicationId] CisNumber  #[vars.CISNumber]" />
+			
+</otherwise>
+		</choice>
+</sub-flow>
+	<sub-flow name="createCupCardNumber" doc:id="330bd6d1-15c7-41b4-a6ca-9cf69a825a2d"><ee:transform doc:name="Transform Message" doc:id="73f544e6-08a6-4a92-befb-93228338e0b4">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable resource="cupRequestTransformation.dwl" variableName="cupCardRequest" />
+				
+</ee:variables>
+			</ee:transform>
+
+		<json-logger:logger doc:name="Cup Card Before Request" doc:id="7ed0039f-e53d-4042-91e6-a0ce65a43444" endpoint="POST:/${fis.application.cupcard}" config-ref="JSON_Logger_Config" message="Cup Card Create Before Request" tracePoint="BEFORE_REQUEST" >
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.cupCardRequest,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="POST" doc:name="Create Cup Card" doc:id="61e3267d-7c66-402c-a678-8358fe01936b" config-ref="HTTP_Request_CupCard" path="/${fis.application.cupcard}" target="cupCardResponse" responseTimeout="${TIMEOUT.ONEMINUTE}">
+			<http:body><![CDATA[#[vars.cupCardRequest]]]></http:body>
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+				<http:response-validator>
+					<http:success-status-code-validator values="200,400" />
+				</http:response-validator>
+
+			</http:request>
+		<json-logger:logger doc:name="Cup Card After Request" doc:id="7398135d-85ac-4b7a-b45b-02c97ca5212a" message="Cup Card Create After Request" config-ref="JSON_Logger_Config" endpoint="POST:/${fis.application.cupcard}" status="#[vars.'httpStatus']" tracePoint="AFTER_REQUEST" >
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.cupCardResponse,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<logger level="INFO" doc:name="Logger" doc:id="36d7f42e-df86-4915-8552-85e13097bcac" message="Cup Card Response is #[vars.'cupCardResponse'] or #[payload]" />
+		<choice doc:name="Choice" doc:id="2b42d71a-abd2-46b0-90a6-a50d6e35bdf4">
+			<when expression='#[isEmpty(vars.cupCardResponse.Error default "")]'>
+				<logger level="INFO" doc:name="Logger" doc:id="4c24b51c-cd4e-4a2b-8c75-b539d38b3d9e" message="Flow Name #[flow.name] completed successfully" />
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="ec1f8aea-c1f9-4248-a073-5083b59d3491">
+			<ee:message>
+			</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="cupCardFailure" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Source: "CupCard",
+	Error: vars.cupCardResponse.Error.ErrorMessageList.*ErrorMessageText joinBy " \r\n "
+}]]></ee:set-variable>
+					</ee:variables>
+		</ee:transform>
+				<raise-error doc:name="Raise error" doc:id="844ace5a-01df-4b91-8739-16cf8b5b0da1" type="CUP:CREATE_CARD_FAILED" />
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="createCupCardAccount" doc:id="9787b00d-f850-421a-9487-743f4ccb1b13" >
+		<ee:transform doc:name="Transform Message" doc:id="6f806ecf-14bd-4234-adf1-eeadbfc64944">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable resource="fisMiscRequestTransformation.dwl" variableName="fismisc" />
+						</ee:variables>
+					</ee:transform>
+		<json-logger:logger doc:name="FIS Misc Before Request" doc:id="06a1d4e1-c2c5-4edb-b514-519e1bbda286" endpoint="POST:/${fis.application.cupcard}" config-ref="JSON_Logger_Config" message="FIS Misc Before Request" tracePoint="BEFORE_REQUEST" >
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.fismisc,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="POST" doc:name="FIS Misc" doc:id="b39bd6d8-2d64-4d62-9fe3-ebccfe3665e2" config-ref="HTTP_Request_fis" path="/${fis.application.misc}" target="FISResponse">
+						<http:body><![CDATA[#[vars.fismisc]]]></http:body>
+				<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+			<http:response-validator>
+				<http:success-status-code-validator values="200" />
+			</http:response-validator>
+					</http:request>
+		<json-logger:logger doc:name="FIS Misc After Request" doc:id="94b146c8-ea3a-485b-a5b2-49ce2392885c" message="FIS Misc After Request" config-ref="JSON_Logger_Config" endpoint="POST:/${fis.application.cupcard}" status="#[vars.'httpStatus']" tracePoint="AFTER_REQUEST" >
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	vars: vars.FISResponse,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<logger level="INFO" doc:name="Logger" doc:id="a0abaf19-02c6-46e0-b1d6-83aac0305af9" message="Request UUID #[correlationId] Flow Name #[flow.name]:: ApplicationId #[vars.ApplicationId] FIS Misc  #[vars.FISResponse]" />
+		<choice doc:name="Choice" doc:id="d16f8b6d-8d85-435d-adba-e5f9e0de4a06" >
+			<when expression='#[isEmpty(vars.FISResponse.Error default "")]'>
+				<logger level="INFO" doc:name="Logger" doc:id="6f882bfa-c0f2-4504-8d41-109e7b09d94b" message="Flow Name #[flow.name] completed successfully" />
+			</when>
+			<otherwise>
+				<ee:transform doc:name="Transform Message" doc:id="f1aac57c-4a30-417c-ac16-6204fb8ff04e">
+			<ee:message>
+			</ee:message>
+					<ee:variables>
+						<ee:set-variable variableName="cupCardFailure" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Source: "FISMiscellaneous",
+	Error: vars.FISResponse.Error.ErrorMessageList.*ErrorMessageText joinBy " \r\n "
+}]]></ee:set-variable>
+					</ee:variables>
+		</ee:transform>
+				<raise-error doc:name="Raise error" doc:id="f69959b4-dbf1-41b3-820c-deeeb36d881f" type="CUP:CREATE_ACCOUNT_FAILED" />
+			</otherwise>
+		</choice>
+	</sub-flow>
+</mule>

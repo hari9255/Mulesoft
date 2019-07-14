@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="updatePromoAndSynergy" doc:id="e99c3d46-2dc0-4b81-9af4-9d0a440b2bff">
+<!-- 		<ee:transform doc:name="Transform Message"
+			doc:id="9ea26d13-e75d-4fa7-a859-47dab6b747fc">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="FIS"><![CDATA[%dw 2.0
+output application/json
+
+{
+	AccountType: payload.CheckingAccount.AccountType,
+	CustomerInformation: {
+		DateOfBirth: payload.CustomerInformation.DateOfBirth,
+		FirstName: payload.CustomerInformation.FirstName,
+		LastName: payload.CustomerInformation.LastName,
+		MiddleInitial: payload.CustomerInformation.MiddleInitial,
+		Title: payload.CustomerInformation.Title,
+		Address: payload.CustomerInformation.Address,
+		MailingAddress: payload.CustomerInformation.MailingAddress,
+		PrimaryPhoneNumber: payload.CustomerInformation.PrimaryPhoneNumber,
+		FaxPhoneNumber: payload.CustomerInformation.FaxPhoneNumber,
+		SecondaryPhoneNumber: payload.CustomerInformation.SecondaryPhoneNumber,
+		MobilePhoneNumber: payload.CustomerInformation.MobilePhoneNumber,
+		TaxNumber: payload.CustomerInformation.TaxNumber,
+		TaxIdType: payload.CustomerInformation.TaxIdType,
+		CitizenshipCode: payload.CustomerInformation.CitizenshipCode,
+		W8CertificateType: payload.CustomerInformation.W8CertificateType,
+		PrimaryID: payload.CustomerInformation.PrimaryID,
+		BranchNumber: payload.CustomerInformation.BranchNumber,
+		CostCenterNumber: payload.CustomerInformation.CostCenterNumber,
+		MailCode: payload.CustomerInformation.MailCode,
+		PrimaryLanguage: payload.CustomerInformation.PrimaryLanguage,
+		PrimaryOfficerNumber: payload.CustomerInformation.PrimaryOfficerNumber,
+		SecondaryOfficerNumber: payload.CustomerInformation.SecondaryOfficerNumber,
+		Gender: payload.CustomerInformation.Gender,
+		CategoryCode1 : payload.CustomerInformation.CategoryCode1,
+    	CountryofDualCitizenship : payload.CustomerInformation.CountryofDualCitizenship,
+		EmploymentDate: payload.CustomerInformation.EmploymentDate,
+		EmploymentOrSchool: payload.CustomerInformation.EmploymentOrSchool,
+		Ethnicity: payload.CustomerInformation.Ethnicity,
+		MaritalStatus: payload.CustomerInformation.MaritalStatus,
+		MothersMaidenName: payload.CustomerInformation.MothersMaidenName,
+		Occupation: payload.CustomerInformation.Occupation,
+		W8CertificateDate: payload.CustomerInformation.W8CertificateDate,
+		Identification: payload.CustomerInformation.Identification,
+		EmailAddress: payload.CustomerInformation.EmailAddress,
+		RequestUUID: payload.RequestUUID,
+		IsPoliticallyExposedPerson: if(payload.CustomerInformation.PEP == 'No')false else true
+	},
+	DepositAccount: payload.CheckingAccount.DepositAccount,
+	CardAccount: payload.CheckingAccount.CardAccount,
+	CustomerToAccountRelationship: {
+		CustomerNumber1: payload.CustomerInformation.CISNumber default "",
+		Customer1AccountRelationshipCode: payload.CheckingAccount.CustomerToAccountRelationship.Customer1AccountRelationshipCode,
+		Customer1AccountAssociationType: payload.CheckingAccount.CustomerToAccountRelationship.Customer1AccountAssociationType,
+		Customer2AccountAssociationType: payload.CheckingAccount.CustomerToAccountRelationship.Customer2AccountAssociationType,
+		Address: {
+			StreetAddress1: payload.CustomerInformation.Address.StreetAddress1,
+			StreetAddress2: payload.CustomerInformation.Address.StreetAddress2,
+			City: payload.CustomerInformation.Address.City,
+			State: payload.CustomerInformation.Address.State,
+			Zip: payload.CustomerInformation.Address.Zip,
+			CountryCode: payload.CustomerInformation.Address.CountryCode,
+			TimeAtAddress: {
+				Years: payload.CustomerInformation.Address.TimeAtAddress.Years,
+				Month: payload.CustomerInformation.Address.TimeAtAddress.Month
+			},
+			IsForeignAddress: payload.CustomerInformation.Address.IsForeignAddress
+		},
+		NumberOfStatementCopies: payload.CheckingAccount.CustomerToAccountRelationship.NumberOfStatementCopies,
+		AddressLineOfTINOwner: payload.CheckingAccount.CustomerToAccountRelationship.AddressLineOfTINOwner
+	},
+	RequestUUID: payload.RequestUUID
+}]]></ee:set-variable>
+				<ee:set-variable variableName="synergy"><![CDATA[%dw 2.0
+output application/json
+
+payload.Documents map ((doc,index) -> {
+	DocumentExtension: doc.DocumentExtension,
+	DocumentSource: doc.DocumentSource,
+	DocumentType: doc.DocumentType,
+	//DocumentType: "DriversLicense",
+	SourceIdentifierId: doc.SourceIdentifierId,
+	RequestUUID: payload.RequestUUID,
+	AccountNumber: doc.AccountNumber,
+	CustomerNumber: doc.CustomerNumber,
+	DocumentDate: doc.DocumentDate,
+	OfficerCode: doc.OfficerCode,
+	DocumentService: doc.DocumentService,
+	DocumentContent: doc.DocumentContent
+} )]]></ee:set-variable>
+				<ee:set-variable variableName="promocode"><![CDATA[%dw 2.0
+output application/json
+
+{
+	Promotion: {
+		Status: payload.Promotions.Status
+	},
+	OnboardingInvitation: {
+		FirstName: payload.CustomerInformation.FirstName,
+		LastName: payload.CustomerInformation.LastName,
+		EmailAddress: payload.Promotions.OnboardingInvitation.EmailAddress,
+		PhoneNumber: payload.Promotions.OnboardingInvitation.PhoneNumber
+	},
+	RequestUUID: payload.RequestUUID
+}]]></ee:set-variable>
+			
+</ee:variables> 
+		</ee:transform>-->
+		<logger level="INFO" doc:name="Synergy "
+			doc:id="91315ed8-9cd2-4739-86cb-6240d91ff1bd" message=" ApplicationId #[vars.ApplicationId] Synery Request #[vars.synergy] Request UUID #[correlationId] Flow Name #[flow.name]" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="f6fec1cb-bf4a-4622-86a4-9a3410566953" >
+			<route >
+				<logger level="INFO" doc:name="Promocode" doc:id="eab3fd40-4620-42c5-bd24-fbd194edf181" message="ApplicationId #[vars.ApplicationId] PromoCode Payload #[vars.promocode] Request UUID #[correlationId] Flow Name #[flow.name]" />
+				<try doc:name="Try" doc:id="40d53ea0-aab0-43c0-bcae-6509e2d0e651">
+					<choice doc:name="Choice" doc:id="1bbc5702-f362-440e-b48b-8f370c1842bb" >
+						<when expression="vars.IsPartnerRequest" >
+							<logger level="INFO" doc:name="Logger" doc:id="c22695d5-8331-47fc-a72f-e7d7373f40a6" message="Request UUID #[correlationId] Flow Name #[flow.name]"/>
+							<set-variable value="Update promo code not required" doc:name="SetUpdatePromocodeResponse" doc:id="86d5d57b-29ba-44ea-abaf-68e2e4d65bf7" variableName="updatePromocodeResponse"/>
+						</when>
+						<otherwise >
+							<json-logger:logger doc:name="PromoUpdate Before Request" doc:id="a24f6470-8fee-445c-8ed2-b53fd65da754" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="PUT:/${caseUpdatePromocode.application.path}" message="Promo Update Request"/>
+							<http:request method="PUT" doc:name="PromoUpdate" doc:id="f307805f-045e-43b2-92fa-53dccc67236d" config-ref="HTTP_Request_caseUpdatePromocode" path="/${caseUpdatePromocode.application.path}" target="updatePromocodeResponse">
+			<http:body><![CDATA[#[vars.promocode]]]></http:body>
+			<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+			<http:uri-params><![CDATA[#[output applicaton/java
+---
+{
+	"promocode" : payload.Promotions.PromoCode
+}]]]></http:uri-params>
+		</http:request>
+							<json-logger:logger doc:name="Promo Update After Response" doc:id="4a4a4c7e-3c0e-422a-8ef9-9af4c39de14a" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="PUT:/${caseUpdatePromocode.application.path}" status="#[vars.'httpStatus']" message="Promo Update Response"/>
+						</otherwise>
+					</choice>
+					<error-handler>
+						
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c641fe54-51fb-4132-9022-57a756717ee7">
+						<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build" />
+                                  <set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="promoUpdateException" />
+                                  <logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Exception Found in PromoUpdate::::::#[vars.promoUpdateException] Request UUID #[correlationId] Flow Name #[flow.name]" />
+						
+					    </on-error-continue>
+					    
+					</error-handler>
+				</try>
+				<logger level="INFO" doc:name="PromocodeResponse" doc:id="4698546f-1589-4218-a37f-f9b528918948" message=" ApplicationId #[vars.ApplicationId]  PromocodeResponse  #[vars.updatePromocodeResponse] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+			</route>
+			<route >
+				<choice doc:name="Choice" doc:id="1a66e674-3af6-48b8-ba9e-53e3a7948648" >
+					<when expression="null == vars.synergy" >
+						<logger level="INFO" doc:name="Synergy Document is empty" doc:id="be18a98d-377c-4202-8625-21c4cd8cae16" message="There are no ducuments to upload to synergy Request UUID #[correlationId] Flow Name #[flow.name]"/>
+					</when>
+					<otherwise >
+						<flow-ref doc:name="synergyUpdateSubFlow" doc:id="1bdfb96d-e1dc-4378-bdb7-796dfe2040f6" name="synergyUpdateSubFlow" />
+					</otherwise>
+				</choice>
+			</route>
+		</scatter-gather>
+		
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="dfd682aa-ee5c-4d4a-ace0-8bf9c3b2a8f8">
+				<flow-ref doc:name="generic-exception" doc:id="4ffaa16e-43b1-4bca-92fd-59af94619e73"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<sub-flow name="synergyUpdateSubFlow" doc:id="8a40a45b-fe30-4b6e-bdc3-66d036adff11">
+	<foreach doc:name="For Each" doc:id="0f30d386-8ccd-488c-9e2d-7e45bcf77ad9"
+			collection="#[vars.synergy]">
+			<choice doc:name="Choice" doc:id="f15fc5bb-d38d-46fd-ac4c-7daf629e13f8">
+				<when expression="payload.DocumentService=='Terafina'">
+					<logger level="INFO" doc:name="Logger"
+						doc:id="dd7878b5-5fd8-40e3-8d66-e02f1ac77c3b" message="#[payload] Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<try doc:name="Try" doc:id="9bd3ebc7-6694-4612-a047-90fd246d9987" >
+						<json-logger:logger doc:name="Synergy Before Request " doc:id="516d78eb-d702-49f7-b9d6-a8749da871fd" message="Synergy Update Request" tracePoint="BEFORE_REQUEST" config-ref="JSON_Logger_Config" endpoint="POST:/${caseSynergy.application.path}" />
+						<http:request method="POST" doc:name="Synergy" doc:id="b3c87b4d-c675-4316-aa63-2695141e1248" config-ref="HTTP_Request_caseSynergy" path="/${caseSynergy.application.path}" target="synergyResponse">
+							<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+					</http:request>
+						<json-logger:logger doc:name="Synergy After Request" doc:id="fa66ffe0-90ae-43ba-bfb4-97e58bb03275" tracePoint="AFTER_REQUEST" message="Request End Synergy" config-ref="JSON_Logger_Config" endpoint="POST:/${caseSynergy.application.path}" status="#[vars.'httpStatus']" />
+						<error-handler >
+							<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="b25c7565-1739-49aa-bd21-7a0acf8b3ca6" >
+							<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build"/>
+                                  <set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="synergyUpdateException"/>
+                                  <logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Exception Found in synergyUpdate:::::::#[vars.synergyUpdateException] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+							
+							</on-error-continue>
+						</error-handler>
+					</try>
+					<logger level="INFO" doc:name="Logger" doc:id="7fc0b829-3966-4fca-9367-31d33a28b5c8" message="Synergy Response #[vars.synergyResponse] Request UUID #[correlationId] Flow Name #[flow.name]"/>				
+</when>
+				<otherwise>
+					<logger level="INFO" doc:name="Logger"
+						doc:id="54c7d044-e420-4825-8e91-abcad44f40ad" message="Data is not from Terifina #[payload] Request UUID #[correlationId] Flow Name #[flow.name]" />
+				</otherwise>
+			</choice>
+		</foreach>
+	</sub-flow>
+</mule>

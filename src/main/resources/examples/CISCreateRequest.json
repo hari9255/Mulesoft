@@ -1,0 +1,94 @@
+{
+  "CreateCustomerRequest": {
+    "CustomerInformation": {
+      "DateOfBirth": "1988-11-26T23:31:45.367Z",
+      "FirstName": "ewb",
+      "LastName": "ewb",
+      "MiddleInitial": "ewb",
+      "Title": "ewb",
+      "Address": {
+        "StreetAddress1": "9300 Flair Dr",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "Country": "US"
+      },
+      "MailingAddress": {
+        "StreetAddress1": "9300 Flair Dr",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "Country": "US"
+      },
+      "PrimaryPhoneNumber": "9999999999",
+      "FaxPhoneNumber": "9999999999",
+      "SecondaryPhoneNumber": "9999999999",
+      "MobilePhoneNumber": "9999999999",
+      "TaxNumber": "854792145",
+      "TaxIdType": "NoNumber",
+      "BirthPlace": "Test",
+      "CitizenshipCode": "Test",
+      "W8CertificateType": "Blank",
+      "PrimaryID": "Test",
+      "BranchNumber": "8088",
+      "CostCenterNumber": 25,
+      "MailCode": "NoSpecialAction",
+      "PrimaryLanguage": "Chinese",
+      "PrimaryOfficerNumber": 0,
+      "SecondaryOfficerNumber": 0,
+      "CategoryCode1": 0,
+      "CategoryCode2": 0,
+      "CategoryCode3": 0,
+      "CategoryCode4": 0,
+      "Gender": "Male",
+      "EmploymentDate": "2018-11-26T23:31:45.367Z",
+      "EmploymentOrSchool": "EWB",
+      "Ethnicity": "AfricanAmerican",
+      "MaritalStatus": "Divorced",
+      "MothersMaidenName": "Test",
+      "Occupation": "AdminOrClerical",
+      "W8CertificateDate": "2018-11-26T23:31:45.367Z",
+      "Identification": {
+        "Status": "VerifiedByBanker",
+        "IsTINAppliedFor": true,
+        "IdentificationInformation1": {
+          "Type": "Test",
+          "Number": "Test",
+          "IssuingEntity": "Test",
+          "IssuingLocation": "Test",
+          "IssueDate": "2018-11-26T23:31:45.367Z",
+          "ExpirationDate": "2019-11-26T23:31:45.367Z"
+        },
+        "IdentificationInformation2": {
+          "Type": "Tet",
+          "Number": "Test",
+          "IssuingEntity": "Test",
+          "IssuingLocation": "string",
+          "IssueDate": "2018-11-26T23:31:45.367Z",
+          "ExpirationDate": "2019-11-26T23:31:45.367Z"
+        },
+        "IdentificationInformation3": {
+          "Type": "Test",
+          "Number": "Test",
+          "IssuingEntity": "Test",
+          "IssuingLocation": "Test",
+          "IssueDate": "2018-11-26T23:31:45.367Z",
+          "ExpirationDate": "2019-11-26T23:31:45.367Z"
+        },
+        "NonDocumentaryIdentificationInformation1": {
+          "Type": "Test",
+          "Results": "Test"
+        },
+        "NonDocumentaryIdentificationInformation2": {
+          "Type": "Test",
+          "Results": "Test"
+        }
+      },
+      "EmailAddress": "test@test.com",
+      "IsPoliticallyExposedPerson": true,
+      "PoliticalRelationshipDescription": "Test",
+      "CountryofDualCitizenship": "Test"
+    }
+  },
+  "RequestUUID": "123456"
+}

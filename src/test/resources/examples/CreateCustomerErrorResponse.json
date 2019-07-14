@@ -1,0 +1,23 @@
+{
+    "RequestUuid": "4b6b8d90-ff4b-11e8-a3b6-02749b50682e",
+    "Status": 400,
+    "Type": "BAD_REQUEST",
+    "Error": {
+        "CreateCustomerResponse": {
+            "CustomerNumber": "00000000000000000000",
+            "ApplicationCode": "CUST"
+        },
+        "RequestUUID": null,
+        "ErrorMessageList": [
+            {
+                "ErrorMessageNumber": "00228",
+                "ErrorMessageText": "CI00228 - WARNING, TAXPAYER NUMBER ALREADY EXISTS"
+            },
+            {
+                "ErrorMessageNumber": "09044",
+                "ErrorMessageText": "Function not processed due to previous function error."
+            }
+        ]
+    },
+    "Message": "HTTP POST on resource 'https://openapiservices.eastwestbank.com:443/CustomerService/api/customers/create' failed: bad request (400)."
+}

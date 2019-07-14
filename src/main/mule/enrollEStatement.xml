@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="enrollEstatementcheck_sub_flow" doc:id="c3647a7a-1717-4c6d-9bbd-95f30f981451" >
+		<choice doc:name="Choice : Check EStatement Conditions" doc:id="2a928b71-a371-4e21-8ee0-33cefbd7bfbe">
+			<when expression='#[output application/java --- ( (vars.FISResponse.data.CustomerNumber != null) and (payload.CustomerInformation.EStatementAccepted == "Yes") )]'>
+				<flow-ref doc:name="enrollEStatementProcess" doc:id="0aa562d5-813b-4c5d-85d2-39898ba463c8" name="enrollEStatementProcess" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="f879afaa-a1ef-4962-9f04-406ce3b08654" message='Application is not approved or EStatementEnrolled is false #[output application/json --- { "fis" :  vars.FISResponse.data.CustomerNumber, "Estatement": payload.CustomerInformation.EStatementAccepted, "partner": vars.originalPayload.Partner.PartnerId}]' />
+			</otherwise>
+		</choice>
+	</sub-flow>
+	<sub-flow name="enrollEStatementProcess" doc:id="82340ec6-3dcf-4f0d-93b7-e8ed6d2ae8fa" >
+		<json-logger:logger doc:name="Logger" doc:id="d6aa390b-dbfa-49a3-a267-0b0d6a2f34d0" message="In IsEnrollEStatementProcess sub flow" config-ref="JSON_Logger_Config"/>
+		<set-variable value="#[vars.FISResponse.data.CustomerNumber as Number]" doc:name="Set Customer Number" doc:id="a5aadf2a-c96d-4d38-b4d6-90708fa1ee80" variableName="cisNbr"/>
+		<try doc:name="Try" doc:id="89acb1aa-0e49-4f91-be04-99575fe2bcec">
+						<ee:transform doc:name="Transform Message" doc:id="243f528b-7631-4aa2-be98-00ed48031c12">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+					<ee:set-variable variableName="infoImageObject" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"FirstName": payload.CustomerInformation.FirstName,
+	"LastName": payload.CustomerInformation.LastName,
+	"UserType": p("ENROLMENT.USERTYPE"),
+	"RequestUUID": payload.RequestUUID
+}]]></ee:set-variable>
+					<ee:set-variable variableName="enrollUserObject" ><![CDATA[%dw 2.0
+output application/json
+---
+{	
+    "FirstName": payload.CustomerInformation.FirstName,
+    "LastName": payload.CustomerInformation.LastName,
+    "Accounts": [
+        {
+            "AccountNumber": vars.FISResponse.data.AccountNumber as String default "",
+            "AccountName": vars.AccountName default "",
+			// DEFAULT VALUE FOR ACCOUNT TYPE
+            "AccountType": p("ENROLMENT.ACCOUNTTYPE"),
+            // AS PER THE INFORMATION FROM PUSHPINDER AND LAVKUMAR
+            "NotifyType": p("ENROLMENT.NOTIFYTYPE"),
+            "PaperlessStatus": {
+                "NewDeliveryPref": p("ENROLMENT.PAPERLESSSTATUS.NEWDELIVERYPREF"),
+                "StatementType": p("ENROLMENT.PAPERLESSSTATUS.STATEMENTTYPE")
+            },
+            "NotifyPref": [
+                {
+                    "EmailAddress": payload.CustomerInformation.EmailAddress
+                }
+            ]
+        }
+    ]
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+			<json-logger:logger doc:name="Start System Call" doc:id="c4660b1b-f942-4bed-a2b4-5fcd48276d04" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" message="Request to create user" endpoint="POST:/${estatement.createInfoImage.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	attributes: attributes,
+	vars:vars
+}]]]></json-logger:content>
+		</json-logger:logger>
+			<http:request method="POST" doc:name="New User in CIF" doc:id="725a680a-eb4c-4d68-9abb-0d5cb132ccbe" path="/${estatement.createInfoImage.path}" config-ref="HTTPS_System_API_Config" responseTimeout="${TIMEOUT.ONEMINUTE}">
+			<http:body><![CDATA[#[vars.infoImageObject]]]></http:body>
+<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+				<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"cisnumber" : vars.cisNbr
+}]]]></http:uri-params>
+		</http:request>
+			<json-logger:logger doc:name="End System Call" doc:id="285b8a23-9e11-4127-bbf5-abaaf2a03434" tracePoint="AFTER_REQUEST" message="User Created for CIF" endpoint="POST://${estatement.createInfoImage.path}/{cisnumber}" status="#[vars.'httpStatus']" config-ref="JSON_Logger_Config">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	attributes: attributes,
+	vars:vars
+}]]]></json-logger:content>
+					</json-logger:logger>
+			<set-variable value="#[output application/json --- payload]" doc:name="Set Variable" doc:id="86e2a84f-61a8-4573-98e5-a39df44e7898" variableName="createUserInCIF" />
+			<error-handler>
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2de078bc-0074-471f-9b6a-d85321445611" type="EXPRESSION" when="#[error.muleMessage.payload.ErrorMessageList[0].ErrorMessageNumber == '409']">
+					<json-logger:logger doc:name="Logger" doc:id="65a4b5ba-88e0-489e-b5fb-560c7541026f" priority="ERROR" message="enrollEStatementProcessCreateUserInCIF process gave 409" config-ref="JSON_Logger_Config"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+					<json-logger:logger doc:name="Start System Call" doc:id="a0f93303-3a5b-4ccd-bead-1acc7572e8d5" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" message="Request to enroll user" endpoint="PUT:/${estatement.enrollUserEstatement.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	attributes: attributes,
+	vars:vars
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<http:request method="PUT" doc:name="Enroll User" doc:id="128d17a4-2ede-4c2b-9a47-530e3c146d0e" config-ref="HTTPS_System_API_Config" path="/${estatement.enrollUserEstatement.path}" responseTimeout="${TIMEOUT.ONEMINUTE}">
+			<http:body><![CDATA[#[vars.enrollUserObject]]]></http:body>
+<http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:uri-params><![CDATA[#[output application/java
+---
+{
+	"cisnumber" : vars.cisNbr
+}]]]></http:uri-params>
+		</http:request>
+					<json-logger:logger doc:name="End System Call" doc:id="4092dde9-8fef-4bf8-8b5e-2a40992ae94a" tracePoint="AFTER_REQUEST" message="User Created for Enroll" endpoint="POST://${estatement.enrollUserEstatement.path}" status="#[vars.'httpStatus']" config-ref="JSON_Logger_Config">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	attributes: attributes,
+	vars:vars
+}]]]></json-logger:content>
+					</json-logger:logger>
+		<set-variable value="#[output application/json --- payload]" doc:name="Set Variable" doc:id="4f9c8486-0435-43c7-8c90-b2d1d7610bcd" variableName="enrollUserResponse" />
+		<logger level="INFO" doc:name="Logger" doc:id="cccec489-1747-4d93-a83d-73e31f3f7fa3" message="request response from scatter gatter:: #[vars.createUserInCIF] ::: #[vars.enrollUserAccount] " />
+	</sub-flow>
+</mule>

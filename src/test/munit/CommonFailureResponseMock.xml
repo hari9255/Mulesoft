@@ -1,0 +1,567 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="CommonFailureResponseMock.xml" />
+	<sub-flow name="PinPointRecommendationAsDeny" doc:id="f69a15d8-876b-40fd-931a-0ce8ef39d1ae" >
+	<ee:transform doc:name="Transform Message" doc:id="a6c154ca-255c-4723-9db9-6401de448c39" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "data": [
+    {
+      "status": "ok",
+      "message": "session info updated, new account created"
+    },
+    {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "malware_ids": {},
+            "info": {},
+            "malware": {},
+            "timestamp": "2019-01-18 17:45:37",
+            "risk_score": 0,
+            "customer_session_id": "w2F5r9wnMUoTmpIug3p5IX3sW"
+          }
+        },
+        "device_data": {
+          "device_key": "N/A",
+          "is_new": true,
+          "v3": {
+            "screen_width": 1024,
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "continent_code": "NA",
+            "remote_addr": "63.157.54.31",
+            "city": "Los Angeles",
+            "plugins": "429867076",
+            "country_code": "US",
+            "counter": 1,
+            "last_access": "2019-01-18 17:46:33",
+            "screen_touch": 0,
+            "agent_key": "",
+            "accept": "*/*",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "post_code": "90031",
+            "screen_height": 768,
+            "mimes": "13481324",
+            "longitude": -118.2113,
+            "latitude": 34.0783,
+            "first_time": "2019-01-18 17:46:33",
+            "cpu": "Win32",
+            "browser": "Chrome",
+            "machine_id": "",
+            "digest": "d61ce144e8df0f0c31575ada6b8f6909e5a1c74d",
+            "js": 1,
+            "country_name": "United States",
+            "file_upload_indicator": 0,
+            "platform": "Win32",
+            "history_length": 16,
+            "file_upload": 1,
+            "client_time_zone": 480,
+            "navigator_props": 3354031354,
+            "doc_location": "https%3A//int-eastwestbank.cs95.force.com/DepositLandingPage",
+            "browser_version": "71.0.3578",
+            "client_charset": "UTF-8",
+            "isp": "CenturyLink",
+            "x_forwarded_for": "63.157.54.31, 10.234.239.18",
+            "accept_language": "en-US,en;q=0.9",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
+            "org": "CenturyLink",
+            "region": "CA",
+            "first_access": "2019-01-18 17:46:33",
+            "charset": 1,
+            "country": "USA",
+            "id": 2919919604,
+            "pinpoint_session": "00062321403150004560",
+            "cookie": "0.8794905533008",
+            "hashed_user_id": "N/A",
+            "application": "222916",
+            "os": "Windows 10",
+            "business": "eastwestbank",
+            "fonts": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8",
+            "area_code": 0,
+            "ip_time_zone": "-480",
+            "accept_encoding": "gzip, deflate, br",
+            "country_code3": "USA"
+          }
+        },
+        "recommendation": {
+          "risk_score": 0,
+          "reason_id": 0,
+          "recommendation": "deny",
+          "reason": ""
+        },
+        "customer_session_id": "w2F5r9wnMUoTmpIug3p5IX3sW"
+      }
+    }
+  ],
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": "Success"
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock Pinpoint Response" doc:id="c7e0b081-1ab6-452b-aeaf-796da0514a12" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="bad45c7e-8314-43ad-893e-ace9630a5536" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="pinpointResponse" value='#[payload]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="PinPointInvalidOrUnknownRecommendation" doc:id="e0979c19-b1be-4b72-af1d-c3f18ed01b95" >
+	<ee:transform doc:name="Transform Message" doc:id="8a91871b-4d24-4db3-9d07-9633fa16147e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "data": [
+    {
+      "status": "ok",
+      "message": "session info updated, new account created"
+    },
+    {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "malware_ids": {},
+            "info": {},
+            "malware": {},
+            "timestamp": "2019-01-18 17:45:37",
+            "risk_score": 0,
+            "customer_session_id": "w2F5r9wnMUoTmpIug3p5IX3sW"
+          }
+        },
+        "device_data": {
+          "device_key": "N/A",
+          "is_new": true,
+          "v3": {
+            "screen_width": 1024,
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "continent_code": "NA",
+            "remote_addr": "63.157.54.31",
+            "city": "Los Angeles",
+            "plugins": "429867076",
+            "country_code": "US",
+            "counter": 1,
+            "last_access": "2019-01-18 17:46:33",
+            "screen_touch": 0,
+            "agent_key": "",
+            "accept": "*/*",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "post_code": "90031",
+            "screen_height": 768,
+            "mimes": "13481324",
+            "longitude": -118.2113,
+            "latitude": 34.0783,
+            "first_time": "2019-01-18 17:46:33",
+            "cpu": "Win32",
+            "browser": "Chrome",
+            "machine_id": "",
+            "digest": "d61ce144e8df0f0c31575ada6b8f6909e5a1c74d",
+            "js": 1,
+            "country_name": "United States",
+            "file_upload_indicator": 0,
+            "platform": "Win32",
+            "history_length": 16,
+            "file_upload": 1,
+            "client_time_zone": 480,
+            "navigator_props": 3354031354,
+            "doc_location": "https%3A//int-eastwestbank.cs95.force.com/DepositLandingPage",
+            "browser_version": "71.0.3578",
+            "client_charset": "UTF-8",
+            "isp": "CenturyLink",
+            "x_forwarded_for": "63.157.54.31, 10.234.239.18",
+            "accept_language": "en-US,en;q=0.9",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
+            "org": "CenturyLink",
+            "region": "CA",
+            "first_access": "2019-01-18 17:46:33",
+            "charset": 1,
+            "country": "USA",
+            "id": 2919919604,
+            "pinpoint_session": "00062321403150004560",
+            "cookie": "0.8794905533008",
+            "hashed_user_id": "N/A",
+            "application": "222916",
+            "os": "Windows 10",
+            "business": "eastwestbank",
+            "fonts": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8",
+            "area_code": 0,
+            "ip_time_zone": "-480",
+            "accept_encoding": "gzip, deflate, br",
+            "country_code3": "USA"
+          }
+        },
+        "recommendation": {
+          "risk_score": 0,
+          "reason_id": 0,
+          "recommendation": "UnknownRecommendation",
+          "reason": ""
+        },
+        "customer_session_id": "w2F5r9wnMUoTmpIug3p5IX3sW"
+      }
+    }
+  ],
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": "Success"
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock Pinpoint Response" doc:id="5055541a-c35e-4418-ba6c-3b06f221df97" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="bad45c7e-8314-43ad-893e-ace9630a5536" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="pinpointResponse" value='#[payload]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="PinPointStatusIsError" doc:id="b918d459-4ced-4184-9198-5b00ce52d9d8" >
+	<ee:transform doc:name="Transform Message" doc:id="ffbc3d90-bcff-4843-98ca-633111775c30" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "data": [
+    {
+      "status": "error",
+      "message": "session info updated, new account created"
+    },
+    {
+      "status": "error",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "malware_ids": {},
+            "info": {},
+            "malware": {},
+            "timestamp": "2019-01-18 17:45:37",
+            "risk_score": 0,
+            "customer_session_id": "w2F5r9wnMUoTmpIug3p5IX3sW"
+          }
+        },
+        "device_data": {
+          "device_key": "N/A",
+          "is_new": true,
+          "v3": {
+            "screen_width": 1024,
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "continent_code": "NA",
+            "remote_addr": "63.157.54.31",
+            "city": "Los Angeles",
+            "plugins": "429867076",
+            "country_code": "US",
+            "counter": 1,
+            "last_access": "2019-01-18 17:46:33",
+            "screen_touch": 0,
+            "agent_key": "",
+            "accept": "*/*",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "post_code": "90031",
+            "screen_height": 768,
+            "mimes": "13481324",
+            "longitude": -118.2113,
+            "latitude": 34.0783,
+            "first_time": "2019-01-18 17:46:33",
+            "cpu": "Win32",
+            "browser": "Chrome",
+            "machine_id": "",
+            "digest": "d61ce144e8df0f0c31575ada6b8f6909e5a1c74d",
+            "js": 1,
+            "country_name": "United States",
+            "file_upload_indicator": 0,
+            "platform": "Win32",
+            "history_length": 16,
+            "file_upload": 1,
+            "client_time_zone": 480,
+            "navigator_props": 3354031354,
+            "doc_location": "https%3A//int-eastwestbank.cs95.force.com/DepositLandingPage",
+            "browser_version": "71.0.3578",
+            "client_charset": "UTF-8",
+            "isp": "CenturyLink",
+            "x_forwarded_for": "63.157.54.31, 10.234.239.18",
+            "accept_language": "en-US,en;q=0.9",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
+            "org": "CenturyLink",
+            "region": "CA",
+            "first_access": "2019-01-18 17:46:33",
+            "charset": 1,
+            "country": "USA",
+            "id": 2919919604,
+            "pinpoint_session": "00062321403150004560",
+            "cookie": "0.8794905533008",
+            "hashed_user_id": "N/A",
+            "application": "222916",
+            "os": "Windows 10",
+            "business": "eastwestbank",
+            "fonts": "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF8",
+            "area_code": 0,
+            "ip_time_zone": "-480",
+            "accept_encoding": "gzip, deflate, br",
+            "country_code3": "USA"
+          }
+        },
+        "recommendation": {
+          "risk_score": 0,
+          "reason_id": 0,
+          "recommendation": "UnknownRecommendation",
+          "reason": ""
+        },
+        "customer_session_id": "w2F5r9wnMUoTmpIug3p5IX3sW"
+      }
+    }
+  ],
+  "result": {
+    "success": true,
+    "code": 200,
+    "message": "Success"
+  }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock Pinpoint Response" doc:id="565b9b21-5c3a-4d93-b510-ba49a793dadc" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="bad45c7e-8314-43ad-893e-ace9630a5536" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:variables>
+						<munit-tools:variable key="pinpointResponse" value='#[payload]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="InstantIdTrasactionStatusAsFailedForPassWorkFlow" doc:id="3f887d52-84e1-466e-a72e-c062fb2b0e0e" >
+		<ee:transform doc:name="Transform Message" doc:id="28e36c3c-e930-4a9b-925e-76d9ef245583" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Status": {
+        "ConversationId": "31000157713765",
+        "RequestId": "375482185",
+        "TransactionStatus": "failed",
+        "Reference": "Reference1"
+    },
+    "Products": [
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "InstantID Step",
+            "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+            "ProductStatus": "pass"
+        },
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "PostID Step",
+            "ProductConfigurationName": "INSTANTID_PASS",
+            "ProductStatus": "pass",
+            "ProductReason": {
+                "Code": "instantid_pass",
+                "Description": "PASS"
+            }
+        }
+    ],
+    "PassThroughs": [
+        {
+            "Type": "INSTANT_ID",
+            "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41886\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCOE\",\"State\":\"CA\",\"Zip5\":\"94124\"},\"DOB\":{\"Year\":1962,\"Month\":9,\"Day\":14},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133838\",\"VerifiedInput\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"County\":\"FULTON\"},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"DOB\":{\"Year\":\"1962\",\"Month\":\"09\",\"Day\":\"14\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":50,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\"}},\"PhoneOfNameAddress\":\"4048637784\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"GEORGIA\",\"IssuedStartDate\":{\"Year\":1974,\"Month\":1},\"IssuedEndDate\":{\"Year\":1975,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HOLLISTER\",\"StreetSuffix\":\"AVE\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"FORT STEWART\",\"State\":\"GA\",\"Zip5\":\"31315\",\"Zip4\":\"1771\"},\"DateFirstSeen\":{\"Year\":2013,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"4106 BROXTON CT\",\"City\":\"HEPHZIBAH\",\"State\":\"GA\",\"Zip5\":\"30815\",\"Zip4\":\"6032\"},\"DateFirstSeen\":{\"Year\":1992,\"Month\":6},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"265 RALPH DAVID ABERNATHY BLVD SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"30312\",\"Zip4\":\"2634\"},\"Phone\":\"4048637784\",\"DateFirstSeen\":{\"Year\":2011},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"Latitude\":\"33.736887\",\"Longitude\":\"-84.396539\"}}}}}"
+        }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="5a4db794-deae-41ec-8fdd-24c375ac9b44" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="1d4da8a1-5ca6-41da-814a-1ea0b83c7045" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>	
+	<sub-flow name="InstantIdTrasactionStatusAsErrorForPassWorkFlow" doc:id="4ad6cc22-dae8-455b-8b17-b4eafbe576d3" >
+		<ee:transform doc:name="Transform Message" doc:id="3354de4b-c0f4-456a-be69-2a2f7421e15d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Status": {
+        "ConversationId": "31000157713765",
+        "RequestId": "375482185",
+        "TransactionStatus": "error",        
+        "Reference": "Reference1"
+    },
+    "Products": [
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "InstantID Step",
+            "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+            "ProductStatus": "pass"
+        },
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "PostID Step",
+            "ProductConfigurationName": "INSTANTID_PASS",
+            "ProductStatus": "pass",
+            "ProductReason": {
+                "Code": "instantid_pass",
+                "Description": "PASS"
+            }
+        }
+    ],
+    "PassThroughs": [
+        {
+            "Type": "INSTANT_ID",
+            "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41886\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCOE\",\"State\":\"CA\",\"Zip5\":\"94124\"},\"DOB\":{\"Year\":1962,\"Month\":9,\"Day\":14},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133838\",\"VerifiedInput\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"County\":\"FULTON\"},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"DOB\":{\"Year\":\"1962\",\"Month\":\"09\",\"Day\":\"14\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":50,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\"}},\"PhoneOfNameAddress\":\"4048637784\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"GEORGIA\",\"IssuedStartDate\":{\"Year\":1974,\"Month\":1},\"IssuedEndDate\":{\"Year\":1975,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HOLLISTER\",\"StreetSuffix\":\"AVE\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"FORT STEWART\",\"State\":\"GA\",\"Zip5\":\"31315\",\"Zip4\":\"1771\"},\"DateFirstSeen\":{\"Year\":2013,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"4106 BROXTON CT\",\"City\":\"HEPHZIBAH\",\"State\":\"GA\",\"Zip5\":\"30815\",\"Zip4\":\"6032\"},\"DateFirstSeen\":{\"Year\":1992,\"Month\":6},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"265 RALPH DAVID ABERNATHY BLVD SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"30312\",\"Zip4\":\"2634\"},\"Phone\":\"4048637784\",\"DateFirstSeen\":{\"Year\":2011},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"Latitude\":\"33.736887\",\"Longitude\":\"-84.396539\"}}}}}"
+        }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="5d601f3d-48ab-4fcb-9b51-d288e4206049" processor="http:request">
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="1d4da8a1-5ca6-41da-814a-1ea0b83c7045" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="instantIdResponse" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+	<sub-flow name="InstantIdUnKnownResponseForPassWorkFlow" doc:id="abaaeed3-f20d-48e4-a0d3-d8df7425c143" >
+		<ee:transform doc:name="Transform Message" doc:id="a0a4c1d8-8396-4a32-af0f-ae762cbe8ef8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Status": {
+        "ConversationId": "31000157713765",
+        "RequestId": "375482185",
+        "TransactionStatus": "passed",
+        "TransactionReasonCode": {
+	      "Code": "instantid_pass",
+	      "Description": "UnKnownDescription"
+	    },      
+        "Reference": "Reference1"
+    },
+    "Products": [
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "InstantID Step",
+            "ProductConfigurationName": "ewb.onlineaccountopening_instantid",
+            "ProductStatus": "pass"
+        },
+        {
+            "ProductType": "InstantID",
+            "ExecutedStepName": "PostID Step",
+            "ProductConfigurationName": "INSTANTID_PASS",
+            "ProductStatus": "pass",
+            "ProductReason": {
+                "Code": "instantid_pass",
+                "Description": "PASS"
+            }
+        }
+    ],
+    "PassThroughs": [
+        {
+            "Type": "INSTANT_ID",
+            "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41886\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCOE\",\"State\":\"CA\",\"Zip5\":\"94124\"},\"DOB\":{\"Year\":1962,\"Month\":9,\"Day\":14},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133838\",\"VerifiedInput\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"County\":\"FULTON\"},\"SSN\":\"612387575\",\"HomePhone\":\"8136858223\",\"DOB\":{\"Year\":\"1962\",\"Month\":\"09\",\"Day\":\"14\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":12,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":50,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"SAN FRANCISCO\",\"State\":\"CA\",\"Zip5\":\"94124\"}},\"PhoneOfNameAddress\":\"4048637784\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"GEORGIA\",\"IssuedStartDate\":{\"Year\":1974,\"Month\":1},\"IssuedEndDate\":{\"Year\":1975,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HOLLISTER\",\"StreetSuffix\":\"AVE\",\"StreetAddress1\":\"1130 HOLLISTER AVE\",\"City\":\"FORT STEWART\",\"State\":\"GA\",\"Zip5\":\"31315\",\"Zip4\":\"1771\"},\"DateFirstSeen\":{\"Year\":2013,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"4106 BROXTON CT\",\"City\":\"HEPHZIBAH\",\"State\":\"GA\",\"Zip5\":\"30815\",\"Zip4\":\"6032\"},\"DateFirstSeen\":{\"Year\":1992,\"Month\":6},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}},{\"Address\":{\"StreetAddress1\":\"265 RALPH DAVID ABERNATHY BLVD SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"30312\",\"Zip4\":\"2634\"},\"Phone\":\"4048637784\",\"DateFirstSeen\":{\"Year\":2011},\"DateLastSeen\":{\"Year\":2013,\"Month\":9}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"JOSE\",\"Last\":\"S-JOHNSON\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":false,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"1130\",\"StreetName\":\"HILLISTER\",\"StreetSuffix\":\"AVE\",\"StreetPostDirection\":\"SW\",\"City\":\"ATLANTA\",\"State\":\"GA\",\"Zip5\":\"94124\",\"Zip4\":\"2634\",\"Latitude\":\"33.736887\",\"Longitude\":\"-84.396539\"}}}}}"
+        }
+    ]
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<munit-tools:mock-when doc:name="Mock when" doc:id="b2b55563-284e-43ff-ac87-ea17c0077238" processor="http:request" >
+			<munit-tools:with-attributes >
+				<munit-tools:with-attribute attributeName="doc:id" whereValue="8b3e01bf-bf6c-4f7b-ad55-cfc26d19df9d" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return >
+				<munit-tools:variables >
+					<munit-tools:variable key="kbaResponse" value="#[payload]" mediaType="application/json" />
+				</munit-tools:variables>
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+
+	<sub-flow name="NewUserInCIFFailureMock_Sub_Flow" doc:id="210f950e-ad4e-49fc-b675-f1b004eb10a0">
+		<munit-tools:mock-when doc:name="Failure CIF Response"
+			doc:id="fe523c0e-273d-44b0-a2b5-56e9c69a83c9" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute
+					attributeName="doc:id" whereValue="725a680a-eb4c-4d68-9abb-0d5cb132ccbe" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return>
+				<munit-tools:payload value='#[output application/json --- {
+    "RequestUUID": "01022130-5232-11e9-8645-02d86b0a9960",
+    "ErrorMessageList": [
+        {
+            "ErrorMessageNumber": "409",
+            "ErrorMessageText": "User already exists."
+        }
+    ]
+}]' mediaType="application/json" />
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+
+	<sub-flow name="EnrollUserFailureMock_Sub_Flow" doc:id="8107aab7-262b-4040-8c25-1e27a328adbd">
+		<munit-tools:mock-when doc:name="Enroll User Failure Response"
+			doc:id="ae25b1f4-03b9-45aa-abf5-053d01edddcb" processor="http:request">
+			<munit-tools:with-attributes>
+				<munit-tools:with-attribute
+					attributeName="doc:id" whereValue="128d17a4-2ede-4c2b-9a47-530e3c146d0e" />
+			</munit-tools:with-attributes>
+			<munit-tools:then-return>
+				<munit-tools:payload value='#[output application/json --- {
+    "RequestUUID": null,
+    "ErrorMessageList": [
+        {
+            "ErrorMessageNumber": null,
+            "ErrorMessageText": "Provide a valid Account Number. Account Number cannot be Empty."
+        }
+    ]
+}]' mediaType="application/json" />
+
+			</munit-tools:then-return>
+		</munit-tools:mock-when>
+	</sub-flow>
+
+</mule>

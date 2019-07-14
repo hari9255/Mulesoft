@@ -1,0 +1,94 @@
+{
+                  "AccountType": "CHK_I_PERS_PREMIER",
+                  "CustomerInformation": {
+                    "DateOfBirth": "1980-05-16T16:55:15.467Z",
+                    "FirstName": "John",
+                    "LastName": "Doe",
+                    "MiddleInitial": "M",
+                    "Title": "Sr Dev",
+                    "Address": {
+                      "StreetAddress1": "9300 Flair Dr",
+                      "StreetAddress2": "300",
+                      "City": "El Monte",
+                      "State": "CA",
+                      "Zip": "91731",
+                      "CountryCode": "US",
+                      "TimeAtAddress": {
+                        "Years": 2,
+                        "Month": 1
+                      },
+                      "IsForeignAddress": false
+                    },
+                    "PrimaryPhoneNumber": "6662367234",
+                    "FaxPhoneNumber": "6662367234",
+                    "SecondaryPhoneNumber": "6662367234",
+                    "MobilePhoneNumber": "6662367234",
+                    "TaxNumber": "734561234",
+                    "TaxIdType": "SocialSecurityNumber",
+                    
+                    "CitizenshipCode": "US",
+                    "W8CertificateType": "Blank",
+                    "PrimaryID": "DL",
+                    "BranchNumber": "8034",
+                    "CostCenterNumber": 1145,
+                    "MailCode": "NoSpecialAction",
+                    "PrimaryLanguage": "Chinese",
+                    "PrimaryOfficerNumber": 30744,
+                    "SecondaryOfficerNumber": 30744,
+                    "Gender": "Female",
+                    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+                    "EmploymentOrSchool": "EWB",
+                    "Ethnicity": "AfricanAmerican",
+                    "MaritalStatus": "Married",
+                    "MothersMaidenName": "Name",
+                    "Occupation": "AdminManagerial",
+                    "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+                    "Identification": {
+                      "Status": "VerifiedByBanker",
+                      "IsTINAppliedFor": true,
+                      "IdentificationInformation1": {
+                        "Type": "DL",
+                        "Number": "F4567",
+                        "IssuingEntity": "DMV",
+                        "IssuingLocation": "Pasadena",
+                        "IssueDate": "2010-05-16T16:55:15.468Z",
+                        "ExpirationDate": "2020-05-16T16:55:15.468Z"
+                      },
+                      "IdentificationInformation2": {
+                        "Type": "Passport",
+                        "Number": "R4567",
+                        "IssuingEntity": "US",
+                        "IssuingLocation": "Pasadena",
+                        "IssueDate": "2008-05-16T16:55:15.468Z",
+                        "ExpirationDate": "2028-05-16T16:55:15.468Z"
+                      }
+                    },
+                    "EmailAddress": "name@email.com",
+                    "RequestUUID": "string"
+                  },
+                  "DepositAccount": {
+                    "WithholdingIndicator": "ExemptAssumed"
+                  },
+                  "CustomerToAccountRelationship": {
+                
+                    "Customer1AccountRelationshipCode": "000",
+                    "Customer1AccountAssociationType": "Primary",
+                    "Customer2AccountAssociationType": "Primary",
+                    "Address": {
+                      "StreetAddress1": "9300 Flair Dr",
+                      "StreetAddress2": "300",
+                      "City": "El Monte",
+                      "State": "CA",
+                      "Zip": "91731",
+                      "CountryCode": "US",
+                      "TimeAtAddress": {
+                        "Years": 1,
+                        "Month": 3
+                      },
+                      "IsForeignAddress": false
+                    },
+                    "NumberOfStatementCopies": 1,
+                    "AddressLineOfTINOwner": 1
+                  },
+                  "RequestUUID": "string"
+                } 

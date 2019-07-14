@@ -1,0 +1,14 @@
+{
+    "data": {
+        "CustomerNumber": "00000061099",
+        "AccountNumber": 178627081,
+        "CardNumber": 0,
+        "RequestUUID": "a04m000000BAcfJAAT",
+        "ErrorMessageList": []
+    },
+    "result": {
+        "success": true,
+        "code": 200,
+        "message": null
+    }
+}

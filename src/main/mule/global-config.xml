@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:crypto="http://www.mulesoft.org/schema/mule/crypto" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
+	xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
+http://www.mulesoft.org/schema/mule/crypto http://www.mulesoft.org/schema/mule/crypto/current/mule-crypto.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">	
+	<http:request-config name="HTTP_Request_configuration_Okta_System"
+		doc:name="HTTP Request configuration" doc:id="0b5ac0e6-942c-4ce8-8e57-cb95e2e4641f">
+		<http:request-connection host="${okta.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="3acea00a-e9c2-4fe8-9b2c-a36ded6a51d5" file="env-${env}.yaml" />
+	<http:request-config name="HTTP_Request_configuration_melissa" doc:name="HTTP Request configuration" doc:id="13fc6db6-bd89-4ce2-9df2-c0498df420e3" >
+		<http:request-connection host="${melissa.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_customerVerificationFlow" doc:name="HTTP Request configuration" doc:id="6901ebfb-f6d4-4826-a0f7-5a390b06f7d8" >
+		<http:request-connection host="${customerVerificationFlow.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_PromoCode" doc:name="HTTP Request configuration" doc:id="86dbe573-c48b-458f-9b2c-a1c752e8d365" >
+		<http:request-connection host="${promotion.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_Product" doc:name="HTTP Request configuration" doc:id="6e2d3b0b-405c-47eb-b132-fac7b215a9cc" >
+		<http:request-connection host="${product.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_Mortgage" doc:name="HTTP Request configuration" doc:id="a6b98517-ac35-487d-aaba-0834bc7d5fad" >
+		<http:request-connection host="${mortgage.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>	
+	<http:request-config name="HTTP_Request_caseApproved" doc:name="HTTP Request configuration" doc:id="8e11e94b-0042-467c-bac2-e5230fa90790" >
+		<http:request-connection host="${caseApproved.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_fis" doc:name="HTTP Request configuration" doc:id="83d737ed-18c7-4f4a-8877-e97832aa2dac" >
+		<http:request-connection host="${fis.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_cis" doc:name="HTTP Request configuration" doc:id="af3b1dbd-b3d4-4d2e-9974-8ff8918c3170" >
+		<http:request-connection host="${cis.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_caseSynergy" doc:name="HTTP Request configuration" doc:id="2935cc96-2f7b-47df-b5ad-da56983452b3" >
+		<http:request-connection host="${caseSynergy.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_caseUpdatePromocode" doc:name="HTTP Request configuration" doc:id="f21a1ac3-a19d-4812-ae5a-690fc2fd739a" >
+		<http:request-connection host="${caseUpdatePromocode.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_MDS_Case_Creation" doc:name="HTTP Request configuration" doc:id="e765fccd-3745-4c35-a5b5-da697147bc68" >
+		<http:request-connection host="${case.host}" connectionIdleTimeout="${TIMEOUT.ONEHALFMINUTE}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<ee:object-store-caching-strategy name="Caching_Strategy" doc:name="Caching Strategy" doc:id="d8e05cd4-c585-4b30-adeb-df2b66f6735e" keyGenerationExpression="#[vars.cacheKey]" maxEntries="200" entryTTL="600000" expirationInterval="600000" />	
+	<http:request-config name="HTTP_Request_configuration_terafinaCaseUpdate" doc:name="HTTP Request configuration" doc:id="ed488dc8-70ea-4ad0-8eb0-934e43242481" >
+		<http:request-connection protocol="HTTPS" host="${terafina.host}" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration_pinpoint" doc:name="HTTP Request configuration" doc:id="16232de8-a41e-4677-9cd5-6998079f9c39" >
+		<http:request-connection host="${pinpoint.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_okta_process" doc:name="HTTP Request configuration" doc:id="11787611-761e-4fd8-8e78-3909e0e5381c" >
+		<http:request-connection host="${okta-process.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_CupCard" doc:name="HTTP Request configuration" doc:id="06581e51-bd3a-437d-a8f8-4ebd3cf869d0" >
+		<http:request-connection host="${fis.host}" protocol="HTTPS" tlsContext="TLS_Context"/>
+	</http:request-config>
+	<tls:context name="TLS_Context" doc:name="TLS Context" doc:id="a17d1da4-f06b-45b4-b6c7-4fe822190a82" >
+		<tls:trust-store insecure="true"/>
+	</tls:context>
+	<api-gateway:autodiscovery apiId="${api.id}" doc:name="API Autodiscovery" doc:id="bcb66baa-2506-45c9-8a82-102083fe058c" flowRef="velo-prc-onboarding-main" />
+	<http:request-config name="HTTPS_System_API_Config" doc:name="HTTP Request configuration" doc:id="79fcbe70-b6b7-4100-9df3-190164165ea5" >
+		<http:request-connection protocol="HTTPS" host="${http.host}" tlsContext="TLS_Context" connectionIdleTimeout="${TIMEOUT.ONEMINUTE}">
+		</http:request-connection>
+	</http:request-config>
+<!-- <crypto:jce-config name="Crypto_Jce" doc:name="Crypto Jce" doc:id="63fe1732-a82e-46e0-8687-f4a21415bff9" keystore="sample.jceks" type="JCEKS" password="password" >
+		<crypto:jce-key-infos >
+			<crypto:jce-symmetric-key-info keyId="sample" alias="sample" password="password" />
+		</crypto:jce-key-infos>
+	</crypto:jce-config> -->
+	<http:request-config name="HTTP_Experience_API_Config" doc:name="HTTP Request configuration" doc:id="2c87968a-0cb7-4d4b-80e5-221bc9d6a08b" >
+		<http:request-connection protocol="HTTPS" host="${partnerCaseUpdate.host}" />
+	</http:request-config>
+	<sub-flow name="generic-exception" doc:id="40503ed2-645b-46dc-9371-d73e94b9b6a6">
+		<logger level="INFO" doc:name="Logger"
+			doc:id="43e200e4-920d-46a8-a28a-5e542c71abac" message="Exception found Request UUID #[correlationId] Flow Name #[flow.name]" />
+		<json-logger:logger doc:name="Exception " doc:id="892d05a8-1b74-4230-9dd3-ec92e5ebcc48" config-ref="JSON_Logger_Config" priority="ERROR" tracePoint="PRINT" message="Exception Found">
+			<json-logger:content ><![CDATA[#[output application/json 
+---
+{
+ 	ErrorPayload: payload,
+	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-variable value="#[error.muleMessage.attributes.StatusCode]" doc:name="Set Variable" doc:id="bb1ebf51-3f01-4a12-b758-e5f02fcc0438" variableName="httpStatus" />
+		<ee:transform doc:name="Copy_of_Transform Message"
+			doc:id="43996a97-0151-4c4d-9691-1241ee2ec5a8">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "data": [],
+    "result": {
+        "success": false,
+        "code": vars.httpStatus,
+        "message": {
+			"errorDescription": error.description,
+			"errorType" : error.errorType
+		}
+    }
+}
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="global-return-response-build" doc:id="1eb4318e-e2a0-4f16-b483-ca35352603f2" >
+		<ee:transform doc:name="Transform Message" doc:id="706d1b15-19c7-450e-b5a6-a9df4efd7f66" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "data": payload default [],
+    "result": {
+        "success": vars.successCode as Boolean default true,
+        "code": vars.httpStatus,
+        "message": vars.retSuccMes
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="global-mortgage-return-response-build" doc:id="1eb4318e-e2a0-4f16-b483-ca35352603f2" >
+		<ee:transform doc:name="Transform Message" doc:id="706d1b15-19c7-450e-b5a6-a9df4efd7f66" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "data": payload default [],
+    "result": {
+        "success": vars.successCode default true,
+        "code": vars.httpStatus,
+        "message": vars.retSuccMes
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow doc:id="88d51c0e-9942-4eca-8131-e24156359147" name="api-exceptions-response-build">
+              <json-logger:logger doc:name="Exception" doc:id="1d017683-5827-46ba-8849-d11690784f1f" config-ref="JSON_Logger_Config" priority="ERROR" tracePoint="PRINT" message="Exception Found">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+	ErrorPayload: payload,
+	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<ee:transform doc:name="Transform Message" doc:id="c4a0ae4a-c75e-4a8b-87e2-3dcc1cbc98a7" >
+                     <ee:message >
+                     </ee:message>
+                     <ee:variables >
+				<ee:set-variable variableName="tempApiExceptionVar" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+       "errorDescription": error.description,
+       "errorType" : error.errorType
+}]]></ee:set-variable>
+                     
+</ee:variables>
+              </ee:transform>
+       </sub-flow>
+	
+</mule>

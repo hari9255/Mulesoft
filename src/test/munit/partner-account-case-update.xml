@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="partner-account-case-update-test-suite.xml" />
+	<munit:test name="WeBull-partner-account-case-update-FISSuccess" description="Test" doc:id="7324fe7c-b33f-4ee0-a3a8-6ba39fbdc527" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="FISSuccessResponse" doc:id="bd32a27f-fc3f-4f71-bc8c-730e695b6b4e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f478a6a9-f63c-4ac2-bc3b-7e56c73d3dfc" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="FISResponse" value='#[output application/json --- {"data":{"CustomerNumber":"00000061099","AccountNumber":178627081,"CardNumber":0,"RequestUUID":"a04m000000BAcfJAAT","ErrorMessageList":[]},"result":{"success":true,"code":200,"message":null}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {"RequestUUID":"3a68a84b-5178-46c9-8750-9267bb90ea56","MID":"cSXPX4wcr1/P8ay7b6UP0aORtWCRWx/xmOvuYmCvQHEldHxw/jvGGWoqeGlZoBTh","CaseId":null,"CaseStatus":"Approved","Partner":{"PartnerId":"31000112989176","PartnerName":"WEBULL","ApplicationIp":"223.186.78.236","Channel":"Mobile","VerificationResults":"Approved"},"CaseNumber":"CAS-09600-N5V6M6","ApplicationId":"APP-M-09221","ApplicantType":"NONNRA","Accounts":[{"AccountType":"CHK_I_VELO","AccountName":"Checking-USChecking","CardHolderName1":null,"CardHolderName2":"","CustomerToAccountRelationship":[{"CustomerAccountRelationshipCode":"Individual","CustomerAccountAssociationType":"Primary","NumberOfStatementCopies":1}]}],"Customer":{"Names":[{"Type":"English","FirstName":"THEODORE","LastName":"BLEEMER","MiddleInitial":null,"Title":""}],"DateOfBirth":"1961-02-27","Addresses":[{"Type":"MailingAddress","IsForeignAddress":false,"StreetAddress1":"6640FORJVWRQZDB","StreetAddress2":null,"StreetAddress3":null,"City":"MODESTO","State":"CA","Zip":"95354","Country":"UnitedStates","CountryCode":"USA"},{"Type":"PrimaryAddress","IsForeignAddress":false,"StreetAddress1":"6640FORJVWRQZDB","StreetAddress2":null,"StreetAddress3":null,"City":"MODESTO","State":"CA","Zip":"95354","CountryCode":"USA","Country":"UnitedStates"},{"Type":"PrimaryChineseAddress","IsForeignAddress":null,"StreetAddress1":null,"StreetAddress2":null,"StreetAddress3":null,"City":null,"State":null,"Zip":null,"CountryCode":null,"Country":null},{"Type":"MailingChineseAddress","IsForeignAddress":null,"StreetAddress1":null,"StreetAddress2":null,"StreetAddress3":null,"City":null,"State":null,"Zip":null,"CountryCode":null,"Country":null}],"ContactInformation":[{"Type":"Primary","Number":"1085551212","CountryCode":"+1"}],"CampaignId":null,"TaxNumber":"613416979","CISNumber":"","TaxIdType":"SocialSecurityNumber","BirthPlace":null,"CitizenshipCode":"USA","W8CertificateType":null,"PrimaryID":null,"MailCode":null,"PrimaryLanguage":"English","EmailAddress":"amruthasajjan.s14@brillio.com","Gender":"Male","CountryofDualCitizenship":"USA","EmploymentDate":null,"EmploymentOrSchool":null,"Ethnicity":null,"MaritalStatus":"Single","MothersMaidenName":null,"Occupation":"Student","TenPercentShareHolder":"No","YearEmployed":"1.0","AnnualIncome":"UnderFiftyThousand","W8CertificateDate":null,"IsPoliticallyExposedPerson":true,"Identification":{"IsTINAppliedFor":null},"NonResidentAccountInformation":{"SourceOfWealth":null,"PurposeOfAccount":null,"IntendInternationalWires":null,"IntendIncomingWires":null,"IncomingWiresLimit":null,"IntendOutgoingWires":null,"OutgoingWiresLimit":null,"VisaType":null,"ForeignTaxNumber":"613416979","PreferredName":null}}}]' doc:name="Set Payload" doc:id="c3d67810-dc2e-4226-a3a9-748fb8c332fd" />
+			<flow-ref doc:name="Flow-ref to post:\process\partner\account\case\update:velo-process-api-config" doc:id="63ae846c-d1c4-4df6-a14e-2390f77d85b1" name="post:\process\partner\account\case\update:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="627ea338-8708-4591-9dcc-da125c3364f8" message="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="7e809960-e6a1-44fd-957a-2487332669e1" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Approved")]' message="Account Creation Failed"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="BBAE-partner-account-case-update-FISSuccess" description="Test" doc:id="9154778a-1a6e-445d-98ab-3dfb52734204" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="FISSuccessResponse" doc:id="cc98fb82-ea2a-45e3-a578-b4752e443431" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f478a6a9-f63c-4ac2-bc3b-7e56c73d3dfc" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="FISResponse" value='#[output application/json --- {"data":{"CustomerNumber":"00000061099","AccountNumber":178627081,"CardNumber":0,"RequestUUID":"a04m000000BAcfJAAT","ErrorMessageList":[]},"result":{"success":true,"code":200,"message":null}}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="b75b077a-4fea-455f-ad89-3660158d90c7" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "RequestUUID": "3a68a84b-5178-46c9-8750-9267bb90ea56",
+  "MID": "cSXPX4wcr1/P8ay7b6UP0aORtWCRWx/xmOvuYmCvQHEldHxw/jvGGWoqeGlZoBTh",
+  "CaseId": null,
+  "CaseStatus": "Approved",
+  "Partner": {
+    "PartnerId": "31000112989075",
+    "PartnerName": "BBAE",
+    "ApplicationIp": "223.186.78.236",
+    "Channel": "Mobile",
+    "VerificationResults": "Approved"
+  },
+  "CaseNumber": "CAS-09600-N5V6M6",
+  "ApplicationId": "APP-M-09221",
+  "ApplicantType": "NONNRA",
+  "Accounts": [
+    {
+      "AccountType": "CHK_I_VELO",
+      "AccountName": "Checking-USChecking",
+      "CardHolderName1": null,
+      "CardHolderName2": "",
+      "CustomerToAccountRelationship": [
+        {
+          "CustomerAccountRelationshipCode": "Individual",
+          "CustomerAccountAssociationType": "Primary",
+          "NumberOfStatementCopies": 1
+        }
+      ]
+    }
+  ],
+  "Customer": {
+    "Names": [
+      {
+        "Type": "English",
+        "FirstName": "THEODORE",
+        "LastName": "BLEEMER",
+        "MiddleInitial": null,
+        "Title": ""
+      }
+    ],
+    "DateOfBirth": "1961-02-27",
+    "Addresses": [
+      {
+        "Type": "MailingAddress",
+        "IsForeignAddress": false,
+        "StreetAddress1": "6640FORJVWRQZDB",
+        "StreetAddress2": null,
+        "StreetAddress3": null,
+        "City": "MODESTO",
+        "State": "CA",
+        "Zip": "95354",
+        "Country": "UnitedStates",
+        "CountryCode": "USA"
+      },
+      {
+        "Type": "PrimaryAddress",
+        "IsForeignAddress": false,
+        "StreetAddress1": "6640FORJVWRQZDB",
+        "StreetAddress2": null,
+        "StreetAddress3": null,
+        "City": "MODESTO",
+        "State": "CA",
+        "Zip": "95354",
+        "CountryCode": "USA",
+        "Country": "UnitedStates"
+      },
+      {
+        "Type": "PrimaryChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": null,
+        "StreetAddress2": null,
+        "StreetAddress3": null,
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "CountryCode": null,
+        "Country": null
+      },
+      {
+        "Type": "MailingChineseAddress",
+        "IsForeignAddress": null,
+        "StreetAddress1": null,
+        "StreetAddress2": null,
+        "StreetAddress3": null,
+        "City": null,
+        "State": null,
+        "Zip": null,
+        "CountryCode": null,
+        "Country": null
+      }
+    ],
+    "ContactInformation": [
+      {
+        "Type": "Primary",
+        "Number": "1085551212",
+        "CountryCode": "+1"
+      }
+    ],
+    "CampaignId": null,
+    "TaxNumber": "613416979",
+    "CISNumber": "",
+    "TaxIdType": "SocialSecurityNumber",
+    "BirthPlace": null,
+    "CitizenshipCode": "USA",
+    "W8CertificateType": null,
+    "PrimaryID": null,
+    "MailCode": null,
+    "PrimaryLanguage": "English",
+    "EmailAddress": "amruthasajjan.s14@brillio.com",
+    "Gender": "Male",
+    "CountryofDualCitizenship": "USA",
+    "EmploymentDate": null,
+    "EmploymentOrSchool": null,
+    "Ethnicity": null,
+    "MaritalStatus": "Single",
+    "MothersMaidenName": null,
+    "Occupation": "Student",
+    "TenPercentShareHolder": "No",
+    "YearEmployed": "1.0",
+    "AnnualIncome": "UnderFiftyThousand",
+    "W8CertificateDate": null,
+    "IsPoliticallyExposedPerson": true,
+    "Identification": {
+      "IsTINAppliedFor": null
+    },
+    "NonResidentAccountInformation": {
+      "SourceOfWealth": null,
+      "PurposeOfAccount": null,
+      "IntendInternationalWires": null,
+      "IntendIncomingWires": null,
+      "IncomingWiresLimit": null,
+      "IntendOutgoingWires": null,
+      "OutgoingWiresLimit": null,
+      "VisaType": null,
+      "ForeignTaxNumber": "613416979",
+      "PreferredName": null
+    }
+  }
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\partner\account\case\update:velo-process-api-config" doc:id="0b4d41bd-9199-45fe-b3a8-c1b99726c8bd" name="post:\process\partner\account\case\update:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="a0ce70e2-7852-4df4-a646-12164b4f5af6" message="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9b7f0548-fc63-49e0-99dc-e03fb161534d" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Approved")]' message="Account Creation Failed"/>
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="partner-account-case-update-FISFailure" description="MUnit Test" doc:id="01c5d2dd-e607-4843-884d-c771cf25f6a6" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="FISFailureResponse" doc:id="21378766-45e8-46f7-8abb-15b3b32919dd" processor="http:response">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f478a6a9-f63c-4ac2-bc3b-7e56c73d3dfc" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="FISResponse" value="#[output application/json --- {
+    &quot;RequestUuid&quot;: &quot;fab781d0-1e2e-11e9-b9ef-02135d12b3fa&quot;,
+    &quot;Status&quot;: 400,
+    &quot;Type&quot;: &quot;BAD_REQUEST&quot;,
+    &quot;Error&quot;: {
+        &quot;CustomerNumber&quot;: &quot;00000000000000000000&quot;,
+        &quot;AccountNumber&quot;: 9999999999,
+        &quot;CardNumber&quot;: 0,
+        &quot;RequestUUID&quot;: &quot;35650bbd-4947-45c4-9113-76a5ce901d5a&quot;,
+        &quot;ErrorMessageList&quot;: [
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;00228&quot;,
+                &quot;ErrorMessageText&quot;: &quot;CI00228 - WARNING, TAXPAYER NUMBER ALREADY EXISTS&quot;
+            },
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;09044&quot;,
+                &quot;ErrorMessageText&quot;: &quot;Function not processed due to previous function error.&quot;
+            },
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;09044&quot;,
+                &quot;ErrorMessageText&quot;: &quot;Function not processed due to previous function error.&quot;
+            },
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;09044&quot;,
+                &quot;ErrorMessageText&quot;: &quot;Function not processed due to previous function error.&quot;
+            },
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;09044&quot;,
+                &quot;ErrorMessageText&quot;: &quot;Function not processed due to previous function error.&quot;
+            },
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;09044&quot;,
+                &quot;ErrorMessageText&quot;: &quot;Function not processed due to previous function error.&quot;
+            },
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;09044&quot;,
+                &quot;ErrorMessageText&quot;: &quot;Function not processed due to previous function error.&quot;
+            },
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;09044&quot;,
+                &quot;ErrorMessageText&quot;: &quot;Function not processed due to previous function error.&quot;
+            },
+            {
+                &quot;ErrorMessageNumber&quot;: &quot;09044&quot;,
+                &quot;ErrorMessageText&quot;: &quot;Function not processed due to previous function error.&quot;
+            }
+        ]
+    },
+    &quot;Message&quot;: &quot;HTTP POST on resource 'https://openapiservices.eastwestbank.com:443/DepositOnboardingServiceDev/api/depositonboarding/checkingaccount' failed: bad request (400).&quot;
+}]" mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="MSDCaseCreationResponse" doc:id="db1005eb-f8f5-4159-9d93-bc6593ea13c1" processor="http:request">
+				<munit-tools:with-attributes />
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="mdsResponse" value='#[output application/json --- {  "CaseNumber": "CAS-44030-K9K9T2"}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<set-payload value='#[output application/json --- {"RequestUUID":"3a68a84b-5178-46c9-8750-9267bb90ea56","MID":"cSXPX4wcr1/P8ay7b6UP0aORtWCRWx/xmOvuYmCvQHEldHxw/jvGGWoqeGlZoBTh","CaseId":null,"CaseStatus":"Approved","Partner":{"PartnerId":"31000112989176","PartnerName":"WEBULL","ApplicationIp":"223.186.78.236","Channel":"Mobile","VerificationResults":"Approved"},"CaseNumber":"CAS-09600-N5V6M6","ApplicationId":"APP-M-09221","ApplicantType":"NONNRA","Accounts":[{"AccountType":"CHK_I_VELO","AccountName":"Checking-USChecking","CardHolderName1":null,"CardHolderName2":"","CustomerToAccountRelationship":[{"CustomerAccountRelationshipCode":"Individual","CustomerAccountAssociationType":"Primary","NumberOfStatementCopies":1}]}],"Customer":{"Names":[{"Type":"English","FirstName":"THEODORE","LastName":"BLEEMER","MiddleInitial":null,"Title":""}],"DateOfBirth":"1961-02-27","Addresses":[{"Type":"MailingAddress","IsForeignAddress":false,"StreetAddress1":"6640FORJVWRQZDB","StreetAddress2":null,"StreetAddress3":null,"City":"MODESTO","State":"CA","Zip":"95354","Country":"UnitedStates","CountryCode":"USA"},{"Type":"PrimaryAddress","IsForeignAddress":false,"StreetAddress1":"6640FORJVWRQZDB","StreetAddress2":null,"StreetAddress3":null,"City":"MODESTO","State":"CA","Zip":"95354","CountryCode":"USA","Country":"UnitedStates"},{"Type":"PrimaryChineseAddress","IsForeignAddress":null,"StreetAddress1":null,"StreetAddress2":null,"StreetAddress3":null,"City":null,"State":null,"Zip":null,"CountryCode":null,"Country":null},{"Type":"MailingChineseAddress","IsForeignAddress":null,"StreetAddress1":null,"StreetAddress2":null,"StreetAddress3":null,"City":null,"State":null,"Zip":null,"CountryCode":null,"Country":null}],"ContactInformation":[{"Type":"Primary","Number":"1085551212","CountryCode":"+1"}],"CampaignId":null,"TaxNumber":"613416979","CISNumber":"","TaxIdType":"SocialSecurityNumber","BirthPlace":null,"CitizenshipCode":"USA","W8CertificateType":null,"PrimaryID":null,"MailCode":null,"PrimaryLanguage":"English","EmailAddress":"amruthasajjan.s14@brillio.com","Gender":"Male","CountryofDualCitizenship":"USA","EmploymentDate":null,"EmploymentOrSchool":null,"Ethnicity":null,"MaritalStatus":"Single","MothersMaidenName":null,"Occupation":"Student","TenPercentShareHolder":"No","YearEmployed":"1.0","AnnualIncome":"UnderFiftyThousand","W8CertificateDate":null,"IsPoliticallyExposedPerson":true,"Identification":{"IsTINAppliedFor":null},"NonResidentAccountInformation":{"SourceOfWealth":null,"PurposeOfAccount":null,"IntendInternationalWires":null,"IntendIncomingWires":null,"IncomingWiresLimit":null,"IntendOutgoingWires":null,"OutgoingWiresLimit":null,"VisaType":null,"ForeignTaxNumber":"613416979","PreferredName":null}}}]' doc:name="Set Payload" doc:id="b3ef888e-373e-4f7b-b61b-cfc7cb8d4c04" />
+			<flow-ref doc:name="Flow-ref to post:\process\partner\account\case\update:velo-process-api-config-FIS Failure" doc:id="b1299123-c746-410a-bd0d-c599466220d5" name="post:\process\partner\account\case\update:velo-process-api-config" />
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="4c1950b5-96a6-4f24-96db-cad223cf7a52" message="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="34ab7da6-8c43-4867-84d6-967402beb954" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Partner Case Approved Test case failed for FIS failure message"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="partner-account-case-denied-ScenarioTest" description="Test" doc:id="4032ccd3-6023-4d57-adc5-6fe898a65811" >
+		<munit:execution >
+			<ee:transform doc:name="Set Payload" doc:id="f77779fa-e82d-41fe-bc1c-f9fd835682cf" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"RequestUUID": "3a68a84b-5178-46c9-8750-9267bb90ea56",
+	"MID": "cSXPX4wcr1/P8ay7b6UP0aORtWCRWx/xmOvuYmCvQHEldHxw/jvGGWoqeGlZoBTh",
+	"CaseId": null,
+	"CaseStatus": "Denied",
+	"Partner": {
+		"PartnerId": "31000112989176",
+		"PartnerName": "WEBULL",
+		"ApplicationIp": "223.186.78.236",
+		"Channel": "Mobile",
+		"VerificationResults": "Approved"
+	},
+	"CaseNumber": "CAS-09600-N5V6M6",
+	"ApplicationId": "APP-M-09221",
+	"ApplicantType": "NONNRA",
+	"Accounts": [{
+		"AccountType": "CHK_I_VELO",
+		"AccountName": "Checking-USChecking",
+		"CardHolderName1": null,
+		"CardHolderName2": "",
+		"CustomerToAccountRelationship": [{
+			"CustomerAccountRelationshipCode": "Individual",
+			"CustomerAccountAssociationType": "Primary",
+			"NumberOfStatementCopies": 1
+		}]
+	}],
+	"Customer": {
+		"Names": [{
+			"Type": "English",
+			"FirstName": "THEODORE",
+			"LastName": "BLEEMER",
+			"MiddleInitial": null,
+			"Title": ""
+		}],
+		"DateOfBirth": "1961-02-27",
+		"Addresses": [{
+			"Type": "MailingAddress",
+			"IsForeignAddress": false,
+			"StreetAddress1": "6640FORJVWRQZDB",
+			"StreetAddress2": null,
+			"StreetAddress3": null,
+			"City": "MODESTO",
+			"State": "CA",
+			"Zip": "95354",
+			"Country": "UnitedStates",
+			"CountryCode": "USA"
+		}, {
+			"Type": "PrimaryAddress",
+			"IsForeignAddress": false,
+			"StreetAddress1": "6640FORJVWRQZDB",
+			"StreetAddress2": null,
+			"StreetAddress3": null,
+			"City": "MODESTO",
+			"State": "CA",
+			"Zip": "95354",
+			"CountryCode": "USA",
+			"Country": "UnitedStates"
+		}, {
+			"Type": "PrimaryChineseAddress",
+			"IsForeignAddress": null,
+			"StreetAddress1": null,
+			"StreetAddress2": null,
+			"StreetAddress3": null,
+			"City": null,
+			"State": null,
+			"Zip": null,
+			"CountryCode": null,
+			"Country": null
+		}, {
+			"Type": "MailingChineseAddress",
+			"IsForeignAddress": null,
+			"StreetAddress1": null,
+			"StreetAddress2": null,
+			"StreetAddress3": null,
+			"City": null,
+			"State": null,
+			"Zip": null,
+			"CountryCode": null,
+			"Country": null
+		}],
+		"ContactInformation": [{
+			"Type": "Primary",
+			"Number": "1085551212",
+			"CountryCode": "+1"
+		}],
+		"CampaignId": null,
+		"TaxNumber": "613416979",
+		"CISNumber": "",
+		"TaxIdType": "SocialSecurityNumber",
+		"BirthPlace": null,
+		"CitizenshipCode": "USA",
+		"W8CertificateType": null,
+		"PrimaryID": null,
+		"MailCode": null,
+		"PrimaryLanguage": "English",
+		"EmailAddress": "amruthasajjan.s14@brillio.com",
+		"Gender": "Male",
+		"CountryofDualCitizenship": "USA",
+		"EmploymentDate": null,
+		"EmploymentOrSchool": null,
+		"Ethnicity": null,
+		"MaritalStatus": "Single",
+		"MothersMaidenName": null,
+		"Occupation": "Student",
+		"TenPercentShareHolder": "No",
+		"YearEmployed": "1.0",
+		"AnnualIncome": "UnderFiftyThousand",
+		"W8CertificateDate": null,
+		"IsPoliticallyExposedPerson": true,
+		"Identification": {
+			"IsTINAppliedFor": null
+		},
+		"NonResidentAccountInformation": {
+			"SourceOfWealth": null,
+			"PurposeOfAccount": null,
+			"IntendInternationalWires": null,
+			"IntendIncomingWires": null,
+			"IncomingWiresLimit": null,
+			"IntendOutgoingWires": null,
+			"OutgoingWiresLimit": null,
+			"VisaType": null,
+			"ForeignTaxNumber": "613416979",
+			"PreferredName": null
+		}
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="214558c7-cb07-4fab-9651-c57f16080e92" message="#[payload]" />
+			<flow-ref doc:name="Flow-ref to post:\process\partner\account\case\update:velo-process-api-config" doc:id="89fe1fd0-5d6c-4ffd-a310-001b1b67c508" name="post:\process\partner\account\case\update:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call to Case Denied Choice branch" doc:id="83257370-5161-415a-bda7-fbe358148a59" processor="mule:logger" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="64208e9f-b9d6-4dd6-bebb-77a9e6f4e829" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+</mule>

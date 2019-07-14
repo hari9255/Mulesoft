@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="fis-system-api-callFlow" doc:id="724071eb-30d3-40ca-8656-cc3ce00cbf37">
+		<try doc:name="Try" doc:id="83ef508b-0e45-47d2-9962-09d742589155">
+			
+			<ee:transform doc:name="Transform Message" doc:id="13473bf5-c434-4386-bb99-c79c574ae73f" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="intendInternationalWires" ><![CDATA[%dw 2.0
+output application/json
+---
+if(
+	payload.CustomerInformation.NonResidentAccountInformation != null 
+	and 
+	(payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit != null and payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit != null)
+	and 
+	upper(payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit) == "NO PLAN"
+	and
+	upper(payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit) == "NO PLAN"
+) 
+	false 
+else 
+	true 
+]]></ee:set-variable>
+					<ee:set-variable variableName="intendIncomingWires" ><![CDATA[%dw 2.0
+output application/json
+---
+if(
+	payload.CustomerInformation.NonResidentAccountInformation != null 
+	and payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit != null
+	and upper(payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit) == "NO PLAN"
+) 
+	false 
+else 
+	true  
+	]]></ee:set-variable>
+					<ee:set-variable variableName="incomingWiresLimit" ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.CustomerInformation.NonResidentAccountInformation != null 
+	and payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit != null
+	and upper(payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit) == "NO PLAN"
+) 
+"" 
+else 
+	payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit ]]></ee:set-variable>
+					<ee:set-variable variableName="intendOutgoingWires" ><![CDATA[%dw 2.0
+output application/json
+---
+if(
+	payload.CustomerInformation.NonResidentAccountInformation != null 
+	and payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit != null
+	and upper(payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit) == "NO PLAN"
+) 
+false 
+else 
+true 
+]]></ee:set-variable>
+					<ee:set-variable variableName="outgoingWiresLimit" ><![CDATA[%dw 2.0
+output application/json
+---
+if(
+	payload.CustomerInformation.NonResidentAccountInformation != null 
+	and 
+	payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit != null
+	and 
+	upper(payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit) == "NO PLAN"
+) "" 
+else 
+	payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit ]]></ee:set-variable>
+					<ee:set-variable variableName="CardAddress" ><![CDATA[%dw 2.0
+output application/json
+---
+if (payload.CustomerInformation.MailingAddress != null)
+	((payload.CustomerInformation.MailingAddress - "State") ++ "StateCode" : payload.CustomerInformation.MailingAddress.State)
+else if(payload.CustomerInformation.Address != null)
+	((payload.CustomerInformation.Address - "State") ++ "StateCode" : payload.CustomerInformation.Address.State)
+else null]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<!-- <ee:transform doc:name="Transform Message" doc:id="13473bf5-c434-4386-bb99-c79c574ae73f" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="intendInternationalWires" ><![CDATA[%dw 2.0
+output application/json
+
+{
+	
+	IntendInternationalWires: if(payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.ForeignIncomingActivity == "No Plan") false else true 
+	
+	
+}]]></ee:set-variable>
+					<ee:set-variable variableName="intendIncomingWires" ><![CDATA[%dw 2.0
+output application/json
+
+{
+	
+	IntendIncomingWires: if(payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.ForeignIncomingActivity == "No Plan") false else true 
+	
+}]]></ee:set-variable>
+					<ee:set-variable variableName="incomingWiresLimit" ><![CDATA[%dw 2.0
+output application/json
+
+{
+	
+	IncomingWiresLimit: if(payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.IncomingWiresAmount == "0-3000") "ZeroToThreeThousand"
+	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.IncomingWiresAmount == "3001-10000") "ThreeThousandOneToTenThousand"
+	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.IncomingWiresAmount == "10001-25000") "TenThousandOneToTwentyFiveThousand"
+	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.IncomingWiresAmount == "25001-50000") "TwentyFiveThousandOneToFiftyThousand"
+   	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.IncomingWiresAmount == "50001-100000") "FiftyThousandOneToHundredThousand"
+   	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.IncomingWiresAmount == "100001+") "GreaterThanHundredThousand"
+	    else null 
+}]]></ee:set-variable>
+					<ee:set-variable variableName="intendOutgoingWires" ><![CDATA[%dw 2.0
+output application/json
+
+{
+	
+	IntendOutgoingWires: if(payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.ForeignOutgoingActivity == "No Plan") false else true
+	
+	
+}]]></ee:set-variable>
+					<ee:set-variable variableName="outgoingWiresLimit" ><![CDATA[%dw 2.0
+output application/json
+
+{
+	OutgoingWiresLimit: if(payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.OutgoingWiresAmount == "0-3000") "ZeroToThreeThousand"
+	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.OutgoingWiresAmount == "3001-10000") "ThreeThousandOneToTenThousand"
+	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.OutgoingWiresAmount == "10001-25000") "TenThousandOneToTwentyFiveThousand"
+	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.OutgoingWiresAmount == "25001-50000") "TwentyFiveThousandOneToFiftyThousand"
+   	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.OutgoingWiresAmount == "50001-100000") "FiftyThousandOneToHundredThousand"
+   	    else if (payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.OutgoingWiresAmount == "100001+") "GreaterThanHundredThousand"
+	    else null 
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform> -->
+			<ee:transform doc:name="IsCardAccountRequired" doc:id="2d835436-e6fb-40aa-b8bd-91953003f48d" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="IsCardAccountRequired" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.CardAddress != null and vars.CardAddress.StreetAddress1 != null and sizeOf(vars.CardAddress.StreetAddress1) > 30 )
+	false
+else if(vars.CardAddress != null and vars.CardAddress.StreetAddress2 != null and sizeOf(vars.CardAddress.StreetAddress2) > 30 )
+	false
+else if(vars.CardAddress != null and vars.CardAddress..AddressLine1[0] != null and sizeOf(vars.CardAddress..AddressLine1[0]) > 30 )
+	false
+else if(vars.CardAddress != null and vars.CardAddress..AddressLine2[0] != null and sizeOf(vars.CardAddress..AddressLine2[0]) > 30 )
+	false
+else if(vars.CardAddress != null and vars.CardAddress..AddressLine3[0] != null and sizeOf(vars.CardAddress..AddressLine3[0]) > 30 )
+	false
+else
+	true]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<ee:transform doc:name="Transform Message"
+				doc:id="f006d829-08a2-4b26-9036-160607147f9f">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="FIS"><![CDATA[%dw 2.0
+output application/json 
+var fullName = (payload.CustomerInformation.LastName) ++ " " ++ (payload.CustomerInformation.FirstName) ++ " " ++ if (null != payload.CustomerInformation.MiddleName and payload.CustomerInformation.MiddleName  != "") (payload.CustomerInformation.MiddleName[0]) else ""
+var sizeof = sizeOf(fullName)
+var fnmiln = (payload.CustomerInformation.FirstName) ++ " " ++ (if (null != payload.CustomerInformation.MiddleName and payload.CustomerInformation.MiddleName  != "") (payload.CustomerInformation.MiddleName[0] ++ " ") else "") ++ (payload.CustomerInformation.LastName)
+var fnln = (payload.CustomerInformation.FirstName) ++ " " ++ (payload.CustomerInformation.LastName)
+var NameOnCardSize = sizeOf(fnmiln)
+var nameOnCard = if (NameOnCardSize <= 23) fnmiln else fnln[0 to 23]
+---
+{
+	AccountType: payload.AccountInformation.AccountType,
+	CustomerInformation: {
+		DateOfBirth: payload.CustomerInformation.DateOfBirth,
+		FirstName: payload.CustomerInformation.FirstName,
+		LastName: payload.CustomerInformation.LastName,
+		MiddleInitial: payload.CustomerInformation.MiddleName[0],
+		Title: payload.CustomerInformation.sTitle,
+		Address: payload.CustomerInformation.Address,
+		MailingAddress: if (payload.CustomerInformation.MailingAddress != null) payload.CustomerInformation.MailingAddress 
+						else null,
+		PrimaryPhoneNumber: payload.CustomerInformation.PrimaryPhoneNumber,
+		FaxPhoneNumber: payload.CustomerInformation.FaxPhoneNumber,
+		SecondaryPhoneNumber: payload.CustomerInformation.SecondaryPhoneNumber,
+		MobilePhoneNumber: if (vars.ApplicantType != "NRA") payload.CustomerInformation.MobilePhoneNumber else null,
+		TaxNumber: payload.CustomerInformation.TaxNumber,
+		TaxIdType: payload.CustomerInformation.TaxIdType,
+		CitizenshipCode: payload.CustomerInformation.CitizenshipCode,
+		W8CertificateType: payload.CustomerInformation.W8CertificateType,
+		PrimaryID: payload.CustomerInformation.PrimaryID,
+		BranchNumber: payload.CustomerInformation.BranchNumber,
+		CostCenterNumber: payload.CustomerInformation.CostCenterNumber,
+		// MailCode: payload.CustomerInformation.MailCode,
+		PrimaryLanguage: payload.CustomerInformation.PrimaryLanguage,
+		PrimaryOfficerNumber: payload.CustomerInformation.PrimaryOfficerNumber,
+		SecondaryOfficerNumber: payload.CustomerInformation.SecondaryOfficerNumber,
+		Gender: payload.CustomerInformation.Gender,
+		CategoryCode1 : payload.CustomerInformation.CategoryCode1,
+		CategoryCode2 : payload.CustomerInformation.CategoryCode2,
+    	CountryofDualCitizenship : if (vars.ApplicantType == "NRA") null else payload.CustomerInformation.CountryofDualCitizenship,
+		EmploymentDate: payload.CustomerInformation.EmploymentDate,
+		//EmploymentOrSchool: payload.CustomerInformation.EmploymentOrSchool,
+		EmploymentOrSchool: null,
+		Ethnicity: payload.CustomerInformation.Ethnicity default "",
+		MaritalStatus: payload.CustomerInformation.MaritalStatus,
+		MothersMaidenName: payload.CustomerInformation.MothersMaidenName,
+		Occupation: payload.CustomerInformation.Occupation,
+		IncomeRange: payload.CustomerInformation.AnnualIncome,
+		W8CertificateDate: payload.CustomerInformation.W8CertificateDate,
+		Identification: {
+			//Status: payload.CustomerInformation.Identification.Status,
+			Status: "NonDocVerification",
+			(IdentificationInformation1: {
+				Type: p("variables.fis.TYPE." ++ payload.Documents[0].DocumentName),
+				Number: payload.CustomerInformation.NonResidentAccountInformation.ForeignTaxNumber,
+				//IssuingEntity: payload.Documents[0].DocumentName,
+				//IssuingLocation: payload.Documents[0].CountryCode
+				//IssueDate: null,
+				//ExpirationDate: null																							
+			}) if (( sizeOf (payload.Documents default [])) > 0),
+			NonDocumentaryIdentificationInformation1: {
+				//Type: payload.CustomerInformation.Identification.NonDocumentaryIdentificationInformation1
+				Type: if (vars.ApplicantType == "NRA") 
+						"VTROO"
+					  else 
+						"VLN"
+			}
+		},
+		EmailAddress: payload.CustomerInformation.EmailAddress,
+		RequestUUID: payload.RequestUUID,
+		IsPoliticallyExposedPerson: if(payload.CustomerInformation.PEP == 'No')false else true
+	},
+	DepositAccount: { 
+		AccountName: trim(if (sizeof <= 23) fullName else fullName[0 to 23]),
+		WithholdingIndicator: payload.AccountInformation.DepositAccount.WithholdingIndicator,
+		UserCode: payload.AccountInformation.DepositAccount.UserCode,
+		StatusCodes: payload.AccountInformation.DepositAccount.StatusCodes,
+		BulkFileType: payload.AccountInformation.DepositAccount.BulkFileType
+	},
+	CardAccount: if(p('CARD.ISCARDGENERATED') == "true") {
+		NameOnCard:nameOnCard,
+		//NameOnCard:  trim(if (sizeof <= 23) fullName else fullName[0 to 23]),
+		//NameOnCard: payload.AccountInformation.CardAccount.NameOnCard,
+		CardDesign: payload.AccountInformation.CardAccount.CardDesign,
+		Address: vars.CardAddress
+	} else null,
+	CustomerToAccountRelationship: {
+		CustomerNumber1: payload.CustomerInformation.CISNumber default "",
+		Customer1AccountRelationshipCode: payload.AccountInformation.CustomerToAccountRelationship.Customer1AccountRelationshipCode,
+		Customer1AccountAssociationType: payload.AccountInformation.CustomerToAccountRelationship.Customer1AccountAssociationType,
+		Customer2AccountAssociationType: payload.AccountInformation.CustomerToAccountRelationship.Customer2AccountAssociationType,
+		Address: if (payload.CustomerInformation.MailingAddress != null) 
+					payload.CustomerInformation.MailingAddress
+						else 
+					payload.CustomerInformation.Address,	
+		//NumberOfStatementCopies: payload.AccountInformation.CustomerToAccountRelationship.NumberOfStatementCopies,
+		NumberOfStatementCopies: "1",
+		AddressLineOfTINOwner: payload.AccountInformation.CustomerToAccountRelationship.AddressLineOfTINOwner
+	},
+	NonResidentAccountInformation: if (vars.ApplicantType == "NRA") {
+			SourceOfWealth: payload.CustomerInformation.NonResidentAccountInformation.SourceOfWealth default null,
+			PurposeOfAccount: payload.CustomerInformation.NonResidentAccountInformation.PurposeOfAccount default null,
+			IntendInternationalWires: vars.intendInternationalWires,
+			IntendIncomingWires: vars.intendIncomingWires,
+			IncomingWiresLimit: vars.incomingWiresLimit,
+			IntendOutgoingWires: vars.intendOutgoingWires,
+			OutgoingWiresLimit: vars.outgoingWiresLimit,
+			VisaType: payload.CustomerInformation.NonResidentAccountInformation.VisaType default null,
+			ForeignTaxNumber: payload.CustomerInformation.ForeignTaxID default null,
+			//PreferredName: payload.CustomerInformation.NonResidentAccountInformation.PreferredName default null,
+			PreferredName: null,
+			CountryCode: payload.CustomerInformation.CountryCode default null,
+			MobilePhoneNumber: payload.CustomerInformation.MobilePhoneNumber			
+	} else null,
+	RequestUUID: payload.RequestUUID
+}]]></ee:set-variable>
+					<ee:set-variable variableName="AccountType"><![CDATA[%dw 2.0
+output application/json
+---
+payload..AccountType[0]]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="INFO" doc:name="FIS Request "
+				doc:id="db079c73-f5e1-43ba-a19a-84681a2e5dfd"
+				message="ApplicationId #[vars.ApplicationId] FIS Request #[vars.FIS] Request UUID #[correlationId] Flow Name #[flow.name]" />
+			<choice doc:name="Choice" doc:id="886f642e-9e40-4768-b806-a23e7932dcdf">
+				<when expression="#[vars.AccountType =='CHK_I_PERS_PREMIER' or vars.AccountType =='CHK_I_VELO']">
+					<json-logger:logger doc:name="FIS Before Request" doc:id="a4a3f81b-cead-4f4f-b437-5a85c7e7b559" config-ref="JSON_Logger_Config" message="FIS Request" tracePoint="BEFORE_REQUEST" endpoint="POST:/${fis.application.checking}">
+				<json-logger:content><![CDATA[#[output application/json ---
+
+{
+ 	vars: vars,
+ 	attributes: attributes
+}]]]></json-logger:content>
+			</json-logger:logger>
+					<http:request method="POST" doc:name="FIS Checking"
+						doc:id="f478a6a9-f63c-4ac2-bc3b-7e56c73d3dfc" config-ref="HTTP_Request_fis"
+						path="/${fis.application.checking}" target="FISResponse"
+						responseTimeout="${TIMEOUT.ONEMINUTE}">
+						<http:body><![CDATA[#[vars.FIS]]]></http:body>
+						<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "vars.token",
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+						<http:response-validator >
+							<http:success-status-code-validator values="200,400" />
+						</http:response-validator>
+					</http:request>
+					<json-logger:logger doc:name="FIS After Request" doc:id="8a13797d-fdfb-4c4c-8806-5ce01b12d60a" config-ref="JSON_Logger_Config" endpoint="POST:/${fis.application.checking}" status="#[vars.'httpStatus']" message="FIS Response" tracePoint="AFTER_REQUEST"/>
+				</when>
+				<when expression="vars.AccountType =='SVG_PERS_PREM_SAVINGS_STMT'">
+					<logger level="INFO" doc:name="Logger"
+						doc:id="bdcdc85d-deb1-4324-ae62-789ce517850c" message="Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<json-logger:logger doc:name="FIS Before Request" doc:id="5c3364d3-5daf-4ae0-bd85-7fa1dcc0d845" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="POST:/${fis.application.saving}" message="FIS Request"/>
+					<http:request method="POST" doc:name="FIS Saving"
+						doc:id="caae1ac4-46e9-4b50-8cd6-fa158b454d91" config-ref="HTTP_Request_fis"
+						path="/${fis.application.saving}" responseTimeout="${TIMEOUT.ONEMINUTE}" target="FISResponse">
+						<http:body><![CDATA[#[vars.FIS]]]></http:body>
+						<http:headers><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "vars.token",
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+						<http:response-validator >
+							<http:success-status-code-validator values="200,400" />
+						</http:response-validator>
+					</http:request>
+					<json-logger:logger doc:name="FIS After Request" doc:id="38176c4a-3c95-475f-8964-452d7460e075" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="POST:/${fis.application.saving}" status="#[vars.'httpStatus']" message="FIS Response"/>
+				</when>
+				<otherwise>
+					<logger level="INFO" doc:name="Logger"
+						doc:id="e90ae57c-2b23-4255-b83b-0bb51ff89589"
+						message="UnKnown Account type Given: #[vars.AccountType] Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<set-variable
+						value='#["UnKnown Account type Given:" ++ vars.AccountType]'
+						doc:name="SetInValidAccType" doc:id="7be9353d-0e42-4714-b354-aa95baa1925a"
+						variableName="inValidAccType" />
+					<set-variable value="true" doc:name="SetSkipOkta"
+						doc:id="2a3a85e2-2b11-4508-be53-f61820111916" variableName="skipOktaUpdate" />
+					<ee:transform doc:name="Transform Message" doc:id="64da13b4-572f-4e62-b171-83995882e092" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="FisResponse" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error":{
+		"ErrorMessageList": [{
+	        "ErrorMessageNumber": "99999",
+	        "ErrorMessageText": "Account type " ++ vars.AccountType ++ " is not supported currently"
+	      }]      
+      }
+}]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+
+				</otherwise>
+			</choice>
+			<logger level="INFO" doc:name="FisResponse"
+				doc:id="1b46e586-791f-412e-80dc-f5ee2feeefbc"
+				message=" ApplicationId #[vars.ApplicationId] FisResponse  #[vars.FisResponse] Request UUID #[correlationId] Flow Name #[flow.name]" />
+
+			<error-handler>
+				<on-error-continue enableNotifications="true"
+					logException="true" doc:name="On Error Continue" doc:id="4596c296-8e65-43d0-a131-01b486d31597">
+					<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02"
+						name="api-exceptions-response-build" />
+					<set-variable value="#[vars.tempApiExceptionVar]"
+						doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb"
+						variableName="fisException" />
+					<ee:transform doc:name="Transform Message" doc:id="789ad21f-ac4d-4990-82f3-2206ef755336" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="FisResponse" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Error":{
+		"ErrorMessageList": [{
+	        "ErrorMessageNumber": "99999",
+	        "ErrorMessageText": vars.tempApiExceptionVar
+	      }]      
+      }
+}]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<logger level="INFO" doc:name="Logger"
+						doc:id="79796bf1-6857-421e-90cd-8e8fa9773537"
+						message="Exception Found in Pinpoint Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<set-variable value="${variables.caseStatus.PENDING}"
+						doc:name="SetCaseStatus" doc:id="3b76d09b-fd98-4360-9235-0824632568b1"
+						variableName="caseStatus" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<flow-ref doc:name="validateFISresponseForPartner" doc:id="06582331-da3c-4f31-a013-6212d64567fe" name="validateFISresponseForPartner"/>
+		
+
+	</flow>
+	<!-- <sub-flow name="validateFISresponse-1" doc:id="d2710895-7359-4692-884e-91577e286ee1" 
+		> <try doc:name="Try" doc:id="8a54c028-7661-4457-ad10-d57bfc2c81ed" > <choice 
+		doc:name="Choice" doc:id="815fe1bf-54ba-4d42-b574-881e35f1b114"> <when expression="vars.FisResponse.result.success 
+		== true"> <logger level="INFO" doc:name="FIS Sucesss" doc:id="8746a13c-2c71-416b-ab31-548e89bb8c13" 
+		message="FIS Sucess Request UUID #[correlationId] Flow Name #[flow.name]" 
+		/> </when> <otherwise> <logger level="INFO" doc:name="FIS Failed" doc:id="7f65720f-4d43-4424-ad78-d5fa943422a3" 
+		message="FIS Failed Request UUID #[correlationId] Flow Name #[flow.name]" 
+		/> <set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" 
+		doc:id="d928e387-5f4c-433e-8225-e32d2d9d0647" variableName="caseStatus" /> 
+		<ee:transform doc:name="Transform Message" doc:id="5d4aa554-087d-4e55-8202-3ed7f3153725" 
+		> <ee:message > </ee:message> <ee:variables > <ee:set-variable variableName="fisSystemAPIException" 
+		><![CDATA[%dw 2.0 output application/json if(null != vars.FisResponse.result.message.errorDescription) 
+		vars.FisResponse.result.message.errorDescription else if (null != vars.inValidAccType) 
+		vars.inValidAccType else "Error At FIS account creation System API call - 
+		Issue might be because of response time out, please check if account is created 
+		in FIS system"]]></ee:set-variable> </ee:variables> </ee:transform> </otherwise> 
+		</choice> <error-handler > <on-error-continue enableNotifications="true" 
+		logException="true" doc:name="On Error Continue" doc:id="6a1940a7-d5df-4d54-802c-6b55f3f7897d" 
+		> <logger level="INFO" doc:name="Logger" doc:id="82e4a840-7e28-41f7-ab7a-f432bc77da22" 
+		message="FisResponse not in json format: #[vars.FisResponse] Request UUID 
+		#[correlationId] Flow Name #[flow.name]"/> </on-error-continue> </error-handler> 
+		</try> </sub-flow> -->
+	<sub-flow name="validateFISresponseForPartner" doc:id="0c22b353-8411-4405-b9a5-d6e67b19edce">
+		<try doc:name="Try" doc:id="c26bb326-a8fd-45fb-8aa6-3704253106b3">
+			<choice doc:name="Choice" doc:id="370abfc6-aa5d-4ebe-b3bc-e1cc7ed704fb">
+				<when expression="vars.FisResponse.result.success == true">
+					<logger level="INFO" doc:name="FIS Sucesss"
+						doc:id="23703be6-68e4-494a-af60-d4d0f68df1dd"
+						message="Request UUID #[correlationId] Flow Name #[flow.name]::FIS Sucess" />
+				</when>
+				<otherwise>
+					<logger level="INFO" doc:name="FIS Failed"
+						doc:id="8aa21168-d70a-4737-a384-4e7012a3f174"
+						message="Request UUID #[correlationId] Flow Name #[flow.name] FIS Failed" />
+					<ee:transform doc:name="Transform Message"
+						doc:id="734700e6-522e-4437-b225-e58a6840d3a7">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="fisErrorMessageList"><![CDATA[%dw 2.0
+output application/json
+---
+vars.FisResponse..ErrorMessageList[0] map (item,index) -> {
+	errorLst: item.ErrorMessageNumber default "0"  ++ " - " ++ item.ErrorMessageText	default ""
+}]]></ee:set-variable>
+							<ee:set-variable variableName="caseStatus"><![CDATA[%dw 2.0
+output application/json
+var caseStatus = "${variables.caseStatus.PENDING}"
+---
+caseStatus]]></ee:set-variable>
+							<ee:set-variable variableName="skipOktaUpdate"><![CDATA[%dw 2.0
+output application/json
+---
+"true"]]></ee:set-variable>
+
+
+						</ee:variables>
+					</ee:transform>
+					<ee:transform doc:name="Transform Message"
+						doc:id="4385e6b1-3a3d-45c2-8444-67fc8157887b">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="fisSystemAPIException" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.fisErrorMessageList as Array ++ [{ "errorLst": vars.FisResponse.Message default "Bad Request" }]]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+
+
+				</otherwise>
+			</choice>
+			<error-handler>
+				<on-error-continue enableNotifications="true"
+					logException="true" doc:name="On Error Continue" doc:id="63626558-8b39-420d-8503-7f89e6218d0f">
+					<logger level="INFO" doc:name="Logger"
+						doc:id="b2f964ea-6b62-4614-9464-57e7624a45ec"
+						message="Request UUID #[correlationId] Flow Name #[flow.name]:: FisResponse not in readable json format: #[vars.FisResponse] Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<ee:transform doc:name="Transform Message"
+						doc:id="22d002fa-32f1-4fa3-a18c-5659790deb13">
+						<ee:message>
+						</ee:message>
+						<ee:variables>
+							<ee:set-variable variableName="fisSystemAPIException"><![CDATA[%dw 2.0
+output application/json
+---
+[
+	//{ "errorLst": vars.FisResponse.result.message.errorDescription },
+	{ "errorLst": vars.FisResponse.Message default "Bad Request"},
+	{ "errorLst": "Error in processing ErrorMessageList" }
+]]]></ee:set-variable>
+							<ee:set-variable variableName="skipOktaUpdate"><![CDATA[%dw 2.0
+output application/json
+---
+"true"]]></ee:set-variable>
+							<ee:set-variable variableName="caseStatus" ><![CDATA[%dw 2.0
+output application/json
+var caseStatus = "${variables.caseStatus.PENDING}"
+---
+caseStatus]]></ee:set-variable>
+
+						</ee:variables>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

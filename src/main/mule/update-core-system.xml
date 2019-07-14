@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="updateCoreSystemFlow" doc:id="db8ed631-cc64-4d1a-b035-5e63b97bcb5d">
+		<logger level="INFO" doc:name="Payload" doc:id="5056be2d-e533-4f5a-be42-f23ecee6d5b2" message="Request UUID #[correlationId] Flow Name #[flow.name]::Inside Case Approved (Synergy,Promo ,FIS)  Response structure #[payload]" />
+		<json-logger:logger doc:name="Payload" doc:id="bb10d980-7f20-4cbb-b479-21a70cd47301" config-ref="JSON_Logger_Config" message="Inside Case Approved (Synergy,Promo ,FIS)  Response structure" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	payload: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="8b44ca21-b5f4-4d58-8370-fa72ecb12c94" variableName="paylaodReqFrCaseCrt"/>
+		<set-variable value="#[payload]" doc:name="SetOriginalPayload" doc:id="e9014bc4-3a1d-40c5-adca-104710b7f614" variableName="originalPayload" />
+		<logger level="INFO" doc:name="Logger" doc:id="817a189a-3573-4a68-8609-6a8e8c026d83" message="Request UUID #[correlationId] Flow Name #[flow.name]::Original  Payload Before Scatter Gather call #[vars.originalPayload]"/>
+						<json-logger:logger doc:name="Logger" doc:id="771c4aba-6ce0-4b4b-bcd8-1f4424dca4b8" config-ref="JSON_Logger_Config" message="Original  Payload Before Scatter Gather call" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	originalpayload: vars.originalPayload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-variable value="#[payload.ApplicantType]" doc:name="Set Variable" doc:id="2ff0d795-a1c9-4394-80d7-7f19064b4796" variableName="ApplicantType"/>
+		<ee:transform doc:name="BuildAddress" doc:id="6a8f234e-5900-4765-8af9-35f4b5149a5b" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="primaryAddress" ><![CDATA[%dw 2.0
+output application/json
+---
+if (payload.CustomerInformation.Address != null and payload.CustomerInformation.Address.IsForeignAddress == true) {
+	"IsForeignAddress": payload.CustomerInformation.Address.IsForeignAddress,
+	"ForeignAddress": {
+		"AddressLine1": payload.CustomerInformation.Address.StreetAddress1 default "",
+		"AddressLine2": payload.CustomerInformation.Address.StreetAddress2 default "",
+		"AddressLine3": payload.CustomerInformation.Address.StreetAddress3 default "",
+		"CountryCode": payload.CustomerInformation.Address.CountryCode default "",
+		"Country": payload.CustomerInformation.Address.Country default ""
+	}
+} else if (payload.CustomerInformation.Address != null and payload.CustomerInformation.Address.IsForeignAddress == false) {
+		"IsForeignAddress": payload.CustomerInformation.Address.IsForeignAddress default "",
+		"StreetAddress1": payload.CustomerInformation.Address.StreetAddress1 default "",
+		"StreetAddress2": payload.CustomerInformation.Address.StreetAddress2 default "",
+		"City": payload.CustomerInformation.Address.City default "",
+		"State": payload.CustomerInformation.Address.State default "",
+		"Zip": payload.CustomerInformation.Address.Zip default ""
+} else null]]></ee:set-variable>
+				<ee:set-variable variableName="mailingAddress" ><![CDATA[%dw 2.0
+output application/json
+---
+if (payload.CustomerInformation.MailingAddress != null and payload.CustomerInformation.MailingAddress.IsForeignAddress == true) {
+	"IsForeignAddress": payload.CustomerInformation.MailingAddress.IsForeignAddress,
+	"ForeignAddress": {
+		"AddressLine1": payload.CustomerInformation.MailingAddress.StreetAddress1 default "",
+		"AddressLine2": payload.CustomerInformation.MailingAddress.StreetAddress2 default "",
+		"AddressLine3": payload.CustomerInformation.MailingAddress.StreetAddress3 default "",
+		"CountryCode": payload.CustomerInformation.MailingAddress.CountryCode default "",
+		"Country": payload.CustomerInformation.MailingAddress.Country default ""
+	}
+} 
+else if (payload.CustomerInformation.MailingAddress != null and payload.CustomerInformation.MailingAddress.IsForeignAddress == false) {
+	"IsForeignAddress": payload.CustomerInformation.MailingAddress.IsForeignAddress default "",
+	"StreetAddress1": payload.CustomerInformation.MailingAddress.StreetAddress1 default "",
+	"StreetAddress2": payload.CustomerInformation.MailingAddress.StreetAddress2 default "",
+	"City": payload.CustomerInformation.MailingAddress.City default "",
+	"State": payload.CustomerInformation.MailingAddress.State default "",
+	"Zip": payload.CustomerInformation.MailingAddress.Zip default ""
+} else null]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="CardAddress" doc:id="86c48a46-eb73-48d2-be52-529b81899f83" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="CardAddress" ><![CDATA[%dw 2.0
+output application/json
+---
+if (vars.mailingAddress != null)
+	((vars.mailingAddress - "State") ++ "StateCode" : vars.mailingAddress.State)
+else if(vars.primaryAddress != null)
+	((vars.primaryAddress - "State") ++ "StateCode" : vars.primaryAddress.State)
+else null]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+
+		<set-variable value="#[payload..AccountType[0]]" doc:name="Set Variable" doc:id="95bfc72f-ce36-4183-b3e4-1e31c2715c0b" variableName="AccountType" />
+
+		<ee:transform doc:name="IsCardAccountRequired" doc:id="1ccc2f07-bca4-47c3-9466-b536b07d0a56" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="IsCardAccountRequired" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.CardAddress != null and vars.CardAddress.StreetAddress1 != null and sizeOf(vars.CardAddress.StreetAddress1) > 30 )
+	false
+else if(vars.CardAddress != null and vars.CardAddress.StreetAddress2 != null and sizeOf(vars.CardAddress.StreetAddress2) > 30 )
+	false
+else if(vars.CardAddress != null and vars.CardAddress..AddressLine1[0] != null and sizeOf(vars.CardAddress..AddressLine1[0]) > 30 )
+	false
+else if(vars.CardAddress != null and vars.CardAddress..AddressLine2[0] != null and sizeOf(vars.CardAddress..AddressLine2[0]) > 30 )
+	false
+else if(vars.CardAddress != null and vars.CardAddress..AddressLine3[0] != null and sizeOf(vars.CardAddress..AddressLine3[0]) > 30 )
+	false
+else
+	true]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		<ee:transform doc:name="Transform Message"
+			doc:id="9ea26d13-e75d-4fa7-a859-47dab6b747fc">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="FIS"><![CDATA[%dw 2.0
+output application/json
+var fullName = (payload.CustomerInformation.LastName) ++ " " ++ (payload.CustomerInformation.FirstName) ++ " " ++ if (null != payload.CustomerInformation.MiddleInitial) (payload.CustomerInformation.MiddleInitial) else ""
+var sizeof = sizeOf(fullName)
+---
+{
+	AccountType: payload.AccountInformation.AccountType,
+	CustomerInformation: {
+		DateOfBirth: payload.CustomerInformation.DateOfBirth,
+		FirstName: payload.CustomerInformation.FirstName,
+		LastName: payload.CustomerInformation.LastName,
+		MiddleInitial: payload.CustomerInformation.MiddleInitial[0],
+		Title: payload.CustomerInformation.sTitle,
+		Address: 
+			if(vars.primaryAddress != null) 
+				vars.primaryAddress
+			 else null,
+		MailingAddress: 
+			if (vars.mailingAddress != null ) 
+				vars.mailingAddress
+			 else null,
+		PrimaryPhoneNumber: payload.CustomerInformation.PrimaryPhoneNumber,
+		FaxPhoneNumber: payload.CustomerInformation.FaxPhoneNumber,
+		SecondaryPhoneNumber: payload.CustomerInformation.SecondaryPhoneNumber,
+		MobilePhoneNumber: if (vars.ApplicantType != "NRA") payload.CustomerInformation.MobilePhoneNumber else null,
+		TaxNumber: payload.CustomerInformation.TaxNumber,
+		TaxIdType: payload.CustomerInformation.TaxIdType,
+		CitizenshipCode: payload.CustomerInformation.CitizenshipCode,
+		W8CertificateType: payload.CustomerInformation.W8CertificateType,
+		PrimaryID: payload.CustomerInformation.PrimaryID,
+		BranchNumber: payload.CustomerInformation.BranchNumber,
+		CostCenterNumber: payload.CustomerInformation.CostCenterNumber,
+		MailCode: payload.CustomerInformation.MailCode,
+		PrimaryLanguage: payload.CustomerInformation.PrimaryLanguage,
+		PrimaryOfficerNumber: payload.CustomerInformation.PrimaryOfficerNumber,
+		SecondaryOfficerNumber: payload.CustomerInformation.SecondaryOfficerNumber,
+		Gender: payload.CustomerInformation.Gender,
+		CategoryCode1 : payload.CustomerInformation.CategoryCode1,
+    	CountryofDualCitizenship : payload.CustomerInformation.CountryofDualCitizenship,
+		EmploymentDate: payload.CustomerInformation.EmploymentDate,
+		EmploymentOrSchool: payload.CustomerInformation.EmploymentOrSchool,
+		Ethnicity: payload.CustomerInformation.Ethnicity,
+		MaritalStatus: payload.CustomerInformation.MaritalStatus,
+		MothersMaidenName: payload.CustomerInformation.MothersMaidenName,
+		Occupation: payload.CustomerInformation.Occupation,
+		W8CertificateDate: payload.CustomerInformation.W8CertificateDate,
+		Identification: {
+			Status: payload.CustomerInformation.Identification.Status,
+			NonDocumentaryIdentificationInformation1: {
+				Type: payload.CustomerInformation.Identification.NonDocumentaryIdentificationInformation1
+			}
+		},
+		EmailAddress: payload.CustomerInformation.EmailAddress,
+		RequestUUID: payload.RequestUUID,
+		IsPoliticallyExposedPerson: if(payload.CustomerInformation.PEP == 'No')false else true
+	},
+	DepositAccount: { 
+		AccountName: trim(if (sizeof <= 23) fullName else fullName[0 to 23]),
+		WithholdingIndicator: payload.AccountInformation.DepositAccount.WithholdingIndicator,
+		UserCode: payload.AccountInformation.DepositAccount.UserCode,
+		StatusCodes: payload.AccountInformation.DepositAccount.StatusCodes,
+		BulkFileType: payload.AccountInformation.DepositAccount.BulkFileType
+	},
+	CardAccount: if(payload.AccountInformation.CardAccount != null and vars.IsCardAccountRequired == true) {
+		NameOnCard: payload.AccountInformation.CardAccount.NameOnCard,
+		CardDesign: payload.AccountInformation.CardAccount.CardDesign,
+		Address: vars.CardAddress
+	} else null,
+	CustomerToAccountRelationship: {
+		CustomerNumber1: payload.CustomerInformation.CISNumber default "",
+		Customer1AccountRelationshipCode: payload.AccountInformation.CustomerToAccountRelationship.Customer1AccountRelationshipCode,
+		Customer1AccountAssociationType: payload.AccountInformation.CustomerToAccountRelationship.Customer1AccountAssociationType,
+		Customer2AccountAssociationType: payload.AccountInformation.CustomerToAccountRelationship.Customer2AccountAssociationType,
+		Address: if( vars.primaryAddress != null ) 
+					vars.primaryAddress				
+				else if ( vars.mailingAddress != null ) 
+					vars.mailingAddress
+				 else null,
+		NumberOfStatementCopies: payload.AccountInformation.CustomerToAccountRelationship.NumberOfStatementCopies,
+		AddressLineOfTINOwner: payload.AccountInformation.CustomerToAccountRelationship.AddressLineOfTINOwner
+	},
+	NonResidentAccountInformation: if (vars.ApplicantType == "NRA") {
+			SourceOfWealth: payload.CustomerInformation.SourceofFunds.Source,
+			PurposeOfAccount: payload.CustomerInformation.PrimaryPurposeofAccOpening,
+			IntendInternationalWires: payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.TransferServices,
+			IntendIncomingWires: payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.ForeignIncomingActivity,
+			IncomingWiresLimit: payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignInActivity.IncomingWiresAmount,
+			IntendOutgoingWires: payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.ForeignOutgoingActivity,
+			OutgoingWiresLimit: payload.CustomerInformation.SourceofFunds.CustomerIntentforIntWireTransfer.ForeignOutActivity.OutgoingWiresAmount,
+			VisaType: payload.CustomerInformation.VisaType,
+			ForeignTaxNumber: payload.CustomerInformation.ForeignTaxID,
+			PreferredName: payload.CustomerInformation.PreferredName,
+			CountryCode: payload.CustomerInformation.CountryCode,
+			MobilePhoneNumber: payload.CustomerInformation.MobilePhoneNumber
+			
+	} else null,
+	RequestUUID: payload.RequestUUID
+}]]></ee:set-variable>
+				<ee:set-variable variableName="synergy"><![CDATA[%dw 2.0
+output application/json
+---
+payload.Documents map ((doc,index) -> {
+	DocumentExtension: doc.DocumentExtension,
+	DocumentSource: doc.DocumentSource,
+	DocumentType: doc.DocumentType,
+	//DocumentType: "DriversLicense",
+	SourceIdentifierId: doc.SourceIdentifierId,
+	RequestUUID: payload.RequestUUID,
+	AccountNumber: doc.AccountNumber,
+	CustomerNumber: doc.CustomerNumber,
+	DocumentDate: doc.DocumentDate,
+	OfficerCode: doc.OfficerCode,
+	DocumentService: doc.DocumentService,
+	DocumentContent: doc.DocumentContent
+} )]]></ee:set-variable>
+				<ee:set-variable variableName="promocode" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Promotion: {
+		Status: payload.Promotions.Status
+	},
+	OnboardingInvitation: {
+		FirstName: payload.CustomerInformation.FirstName,
+		LastName: payload.CustomerInformation.LastName,
+		EmailAddress: payload.Promotions.OnboardingInvitation.EmailAddress,
+		PhoneNumber: payload.Promotions.OnboardingInvitation.PhoneNumber
+	},
+	RequestUUID: payload.RequestUUID
+}]]></ee:set-variable>
+			
+
+</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="updatePromoAndSynergy" doc:id="fc559db8-a5c8-471f-8db0-c5cb90f477e6" name="updatePromoAndSynergy"/>
+		<logger level="INFO" doc:name="FIS Request "
+			doc:id="db079c73-f5e1-43ba-a19a-84681a2e5dfd" message="Request UUID #[correlationId] Flow Name #[flow.name]::ApplicationId #[vars.ApplicationId] FIS Request #[vars.FIS]" />
+		<try doc:name="Try" doc:id="6860da71-5f61-49d9-b40f-04af2af84644" >
+			<choice doc:name="Choice" doc:id="886f642e-9e40-4768-b806-a23e7932dcdf" >
+				<when expression="vars.AccountType =='CHK_I_PERS_PREMIER'" >
+					<json-logger:logger doc:name="FIS Checking Before Request" doc:id="9e2260f8-3bcb-47ae-baf6-91925e22768b" endpoint="POST:/${fis.application.checking}" config-ref="JSON_Logger_Config" message="FIS Checking Before Request" tracePoint="BEFORE_REQUEST"/>
+					<http:request method="POST" doc:name="FIS Checking" doc:id="f478a6a9-f63c-4ac2-bc3b-7e56c73d3dfc" config-ref="HTTP_Request_fis" path="/${fis.application.checking}" target="FISResponse" responseTimeout="${TIMEOUT.ONEMINUTE}">
+						<http:body ><![CDATA[#[vars.FIS]]]></http:body>
+						<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+						<http:response-validator >
+							<http:success-status-code-validator values="200,400" />
+						</http:response-validator>
+					
+</http:request>
+					<json-logger:logger doc:name="FIS  Checking After Request" doc:id="5dcd9782-8f0e-43b1-aaea-82bc70ff5589" message="FIS Checking After Request" config-ref="JSON_Logger_Config" endpoint="POST:/${fis.application.checking}" status="#[vars.'httpStatus']" tracePoint="AFTER_REQUEST"/>
+				</when>
+				<when expression="vars.AccountType =='SVG_PERS_PREM_SAVINGS_STMT'" >
+					<logger level="INFO" doc:name="Logger" doc:id="bdcdc85d-deb1-4324-ae62-789ce517850c" message="Request UUID #[correlationId] Flow Name #[flow.name]"/>
+					<json-logger:logger doc:name="FIS Savings Before Request" doc:id="26fce461-1bb7-4787-8e9f-f4f4398a97f8" config-ref="JSON_Logger_Config" message="FIS Savings Before Request" tracePoint="BEFORE_REQUEST" endpoint="POST:/${fis.application.saving}"/>
+					<http:request method="POST" doc:name="FIS Saving" doc:id="caae1ac4-46e9-4b50-8cd6-fa158b454d91" config-ref="HTTP_Request_fis" path="/${fis.application.saving}" responseTimeout="${TIMEOUT.ONEMINUTE}" target="FISResponse">
+						<http:body ><![CDATA[#[vars.FIS]]]></http:body>
+						<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+						<http:response-validator >
+							<http:success-status-code-validator values="200,400" />
+						</http:response-validator>
+					
+</http:request>
+					<json-logger:logger doc:name="FIS Savings After Request" doc:id="0100a33b-d80e-4670-99cb-0cccb6705844" config-ref="JSON_Logger_Config" message="FIS Savings After Request" tracePoint="AFTER_REQUEST" endpoint="POST:/${fis.application.saving}" status="#[vars.'httpStatus']"/>
+				</when>
+				<when expression="vars.AccountType =='CUP_CARD'" >
+					<flow-ref doc:name="Create Customer" doc:id="36b807cc-4d81-4d6a-9a55-713c0dcd5c27" name="createCustomerNumber" />
+					<flow-ref doc:name="Create Cup Card" doc:id="a44184ec-495c-48f6-8e47-fdda9d144b62" name="createCupCardNumber" />
+					<flow-ref doc:name="Create Cup Card Account" doc:id="02b39cf3-38b0-420b-9f8b-d1103a293f0f" name="createCupCardAccount" />
+				
+</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Logger" doc:id="e90ae57c-2b23-4255-b83b-0bb51ff89589" message="Request UUID #[correlationId] Flow Name #[flow.name]::UnKnown Account type Given: #[vars.AccountType]"/>
+					<json-logger:logger doc:name="UnKnown Account type Given" doc:id="10287a24-73d6-4707-99c9-ea98262df915" config-ref="JSON_Logger_Config" message="UnKnown Account type Given" priority="DEBUG" tracePoint="PRINT">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	AccountType: vars.AccountType
+}]]]></json-logger:content>
+					</json-logger:logger>
+					<set-variable value='#["UnKnown Account type Given:" ++ vars.AccountType]' doc:name="SetInValidAccType" doc:id="7be9353d-0e42-4714-b354-aa95baa1925a" variableName="inValidAccType"/>
+					<set-variable value="true" doc:name="SetSkipOkta" doc:id="2a3a85e2-2b11-4508-be53-f61820111916" variableName="skipOktaUpdate"/>
+				
+
+</otherwise>
+			</choice>
+			<logger level="INFO" doc:name="FisResponse" doc:id="1b46e586-791f-412e-80dc-f5ee2feeefbc" message="Request UUID #[correlationId] Flow Name #[flow.name]:: ApplicationId #[vars.ApplicationId] FisResponse  #[vars.FisResponse]" />
+			<flow-ref doc:name="validateFISresponse" doc:id="db7da21e-09f0-4b6a-84f7-7d785c7fccf5" name="validateFISresponse"/>
+			<choice doc:name="Choice" doc:id="f61bf448-2976-409b-8c46-a2b9580bdcc6" >
+				<when expression="vars.skipOktaUpdate == 'true'" >
+					<logger level="INFO" doc:name="Logger" doc:id="6ae9ea4e-a03d-4aa5-9b2a-f52b524731a5" message="Request UUID #[correlationId] Flow Name #[flow.name]::Skipping Okta Update because as FIS update was unsuccessfull"/>
+				</when>
+				<when expression="vars.IsPartnerRequest" >
+					<logger level="INFO" doc:name="Logger" doc:id="72d3ffd9-9bab-43cb-9feb-819a80730b60" message="Request UUID #[correlationId] Flow Name #[flow.name]::Creating User Profile in OKTA"/>
+				</when>
+				<otherwise >
+					<flow-ref doc:name="okta-flowSub_Flow1" doc:id="a9f836a4-a23a-49a8-8101-8a54a73343f7" name="okta-flowSub_Flow1" />
+				</otherwise>
+			</choice>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="97db13f1-bd6f-4dd7-8496-cf9b54bb8a59" >
+					<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build"/>
+                                  <set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="fisException" />
+					<ee:transform doc:name="Transform Message" doc:id="a15e3c21-e10c-4285-a2e6-f5af7857f8aa" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="fisException" ><![CDATA[%dw 2.0
+output application/json
+---
+
+if(null != vars.cupCardFailure)
+null
+else
+vars.tempApiExceptionVar]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+                                  <logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Exception Found in Pinpoint Request UUID #[correlationId] Flow Name #[flow.name]"/>
+					<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="3b76d09b-fd98-4360-9235-0824632568b1" variableName="caseStatus"/>
+					
+				
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<choice doc:name="Choice" doc:id="815fe1bf-54ba-4d42-b574-881e35f1b114" >
+			<when expression="vars.FisResponse.result.success == true" >
+				<logger level="INFO" doc:name="FIS Sucesss" doc:id="8746a13c-2c71-416b-ab31-548e89bb8c13" message="FIS Sucess"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="FIS Failed" doc:id="7f65720f-4d43-4424-ad78-d5fa943422a3" message="FIS Failed"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="Set Variable" doc:id="d928e387-5f4c-433e-8225-e32d2d9d0647" variableName="caseStatus"/>
+			</otherwise>
+		</choice>
+		<set-payload value="#[vars.paylaodReqFrCaseCrt]" doc:name="Set Payload" doc:id="e310887a-e015-4981-924f-1f3ae054367a" />		
+		<choice doc:name="Choice" doc:id="7f0c198b-7734-414b-8c69-19a4a9ca95bc" >
+			<when expression="vars.isCaseApprovedFlow == 'true'" >
+				<logger level="INFO" doc:name="Logger" doc:id="c8f1c9e0-fe6c-4dab-b29c-edf9e47125d9" message="Request UUID #[correlationId] Flow Name #[flow.name]::Case Creation not Required for Case Approved from Pending from MSD"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="caseCreationFlow" doc:id="903029ca-45e1-4bc5-95c4-225754c25173" name="caseCreationFlow" />
+			</otherwise>
+		</choice>		 
+		<ee:transform doc:name="Transform Message" doc:id="460c40cd-0490-4a36-8c13-4bd7e6134600">
+			<ee:message>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="finalResponse" ><![CDATA[%dw 2.0
+output application/json
+var systemResponse = if (null != vars.CISResponse) vars.CISResponse else vars.FisResponse.data
+---
+{	
+	"ApplicationId": vars.ApplicationId,
+	"ApplicationStatus": vars.caseStatus,
+	"CaseNumber": if(null != payload.data.CaseNumber)
+					payload.data.CaseNumber
+					else if (null != vars.originalPayload.CaseId) 
+					vars.originalPayload.CaseId
+					else null,
+	"OktaId": if (isEmpty(vars.oktaUserProfileResponse.id)) 
+					vars.oktaCrtUsrResp.id default null 
+					else 
+					vars.oktaUserProfileResponse.id,
+	"CustomerNumber": if (null != systemResponse.CustomerNumber)
+						systemResponse.CustomerNumber
+					  else if (vars.CISNumber != null)
+						vars.CISNumber
+					  else "",
+    "AccountNumber": vars.FisResponse.data.AccountNumber,    
+    "RequestUUID": systemResponse.RequestUUID,
+    "ErrorMessageList": if(null != vars.fisSystemAPIException)  ([
+         {
+             "Source": "FIS",
+             "Error": if(null != vars.fisException.errorDescription)
+             			vars.fisException.errorDescription
+                      else
+                      	vars.fisSystemAPIException.errorLst joinBy " \r\n " default ""
+          }])
+          else if(null != vars.cupCardFailure)  ([
+         {
+             "Source": vars.cupCardFailure.Source,
+             "Error": vars.cupCardFailure.Error
+          }])
+          else if(null != vars.tempApiExceptionVar)  ([
+         {
+             "Source": vars.tempApiExceptionVar.errorType,
+             "Error": vars.tempApiExceptionVar.errorDescription
+          }])
+          else [] 
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-payload doc:name="Set Payload"
+			doc:id="716c2346-418c-434d-b0d8-71b678defdde" mimeType="application/json"
+			value="#[vars.finalResponse]" />
+		<flow-ref doc:name="global-return-response-build" doc:id="b68eb0b4-2fa7-4dcb-a0df-8a5bc802d6d0"
+			name="global-return-response-build" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="b43d0424-b659-4ccd-89d9-98ac8b87f9f2">
+				<flow-ref doc:name="generic-exception" doc:id="38b4dfda-a94a-4cd6-adf6-d9acf70293f7"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<!-- <flow name="OktaUpdateUserprofile" doc:id="0d4a0761-8a3b-4ac7-9cbd-42c5495d688f" >
+		<logger level="INFO" doc:name="Logger" doc:id="d18e3cf9-3d81-41a1-91c7-133da2e779a1" message="Request UUID #[correlationId] Flow Name #[flow.name]::Okat Update User Profile Flow"/>
+		<json-logger:logger doc:name="Okta  Request" doc:id="920ca504-c932-422c-93cf-8f63356a1c54" tracePoint="BEFORE_REQUEST" message="Okta  Request"/>
+		<try doc:name="Try" doc:id="68046a96-7459-4395-aaab-6e5cc85664d7" >
+			<ee:transform doc:name="Transform Message" doc:id="2381e9d3-1496-4113-833a-7f1edbe9f607" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="oktaUserProfileRequest" ><![CDATA[%dw 2.0
+output application/json
+
+{	
+	profile: {
+    firstName: vars.originalPayload.CustomerInformation.FirstName,
+    lastName: vars.originalPayload.CustomerInformation.LastName ,
+    email: vars.originalPayload.CustomerInformation.EmailAddress,
+    login: vars.originalPayload.CustomerInformation.EmailAddress,
+    mobilePhone: vars.originalPayload.CustomerInformation.CountryCode ++ vars.originalPayload.CustomerInformation.MobilePhoneNumber,
+    CIS_Number : if (null != vars.originalPayload.CustomerInformation.CISNumber and vars.originalPayload.CustomerInformation.CISNumber != "")
+    				vars.originalPayload.CustomerInformation.CISNumber
+    			else if (null != vars.FisResponse.data.CustomerNumber and "" != vars.FisResponse.data.CustomerNumber)
+    				vars.FisResponse.data.CustomerNumber
+    			else ""	
+  }
+  /* ,
+  credentials: {
+    password : {
+      value: "secure-password"
+     }
+  }*/
+}]]></ee:set-variable>
+					<ee:set-variable variableName="oktaUserId" ><![CDATA[%dw 2.0
+output application/json
+
+{
+	oktaUserId: vars.originalPayload.CustomerInformation.EmailAddress
+}]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<logger level="INFO" doc:name="oktaUserProfileRequest" doc:id="19f58099-73ab-4414-8598-443c5cf25e2c" message="Request UUID #[correlationId] Flow Name #[flow.name]::Okat Update User Profile Flow Request #[vars.oktaUserProfileRequest]" />
+			<logger level="INFO" doc:name="okta User Id" doc:id="6b12d4a3-70ae-4f47-b036-bfddfb5e16f7" message="Request UUID #[correlationId] Flow Name #[flow.name]::Okta User Id Extracted from Email: #[vars.oktaUserId]"/>
+			<http:request method="POST" doc:name="Okta Update Profile Request" doc:id="eb34b859-abd2-4507-9c0a-e85006019ac8" target="oktaUserProfileResponse" config-ref="HTTP_Request_okta_process" path="/${okta-process.endpoints.userProfile}" responseTimeout="${http.request.timeout}">
+			<http:body><![CDATA[#[vars.oktaUserProfileRequest]]]></http:body>
+				<http:headers ><![CDATA[#[output applicaton/java
+
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+				<http:uri-params ><![CDATA[#[output applicaton/java
+
+{
+	"userId" : vars.oktaUserId.oktaUserId
+}]]]></http:uri-params>
+		</http:request>
+			<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="96cedee9-1d7f-4783-8c50-9f08beb6f1dc" >
+				<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02" name="api-exceptions-response-build"/>
+                    <set-variable value="#[vars.tempApiExceptionVar]" doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb" variableName="oktaUserProfileUpdateException"/>
+                                  <set-variable value="#[vars.oktaUserProfileUpdateException]" doc:name="Set Variable" doc:id="3e763cca-89df-4a74-bd9f-6c4cada9f301" variableName="genricException"/>
+						<logger level="INFO" doc:name="Logger" doc:id="79796bf1-6857-421e-90cd-8e8fa9773537" message="Request UUID #[correlationId] Flow Name #[flow.name]::Exception Found in Okta #[vars.oktaUserProfileUpdateException]"/>
+					<set-variable value="Pending" doc:name="Set Variable" doc:id="3b76d09b-fd98-4360-9235-0824632568b1" variableName="caseStatus"/> 
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<json-logger:logger doc:name="Okta  Response" doc:id="8064de9b-2eee-4bde-85f8-defb2ab1bb41" tracePoint="AFTER_REQUEST" message="Okta  Response"/>
+		<logger level="INFO" doc:name="oktaUserProfileResponse" doc:id="61beee2e-8b78-4d78-9d43-4588edf505ae" message="Request UUID #[correlationId] Flow Name #[flow.name]::Okta User Profile Response #[vars.oktaUserProfileResponse]"/>
+	</flow> -->
+	<sub-flow name="validateFISresponse" doc:id="d2710895-7359-4692-884e-91577e286ee1" >
+		<try doc:name="Try" doc:id="8a54c028-7661-4457-ad10-d57bfc2c81ed" >
+			<choice doc:name="Choice" doc:id="815fe1bf-54ba-4d42-b574-881e35f1b114">
+			<when expression="vars.FisResponse.result.success == true">
+				<logger level="INFO" doc:name="FIS Sucesss" doc:id="8746a13c-2c71-416b-ab31-548e89bb8c13" message="Request UUID #[correlationId] Flow Name #[flow.name]::FIS Sucess" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="FIS Failed" doc:id="7f65720f-4d43-4424-ad78-d5fa943422a3" message="Request UUID #[correlationId] Flow Name #[flow.name] FIS Failed" />
+					<ee:transform doc:name="Transform Message" doc:id="51f10e82-ca4c-4bd5-b852-4cede1d55b17">
+						<ee:message>
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="caseStatus" ><![CDATA[%dw 2.0
+output application/json
+var caseStatus = "${variables.caseStatus.PENDING}"
+---
+caseStatus]]></ee:set-variable>
+							<ee:set-variable variableName="skipOktaUpdate" ><![CDATA[%dw 2.0
+output application/json
+---
+"true"]]></ee:set-variable>
+							<ee:set-variable variableName="fisErrorMessageList" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.FisResponse..ErrorMessageList[0] map (item,index) -> {
+	errorLst: item.ErrorMessageNumber default "0"  ++ " - " ++ item.ErrorMessageText	default ""
+}]]></ee:set-variable>
+						
+
+</ee:variables>
+					</ee:transform>
+					<ee:transform doc:name="Transform Message" doc:id="5d4aa554-087d-4e55-8202-3ed7f3153725" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="fisSystemAPIException" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.fisErrorMessageList as Array ++ [{ "errorLst": vars.FisResponse.Message default "Bad Request" }]]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+			
+
+</otherwise>
+		</choice>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6a1940a7-d5df-4d54-802c-6b55f3f7897d" >
+					<logger level="INFO" doc:name="Logger" doc:id="82e4a840-7e28-41f7-ab7a-f432bc77da22" message="Request UUID #[correlationId] Flow Name #[flow.name]:: FisResponse not in readable json format: #[vars.FisResponse]"/>
+					<ee:transform doc:name="Transform Message" doc:id="96522d8a-9514-4eee-93e9-1a33885753b2" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="fisSystemAPIException" ><![CDATA[%dw 2.0
+output application/json
+---
+[
+	//{ "errorLst": vars.FisResponse.result.message.errorDescription },
+	{ "errorLst": vars.FisResponse.Message default "Bad Request"},
+	{ "errorLst": "Error in processing ErrorMessageList" }
+]]]></ee:set-variable>
+							<ee:set-variable variableName="skipOktaUpdate" ><![CDATA[%dw 2.0
+output application/json
+---
+"true"]]></ee:set-variable>
+							<ee:set-variable variableName="caseStatus" ><![CDATA[%dw 2.0
+output application/json
+var caseStatus = "${variables.caseStatus.PENDING}"
+---
+caseStatus]]></ee:set-variable>
+						
+</ee:variables>
+					</ee:transform>
+				
+</on-error-continue>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

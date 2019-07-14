@@ -1,0 +1,15 @@
+{
+    "data": {
+        "CustomerNumber": "00000063587",
+        "AccountApplicationCode": "CUP",
+        "AccountNumber": "110519834334",
+        "AccountOpenDate": "2018-12-11",
+        "RequestUUID": null,
+        "ErrorMessageList": []
+    },
+    "result": {
+        "success": true,
+        "code": 200,
+        "message": null
+    }
+}

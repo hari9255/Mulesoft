@@ -1,0 +1,7 @@
+{
+	"CaseStatus": " Close & Proceed | Close & Reject | Escalate to FIU Team", 
+    "DoNotBank" : true, 
+    "PoliticalExposedPerson" : true,
+    "ApplicationId" : "ABC-1234567",
+    "CaseNumber" : "23456767" 
+}

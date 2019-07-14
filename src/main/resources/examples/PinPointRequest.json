@@ -1,0 +1,354 @@
+{
+  "Pass": true,
+  "PinPointRequest": [
+    {
+      "handler": "session_info",
+      "customer_session_id": "zGlQUMjibETq87tDfFpliOEXb",
+      "remote_addr": "73.231.210.58",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36",
+      "result": "pass",
+      "channel": "online",
+      "new_account_data": {
+        "new_account": true,
+        "first_name": "nag",
+        "last_name": "test",
+        "phone_number": "16508479693",
+        "email": "s.n4@ewb.com"
+      }
+    },
+    {
+      "handler": "pinpoint_eval",
+      "customer_session_id": "zGlQUMjibETq87tDfFpliOEXb",
+      "remote_addr": "73.231.210.58",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36",
+      "activity": "new_account",
+      "url": "https://dodev-eastwestbank.cs95.force.com/tf4sf__dsp#/get-started",
+      "timestamp": "2018-11-27 06:53:33"
+    }
+  ],
+  "IdVerificationRequest": {
+    "VerboseMode": true,
+    "DataFields": {
+      "PersonInfo": {
+        "YearOfBirth": null,
+        "MonthOfBirth": null,
+        "DayOfBirth": null,
+        "AdditionalFields": {
+          "FullName": null
+        }
+      },
+      "NationalIds": [
+        {
+          "Type": "NationalID",
+          "IDNumber": null
+        }
+      ],
+      "Communication": {
+        "MobileNumber": "16508479693"
+      }
+    },
+    "CountryCode": "CN",
+    "ConfigurationName": "Identity Verification",
+    "CleansedAddress": true,
+    "AcceptTruliooTermsAndConditions": true
+  },
+  "IdAuthenticationResponse": [
+    {
+      "CountryCode": "CN",
+      "DocumentType": "IdentityCard",
+      "Errors": [
+        
+      ],
+      "ProductName": "Identity Verification",
+      "Record": {
+        "DatasourceResults": [
+          {
+            "AppendedFields": [
+              
+            ],
+            "DatasourceFields": [
+              
+            ],
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "Errors": [
+              {
+                
+              }
+            ],
+            "FieldGroups": [
+              
+            ]
+          }
+        ],
+        "Errors": [
+          
+        ],
+        "RecordStatus": "nomatch",
+        "Rule": {
+          "Note": "Script manually created",
+          "RuleName": "RuleScript DocumentVerification"
+        },
+        "TransactionRecordID": "cc12e103-b9e8-4d24-8f3c-77e86916ae17"
+      },
+      "TransactionID": "587dcf10-46e2-4173-91fe-c5092acb623b",
+      "UploadedDt": "2018-11-27T06:51:09"
+    },
+    {
+      "CountryCode": "CN",
+      "DocumentType": "IdentityCard",
+      "Errors": [
+        
+      ],
+      "ProductName": "Identity Verification",
+      "Record": {
+        "DatasourceResults": [
+          {
+            "AppendedFields": [
+              
+            ],
+            "DatasourceFields": [
+              
+            ],
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "Errors": [
+              {
+                
+              }
+            ],
+            "FieldGroups": [
+              
+            ]
+          }
+        ],
+        "Errors": [
+          
+        ],
+        "RecordStatus": "nomatch",
+        "Rule": {
+          "Note": "Script manually created",
+          "RuleName": "RuleScript DocumentVerification"
+        },
+        "TransactionRecordID": "d1a9429d-281c-4885-9f84-a59f3d9a5ad5"
+      },
+      "TransactionID": "e375cf81-a419-473d-baf1-76106d0c8a83",
+      "UploadedDt": "2018-11-27T06:51:26"
+    },
+    {
+      "CountryCode": "CN",
+      "DocumentType": "Passport",
+      "Errors": [
+        
+      ],
+      "ProductName": "Identity Verification",
+      "Record": {
+        "DatasourceResults": [
+          {
+            "AppendedFields": [
+              
+            ],
+            "DatasourceFields": [
+              
+            ],
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "Errors": [
+              {
+                
+              }
+            ],
+            "FieldGroups": [
+              
+            ]
+          }
+        ],
+        "Errors": [
+          
+        ],
+        "RecordStatus": "nomatch",
+        "Rule": {
+          "Note": "Script manually created",
+          "RuleName": "RuleScript DocumentVerification"
+        },
+        "TransactionRecordID": "9e6b6a0c-9702-46d3-9f35-62b52ff1f3cc"
+      },
+      "TransactionID": "6b87ffaf-5885-42f4-8423-f4995bfa181d",
+      "UploadedDt": "2018-11-27T06:51:40"
+    },
+    {
+      "CountryCode": "CN",
+      "DocumentType": "Passport",
+      "Errors": [
+        
+      ],
+      "ProductName": "Identity Verification",
+      "Record": {
+        "DatasourceResults": [
+          {
+            "AppendedFields": [
+              
+            ],
+            "DatasourceFields": [
+              
+            ],
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "Errors": [
+              {
+                
+              }
+            ],
+            "FieldGroups": [
+              
+            ]
+          }
+        ],
+        "Errors": [
+          
+        ],
+        "RecordStatus": "nomatch",
+        "Rule": {
+          "Note": "Script manually created",
+          "RuleName": "RuleScript DocumentVerification"
+        },
+        "TransactionRecordID": "49c0e677-56d9-452c-b667-247de131aaec"
+      },
+      "TransactionID": "44c4cb21-1475-4a6c-a28b-1ee788f566fc",
+      "UploadedDt": "2018-11-27T06:51:53"
+    }
+  ],
+  "RequestUUID": "a040x000001m4LAAAY",
+  "CaseId": "",
+  "CaseStatus": "",
+  "ApplicationId": "APP-M-04039",
+  "ApplicantType": "NRA",
+  "Settings": {
+    "AccountNumber": "45065",
+    "Workflow": "public.testing.redherrings.open",
+    "Mode": "testing",
+    "Reference": "Reference1",
+    "Locale": "en_US",
+    "ConversationId": "31000095253376",
+    "Venue": "online"
+  },
+  "Promotions": {
+    "Status": "Finished",
+    "PromoCode": "UATP449",
+    "OnboardingInvitation": {
+      "EmailAddress": "s.n4@ewb.com",
+      "PhoneNumber": "6508479693"
+    }
+  },
+  "AccountInformation": {
+    "AccountType": "CHK_I_PERS_PREMIER",
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptForeignAccount",
+      "UserCode": "D",
+      "StatusCodes": [
+        "NeverClose"
+      ],
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+      "NameOnCard": "nag test",
+      "CardDesign": "Red"
+    },
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Address": {
+        "StreetAddress1": "121111 Yixian",
+        "StreetAddress2": "",
+        "CountryCode": "CHN",
+        "City": "Jinzhou",
+        "State": "LN",
+        "Zip": "345234",
+        "IsForeignAddress": true,
+        "ForeignAddress": {
+          "AddressLine1": "121111 Yixian",
+          "AddressLine2": "Jinzhou",
+          "AddressLine3": "Liaoning 345234",
+          "CountryCode": "CHN",
+          "Country": "China"
+        }
+      },
+      "NumberOfStatementCopies": 1,
+      "AddressLineOfTINOwner": 1
+    }
+  },
+  "CustomerInformation": {
+    "DateOfBirth": "1983-11-11",
+    "FirstName": "nag",
+    "LastName": "test",
+    "Gender": null,
+    "PreferredName": "mtest test",
+    "VisaType": "H4",
+    "ForeignTaxID": "234523452345234523",
+    "PrimaryPurposeofAccOpening": "RealEstatePurchase",
+    "SourceofFunds": {
+      "Source": "Retirement",
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": false,
+        "ForeignOutActivity": {
+          "OutgoingWiresAmount": null,
+          "OutgoingWires": null,
+          "ForeignOutgoingActivity": false
+        },
+        "ForeignInActivity": {
+          "IncomingWiresAmount": null,
+          "IncomingWires": null,
+          "ForeignIncomingActivity": false
+        }
+      }
+    },
+    "CISNumber": "",
+    "PEP": "No",
+    "Address": {
+      "StreetAddress1": "121111 Yixian",
+      "StreetAddress2": "",
+      "CountryCode": "CHN",
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "121111 Yixian",
+        "AddressLine2": "Jinzhou",
+        "AddressLine3": "Liaoning 345234",
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      "City": "Jinzhou",
+      "State": "LN",
+      "Zip": "345234"
+    },
+    "MailingAddress": {
+      "StreetAddress1": "china road lu",
+      "City": "shanghai shi",
+      "Zip": "345235",
+      "CountryCode": "CHN",
+      "IsForeignAddress": true,
+      "ForeignAddress": {
+        "AddressLine1": "china road lu",
+        "AddressLine2": "shanghai shi",
+        "AddressLine3": "shanghai 345235",
+        "CountryCode": "CHN",
+        "Country": "China"
+      },
+      "State": "shanghai"
+    },
+    "CountryCode": "+1",
+    "MobilePhoneNumber": "6508479693",
+    "CitizenshipCode": "CHN",
+    "W8CertificateType": "W8BenNoCert",
+    "W8CertificateDate": "2018-11-27T06:53:34.124+0000",
+    "BranchNumber": "8088",
+    "CostCenterNumber": "88",
+    "CategoryCode1": "903",
+    "Occupation": "ArchitectureOrEngineering",
+    "Identification": {
+      "Status": "NonDocVerification",
+      "NonDocumentaryIdentificationInformation1": "VTROO"
+    },
+    "EmailAddress": "s.n4@ewb.com",
+    "RequestUUID": "a040x000001m4LAAAY"
+  },
+  "Documents": [
+    
+  ]
+}

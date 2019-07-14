@@ -1,0 +1,1323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<sub-flow name="OktaValidation" doc:id="434895e6-15d2-400b-a4e1-6366bd5528a6" >
+		<flow-ref doc:name="okta-create-user" doc:id="d571bf09-6fe3-4b6a-a052-68dbc20b4492" name="okta-create-user" />
+		<choice doc:name="Choice" doc:id="f88cbaf4-50f7-451a-bd45-9b70d6191127">
+							<when expression="vars.oktaCrtUsrResp.Status == 400">
+								<logger level="INFO" doc:name="Logger" doc:id="9aad1d06-25f1-463e-a97d-46ad6b8fefef" />
+								<flow-ref doc:name="OktaUpdateUserprofile" doc:id="02fd0d60-c2fe-444d-a6a6-4e341c64b4f5" name="okta-flow-update-partner-Sub_Flow" />
+							</when>
+					<otherwise>
+						<logger level="INFO" doc:name="Logger" doc:id="59ab798f-aad6-4b30-bdec-5fab0066aafe" message="Okta User Created" />
+					</otherwise>
+						</choice>
+	</sub-flow>
+	<flow name="PartnerAccountCreateMainFlow" doc:id="e753dd33-869c-46e4-ad0f-e37e009b3318">
+		<!-- <logger level="INFO" doc:name="Partner Create Flow Start"
+			doc:id="53c66077-11f2-477c-9684-3b1988007435" message="Partner API request ::::::: #[payload]" /> -->
+		<json-logger:logger doc:name="Partner Create Flow Start" doc:id="dbea1fd8-5c3b-471a-9ec8-542fe073b4c1" config-ref="JSON_Logger_Config" message="Partner Create Flow Start" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	PartnerAPIrequest: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="d6ebb096-9cb1-493b-bb05-3502ab83b813" variableName="originalPayload"/>
+		
+		<set-variable value="#[payload.Customer.Occupation]" doc:name="Set Variable" doc:id="e5c06628-00f2-4891-8301-9094094a7ddc" variableName="cofinance"/>
+		<ee:transform doc:name="SetVariables" doc:id="38d7e885-7801-4b0e-a4b4-1e1281eea983">
+			<ee:message>
+			</ee:message>			
+			<ee:variables>
+			<ee:set-variable variableName="ApplicationId"><![CDATA[%dw 2.0
+output application/json
+---
+payload.ApplicationId default null]]></ee:set-variable>
+				<ee:set-variable variableName="originalApplicantType" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.ApplicantType default null]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerName"><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.Names filter ($.Type == "English")]]></ee:set-variable>
+				<ee:set-variable variableName="partnerPayload"><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="IsPartnerRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+true]]></ee:set-variable>
+				<ee:set-variable variableName="documents" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Documents]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerPrimaryAddressFrPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.Addresses filter ($.Type == "PrimaryAddress")]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerMailingAddressFrPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.Addresses filter ($.Type == "MailingAddress")]]></ee:set-variable>
+				<ee:set-variable variableName="RequestUUID" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.RequestUUID default null]]></ee:set-variable>
+				<ee:set-variable variableName="synergyRequestError" ><![CDATA[%dw 2.0
+output application/json
+---
+[]]]></ee:set-variable>
+<ee:set-variable variableName="primaryContactNumber" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.ContactInformation filter ($.Type == "Primary") default null]]></ee:set-variable>
+<ee:set-variable variableName="CustomerDOB" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.DateOfBirth]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerNameChinese" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.Names filter ($.Type == "Chinese")]]></ee:set-variable>
+				<ee:set-variable variableName="pendingVar" ><![CDATA[%dw 2.0
+output application/json
+---
+p("variables.caseStatus.PENDING")]]></ee:set-variable>
+				<ee:set-variable variableName="declinedVar" ><![CDATA[%dw 2.0
+output application/json
+---
+p("variables.caseStatus.DECLINE")]]></ee:set-variable>
+				<ee:set-variable variableName="CISNumber" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.CISNumber default null]]></ee:set-variable>
+				<ee:set-variable variableName="MID" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.MID default null]]></ee:set-variable>
+				<ee:set-variable variableName="AccountName" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Accounts[0].AccountName default null]]></ee:set-variable>
+			
+</ee:variables>
+		</ee:transform>
+		<flow-ref doc:name="BuildPrimaryAndMailingAddressFlow"
+			doc:id="d47af7cf-6bbf-46d6-9cd2-502a63b087b3" name="BuildPrimaryAndMailingAddressFlow" />
+		<flow-ref doc:name="getPartnerDetails" doc:id="ecb2a895-0353-4b5a-a021-bd5388d79a34" name="getPartnerDetails"/>
+		<!-- <flow-ref doc:name="okta-create-user" doc:id="d571bf09-6fe3-4b6a-a052-68dbc20b4492" name="okta-create-user"/> -->
+		<choice doc:name="Choice" doc:id="70eea92c-1a83-4e0e-ad74-5bd0fbf41377" >
+			<when expression='vars.originalApplicantType == "NRA-CHN"' >
+				<logger level="INFO" doc:name="Partner NRA-CHN flow" doc:id="4f58ed13-ccd1-4824-bbd0-ef935e6f10ba" message="Partner API request #[correlationId] ::::::: NRA-CHN flow called"/>
+				<!-- <flow-ref doc:name="Trulioo Id Authentication Request" doc:id="e245580e-1494-472a-b288-98ead190c757" name="PartnerAccountTruliooIdauthenticationRequest" /> -->
+				<flow-ref doc:name="Id Verification Object Builder" doc:id="d465275f-e15d-4e07-9254-c492b694d165" name="PartnerAccountIdVerificationObjectBuilder" />
+				<!-- <flow-ref doc:name="SaveDocumentsInSynergy" doc:id="ed626677-119e-4b82-a7df-eeaaa6a214f8" name="SaveDocumentsInSynergy"/> -->
+				<!-- <ee:transform doc:name="Transform Message" doc:id="0a1441c5-1ad8-450f-9729-81341c09ca0d">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="occupation" ><![CDATA[%dw 2.0
+output application/json
+var toRelCode = vars.cofinance as String 
+var toAccountRelCodeProperty = log('fisMapping.occupation' ++ "." ++ toRelCode)
+var toAccountForbidList = log(p(toAccountRelCodeProperty) default "")
+
+log(toAccountForbidList)
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform> -->
+				<ee:transform doc:name="Transform Message" doc:id="8a6b332d-8b46-4195-b7f0-009238fc4045">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	ApplicationId: payload.ApplicationId,
+	ApplicantType: (payload.ApplicantType default ""),
+	Partner: payload.Partner.PartnerName,
+	IsPartnerRequest: true,
+	RequestUUID: payload.RequestUUID,
+	AccountInformation: {
+		AccountType: payload.Accounts[0].AccountType  default "",
+		CustomerToAccountRelationship: {
+			Customer1AccountRelationshipCode: if(payload.Accounts[0].CustomerToAccountRelationship[0].CustomerAccountRelationshipCode == "Individual") "000" else "",
+			Customer1AccountAssociationType: payload.Accounts[0].CustomerToAccountRelationship[0].CustomerAccountAssociationType,
+			Customer2AccountAssociationType: null,
+			NumberOfStatementCopies: payload.Accounts[0].CustomerToAccountRelationship[0].NumberOfStatementCopies,
+			AddressLineOfTINOwner: null
+		},
+		DepositAccount: {			
+			"WithholdingIndicator": "ExemptForeignAccount",
+			  "UserCode": if (null != payload.Customer.CampaignId ) 
+			  				payload.Customer.CampaignId 
+			  			else
+			  				vars.PARTNER_CONFIGS.userCode,
+			"StatusCodes": if(payload.Accounts[0].AccountType != "CHK_I_VELO") [
+			  "NeverClose"
+			] else null,
+			"BulkFileType": "ImageFile"
+		},
+		CardAccount: {
+			NameOnCard: payload.Accounts[0].CardHolderName1 default null,
+			CardDesign: "Black"
+		}
+	},
+	CustomerInformation: {
+		Address: vars.CustomerPrimaryAddress[0],
+		MailingAddress: vars.CustomerMailingAddress[0],
+		GivenAddresses: payload.Customer.Addresses,
+		SourceofFunds: payload.Customer.SourceofFunds,
+		VisaType: payload.Customer.VisaType,		
+		BranchNumber: if(null!=payload.Customer.BranchNumber) payload.Customer.BranchNumber else "8161",
+		CitizenshipCode: payload.Customer.CitizenshipCode,
+		CountryofDualCitizenship: payload.Customer.CountryOfDualCitizenship default null,
+		CostCenterNumber: if(null!=payload.Customer.CostCenterNumber)payload.Customer.CostCenterNumber else "161",
+		CountryOfBirth: null,
+		DateOfBirth: payload.Customer.DateOfBirth,
+		EmailAddress: payload.Customer.EmailAddress,
+		EmploymentDate: payload.Customer.EmploymentDate,
+		EmploymentOrSchool: payload.Customer.EmploymentOrSchool,
+		EmploymentStatus: payload.Customer.Employer,
+		EntityType: null,
+		Ethnicity: null,
+		FirstName: vars.CustomerName.FirstName[0],
+		LastName: vars.CustomerName.LastName[0],
+		MiddleName: vars.CustomerName.MiddleInitial[0],
+		Gender: payload.Customer.Gender,
+		Identification: {
+			IdentificationInformation1: payload.Customer.Identification.IdentificationInformation1,
+			IdentificationInformation2: payload.Customer.Identification.IdentificationInformation2,
+			IsTINAppliedFor: payload.Customer.Identification.IsTINAppliedFor,
+			Status: payload.Customer.Identification.Status
+		},
+		MailCode: payload.Customer.MailCode,
+		MaritalStatus: payload.Customer.MaritalStatus,
+		MothersMaidenName: payload.Customer.MothersMaidenName,
+		Occupation: payload.Customer.Occupation default "",
+		PEP: payload.Customer.IsPoliticallyExposedPerson as String,
+		CISNumber: payload.Customer.CISNumber,
+		PrimaryID: payload.Customer.PrimaryID,
+		PrimaryLanguage: payload.Customer.PrimaryLanguage,
+		PrimaryOfficerNumber: payload.Customer.PrimaryOfficerNumber,
+		CountryCode: vars.primaryContactNumber.CountryCode[0] default null,
+		MobilePhoneNumber: vars.primaryContactNumber.Number[0] default null,
+		SSN: null,
+		SSN_Type: null,
+		SearchName: null,
+		SecondaryOfficerNumber: payload.Customer.SecondaryOfficerNumber,
+		//  TaxId & Number flow is not required  for NRA-CHN
+		// TaxIdType: payload.Customer.TaxIdType default null,
+		// TaxNumber: payload.Customer.TaxNumber default null,
+		ForeignTaxID: if(null!=payload.Customer.NonResidentAccountInformation) payload.Customer.NonResidentAccountInformation.ForeignTaxNumber else null,
+		ForeignTaxNumber: if(null!=payload.Customer.NonResidentAccountInformation) payload.Customer.NonResidentAccountInformation.ForeignTaxNumber else null,
+		Title: null,
+		W8CertificateDate: payload.Customer.W8CertificateDate,
+		W8CertificateType: payload.Customer.W8CertificateType,
+		NonResidentAccountInformation: payload.Customer.NonResidentAccountInformation default null,
+		MaritalStatus: payload.Customer.MaritalStatus,		
+		Position: payload.Customer.Position,
+		NationalID: payload.Customer.ForeignTaxNumber default null,
+		YearOfEmployment: payload.Customer.YearEmployed,
+		TenPercentShareHolder: payload.Customer.TenPercentShareHolder,
+		AnnualIncome: payload.Customer.AnnualIncome,
+   		TotalNetWorth: payload.Customer.TotalNetWorth,
+    	PrimaryBanking: payload.Customer.PrimaryBanking,
+    	CategoryCode1: vars.PARTNER_CONFIGS.categoryCode1,
+		CategoryCode2: vars.PARTNER_CONFIGS.categoryCode2,
+		EStatementAccepted: payload.Customer.EStatementAccepted,
+		EStatementAcceptedDate: payload.Customer.EStatementAccepted,
+		EStatementAcceptedTime: payload.Customer.EStatementAcceptedTime
+	},
+	IdAuthenticationResponse: vars.truliooIdAuthenticationResp,
+	IdVerificationRequest: vars.idVerificationReq,
+	Documents: payload.Documents,
+	Partner: payload.Partner,
+	Pass: payload.Pass
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<ee:transform doc:name="Set Variables" doc:id="c9d9a25d-4929-4e23-933a-76c095cf4ef7">
+			<ee:message>
+			</ee:message>
+			<ee:variables>				
+				<ee:set-variable variableName="CISNumber"><![CDATA[%dw 2.0
+output application/json
+---
+payload.CustomerInformation.CISNumber default null]]></ee:set-variable>
+				<ee:set-variable variableName="tmpPassPartner"><![CDATA[%dw 2.0
+output application/json
+---
+vars.partnerPayload.Pass]]></ee:set-variable>
+						<ee:set-variable variableName="applicantType" ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.ApplicantType == "NRA-CHN")
+	"NRA"
+else ""]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="ba93892c-d194-4172-b694-16272f3b64e0" message="Partner API request #[correlationId] #[vars.ApplicationId] ::::::: Payload before calling Core banking systems - Transformed Payload for request ::::::: #[payload]" />
+				<flow-ref doc:name="buildIncomingAndOutgoingWires" doc:id="597a34f7-d9b3-433c-a5cd-44252b7ecb00" name="buildIncomingAndOutgoingWires"/>
+				<flow-ref doc:name="non-us-citizen-submit-flowFlow" doc:id="34690093-6843-4a17-891f-5cccaa8ef993" name="non-us-citizen-submit-flowFlow" />
+			</when>
+			<when expression='vars.originalApplicantType == "NonNRA"' >
+				<logger level="INFO" doc:name="Partner NonNRA flow" doc:id="3b2f1c77-14e8-4d48-8586-eac50f6da47d" message="Partner API request #[correlationId] ::::::: NonNRA flow called"/>
+				<!-- <flow-ref doc:name="SaveDocumentsInSynergy" doc:id="898a6f2b-e38d-436d-8406-4da71d9008b4" name="SaveDocumentsInSynergy"/> -->
+				<ee:transform doc:name="Transform Message" doc:id="707039e5-c85b-46cf-932d-94190771d336" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	ApplicantType: (payload.ApplicantType default ""),
+	IsPartnerRequest: true,
+	IdVerificationRequest: null,	
+	//IDAuthentication is not required for Partner
+	IdAuthenticationResponse: null,
+	RequestUUID: payload.RequestUUID,
+	ApplicationId: payload.ApplicationId,
+	AccountInformation: {
+		AccountType: payload.Accounts[0].AccountType  default "",
+		CustomerToAccountRelationship: {
+			Customer1AccountRelationshipCode: if(payload.Accounts[0].CustomerToAccountRelationship[0].CustomerAccountRelationshipCode == "Individual") "000" else "",
+			Customer1AccountAssociationType: payload.Accounts[0].CustomerToAccountRelationship[0].CustomerAccountAssociationType,
+			Customer2AccountAssociationType: null,
+			NumberOfStatementCopies: payload.Accounts[0].CustomerToAccountRelationship[0].NumberOfStatementCopies,
+			AddressLineOfTINOwner: null
+		},
+		DepositAccount: {
+			//WithholdingIndicator: payload.Accounts[0].DepositAccount.WithholdingIndicator,
+			//UserCode: payload.Accounts[0].DepositAccount.UserCode,
+			//StatusCodes: payload.Accounts[0].DepositAccount.StatusCodes map ( statusCode , indexOfStatusCode ) -> statusCode,
+			//BulkFileType: payload.Accounts[0].DepositAccount.BulkFileType
+			"WithholdingIndicator": "ExemptConfirmed",
+			"UserCode": if (null != payload.Customer.CampaignId ) 
+			  				payload.Customer.CampaignId 
+			  			else
+			  				vars.PARTNER_CONFIGS.userCode,
+			"StatusCodes": if(payload.Accounts[0].AccountType != "CHK_I_VELO") [
+			  "NeverClose"
+			] else null,
+			"BulkFileType": "ImageFile"
+		},
+		CardAccount: {
+			NameOnCard: payload.Accounts[0].CardHolderName1 default null,
+			CardDesign: "Black"
+		}
+	},
+	CustomerInformation: {
+		DateOfBirth: payload.Customer.DateOfBirth,
+		FirstName: vars.CustomerName.FirstName[0],
+		LastName: vars.CustomerName.LastName[0],
+		MiddleName: vars.CustomerName.MiddleInitial[0],		
+		PEP: payload.Customer.IsPoliticallyExposedPerson as String,
+		Address: vars.CustomerPrimaryAddress[0],
+		MailingAddress: vars.CustomerMailingAddress[0],
+		GivenAddresses: payload.Customer.Addresses,
+		CountryCode: vars.primaryContactNumber.CountryCode[0] default null,
+		MobilePhoneNumber: vars.primaryContactNumber.Number[0] default null,
+		CISNumber: payload.Customer.CISNumber default null,
+		TaxNumber: payload.Customer.TaxNumber default null,
+		TaxIdType: payload.Customer.TaxIdType default null,
+		CitizenshipCode: payload.Customer.CitizenshipCode,
+		CountryofDualCitizenship: payload.Customer.CountryOfDualCitizenship default null,
+		BranchNumber: if(null!=payload.Customer.BranchNumber) payload.Customer.BranchNumber else "8161",
+		CostCenterNumber: if(null!=payload.Customer.CostCenterNumber)payload.Customer.CostCenterNumber else "161",
+		CategoryCode1: vars.PARTNER_CONFIGS.categoryCode1,
+		CategoryCode2: vars.PARTNER_CONFIGS.categoryCode2,
+		Occupation: payload.Customer.Occupation,
+		Gender: payload.Customer.Gender,
+		Identification: {
+			Status: null,
+			NonDocumentaryIdentificationInformation: null
+		},
+		EmailAddress: payload.Customer.EmailAddress,
+		EmploymentOrSchool: payload.Customer.EmploymentOrSchool,
+		EmploymentStatus: payload.Customer.Employer,
+		RequestUUID: payload.RequestUUID,
+		NonResidentAccountInformation: payload.Customer.NonResidentAccountInformation default null,
+		MaritalStatus: payload.Customer.MaritalStatus,
+		CountryOfBirth: null,
+		Position: payload.Customer.Position,
+		NationalID: payload.Customer.ForeignTaxNumber default null,
+		YearOfEmployment: payload.Customer.YearEmployed,
+		TenPercentShareHolder: payload.Customer.TenPercentShareHolder,		
+		AnnualIncome: payload.Customer.AnnualIncome,
+   		TotalNetWorth: payload.Customer.TotalNetWorth,
+    	PrimaryBanking: payload.Customer.PrimaryBanking,
+    	PrimaryLanguage:payload.Customer.PrimaryLanguage,
+    	EStatementAccepted: payload.Customer.EStatementAccepted,
+		EStatementAcceptedDate: payload.Customer.EStatementAccepted,
+		EStatementAcceptedTime: payload.Customer.EStatementAcceptedTime
+	},
+	Documents: payload.Documents,
+	Partner: payload.Partner,
+	Pass: payload.Pass
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<ee:transform doc:name="Transform Message" doc:id="5b2835b9-7b4a-4904-a657-ada4aec38574">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="applicantType" ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.ApplicantType == "NonNRA")
+	"NONNRA"
+else ""]]></ee:set-variable>
+						<ee:set-variable variableName="pepFlag" ><![CDATA[%dw 2.0
+output application/json
+---
+payload..PEP[0]]]></ee:set-variable>
+						<ee:set-variable variableName="tmpPass" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Pass default null]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="017dbe91-8970-4f67-8d13-2134cf37bcc1" message="Partner API request #[correlationId] #[vars.ApplicationId] ::::::: Payload before calling Core banking systems - Transformed Payload for request ::::::: #[payload]" />
+				<flow-ref doc:name="buildIncomingAndOutgoingWires" doc:id="d2e11a0a-47f7-49ea-89cb-544dc36ef24a" name="buildIncomingAndOutgoingWires"/>
+				<flow-ref doc:name="NonNraPartnerSubmissionFlow" doc:id="5f79c887-9dfb-4b47-acb8-f63bb964cd79" name="NonNraPartnerSubmissionFlow"/>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Undefined ApplicantType" doc:id="135b76d5-b75a-42ec-9ffb-e601a5e3262e" message="Partner API request #[correlationId] ::::::: Undefined ApplicantType Given #[vars.applicatType]"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="48d79b20-7381-4116-9344-429aa2edb75c" message="Partner API Response for #[correlationId] #[vars.ApplicationId]  :::::::::::::::::::::::::::: response from CoreSystem &amp; Case Creation before final response builder #[payload]"/>
+		<choice doc:name="Choice" doc:id="7bfef5f2-5a7e-40aa-bfef-099c799042d6" >
+			<when expression="#[vars.caseStatus==vars.declinedVar or vars.caseStatus==vars.pendingVar]" >
+				<logger level="INFO" doc:name="Logger" doc:id="4adf5048-edd5-4581-b9e1-580b8a4dad84" message="Application is not approved, skipping encryption"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="b3bee5cb-511e-462a-ae9e-f84e342f5228">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable variableName="encryptValue" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.FISResponse..AccountNumber[0] default null]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<flow-ref doc:name="encrypt-flow" doc:id="9fd314ff-1f40-4f35-becd-5620ec4e1607" name="encrypt-flow" target="enAccountNumber" targetValue="#[payload]" />
+				<ee:transform doc:name="Transform Message" doc:id="022a499d-d40a-4f06-9cb1-abf82ec86747" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="encryptValue" ><![CDATA[%dw 2.0
+output application/json
+---
+if (null != vars.FisResponse..CustomerNumber[0])
+	vars.FisResponse..CustomerNumber[0]
+else if (vars.CISNumber != null)
+	vars.CISNumber
+else ""
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="encrypt-flow" doc:id="c39dc11c-394a-40f4-94fd-396c6d6e1dbb" name="encrypt-flow" target="enCustomerNumber" targetValue="#[payload]" />
+			</otherwise>
+		</choice>
+		<ee:transform doc:name="Transform Message" doc:id="460c40cd-0490-4a36-8c13-4bd7e6134600">
+			<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	"ApplicationId": vars.ApplicationId,
+	"ApplicationStatus": vars.caseStatus,
+	"CaseNumber": payload.data.CaseNumber,
+	"OktaId": if (isEmpty(vars.oktaUserProfileResponse.id)) 
+					vars.oktaCrtUsrResp.id default null 
+					else 
+					vars.oktaUserProfileResponse.id,
+	"EnCustomerNumber": vars.enCustomerNumber,
+	"CustomerNumber":if (null != vars.FisResponse..CustomerNumber[0] and vars.caseStatus == p('variables.caseStatus.APRROVED'))
+						vars.FisResponse..CustomerNumber[0]
+					else if (vars.CISNumber != null)
+						vars.CISNumber
+					else "",
+    "EnAccountNumber": vars.enAccountNumber,
+    "AccountNumber": if (vars.caseStatus == p('variables.caseStatus.APRROVED'))
+    	vars.FISResponse..AccountNumber[0]
+    else  "",
+    "RequestUUID": vars.FisResponse.data.RequestUUID default "",
+    "ErrorMessageList": vars.FisResponse.data.ErrorMessageList
+}]]></ee:set-payload>
+
+			</ee:message>
+			<ee:variables>
+			</ee:variables>
+		</ee:transform>
+		<async doc:name="Async" doc:id="4763ea76-e9c7-4de0-b121-6e9d8364939c" >
+			<choice doc:name="Choice" doc:id="c93f4e8d-236b-42eb-93f6-256519346334" >
+				<when expression="vars.partnerPayload.Partner.PartnerId == p('PARTNER.BBAE.PARTNER_CODE')">
+					<flow-ref doc:name="adobeAnalyticRequestBuilder" doc:id="00aa0f00-578c-4314-a237-73999f15754a" name="adobeAnalyticRequestBuilder"/>
+					<ee:transform doc:name="Transform Message" doc:id="1d60495e-63be-421b-9f85-4d71d85ec4d5">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="analyticRequest"><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	request: vars.tempAnalyticRequest ++ 
+	{	
+		"pageName": "bbae:onboarding:decisioned",
+  		"channel": "bbae",
+		"eVar43": "bbae",
+		"events": if(vars.caseStatus == p('variables.caseStatus.DECLINE')) p('variables.events.BBAE.DECLINE_EVENTS') else p('variables.events.BBAE.APPROVED_EVENTS')
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+					<choice doc:name="Choice" doc:id="7c74213b-035c-4133-aeb5-2e8790a4f96d">
+						<when expression="vars.caseStatus == p('variables.caseStatus.APRROVED') or vars.caseStatus == p('variables.caseStatus.DECLINE')">
+							<flow-ref doc:name="adobeAnalyticsFlow" doc:id="ddd9b949-0aa3-49a5-adf7-86b3f7a50c7e" name="adobeAnalyticsFlow" />
+						</when>
+						<otherwise >
+							<logger level="INFO" doc:name="Logger" doc:id="e89933cf-e1aa-4977-a39f-32f4d17125dd" message="Case status PENDING .Request not sent to Analytics"/>
+						</otherwise>
+					</choice>
+				</when>
+				<when expression="vars.partnerPayload.Partner.PartnerId == p('PARTNER.WEBULL.PARTNER_CODE')">
+					<flow-ref doc:name="adobeAnalyticRequestBuilder" doc:id="00aa0f00-578c-4314-a237-73999f15754a" name="adobeAnalyticRequestBuilder"/>
+					<ee:transform doc:name="Transform Message" doc:id="1d60495e-63be-421b-9f85-4d71d85ec4d5">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="analyticRequest"><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	request: vars.tempAnalyticRequest ++ 
+	{	"pageName": "webull : onboarding : decisioned",
+  		"channel": "webull",
+		"eVar43": "webull",
+		"events": if(vars.caseStatus == p('variables.caseStatus.DECLINE')) p('variables.events.WEBULL.DECLINE_EVENTS') else p('variables.events.WEBULL.APPROVED_EVENTS')
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+					<choice doc:name="Choice" doc:id="2d537a17-3f29-445c-ac1e-99f3da15c22c">
+						<when expression="vars.caseStatus == p('variables.caseStatus.APRROVED') or vars.caseStatus == p('variables.caseStatus.DECLINE')">
+							<flow-ref doc:name="adobeAnalyticsFlow" doc:id="ddd9b949-0aa3-49a5-adf7-86b3f7a50c7e" name="adobeAnalyticsFlow" />
+						</when>
+						<otherwise >
+							<logger level="INFO" doc:name="Logger" doc:id="d7fcb4c0-81e8-4634-87c6-4ce5c6320cf4" message="Case status PENDING .Request not sent to Analytics"/>
+						</otherwise>
+					</choice>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Logger" doc:id="655bcf95-3169-4066-9af7-e8251de1cf44" message="Partner is Neither BBAE nor WEBULL"/>
+					<json-logger:logger doc:name="Logger" doc:id="06f09cd5-9c01-4e5d-9701-96f065a67b13" config-ref="JSON_Logger_Config" tracePoint="PRINT" message="Partner is Neither BBAE nor WEBULL">
+						<json-logger:content ><![CDATA[#[output application/json ---
+						{
+						}]]]></json-logger:content>
+					</json-logger:logger>
+				</otherwise>
+			</choice>
+		</async>
+		<flow-ref doc:name="global-return-response-build" doc:id="3830e852-93ee-4f83-b28e-f9d083d5f799" name="global-return-response-build"/>
+		<logger level="INFO" doc:name="Logger" doc:id="95aba80b-bd72-4173-98dd-2afaa880d08f" message="Partner API Response for #[correlationId] #[vars.ApplicationId]  :::::::::::::::::::::::::::: #[payload]"/>
+	</flow>
+	<sub-flow name="BuildPrimaryAndMailingAddressFlow" doc:id="088cf691-ff1b-4a19-b2e3-c75ef167e350">
+		<ee:transform doc:name="BuildAddress"
+			doc:id="84281d0a-8d40-42bb-8738-689a759ac425">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="CustomerMailingAddress"><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.CustomerMailingAddressFrPayload[0]==null) 
+	[null]
+else [
+	if (vars.CustomerMailingAddressFrPayload[0].IsForeignAddress == true) 
+	{
+		"IsForeignAddress": vars.CustomerMailingAddressFrPayload[0].IsForeignAddress,
+		"ForeignAddress": {
+	        "AddressLine1": vars.CustomerMailingAddressFrPayload[0].StreetAddress1 default "",
+	        "AddressLine2": vars.CustomerMailingAddressFrPayload[0].StreetAddress2 default "",
+	        "AddressLine3": vars.CustomerMailingAddressFrPayload[0].StreetAddress3 default "",
+	        "CountryCode": vars.CustomerMailingAddressFrPayload[0].CountryCode default "",
+	        "Country": vars.CustomerMailingAddressFrPayload[0].Country default ""
+	    }	
+	} 
+	else 
+	{
+		"IsForeignAddress": vars.CustomerMailingAddressFrPayload[0].IsForeignAddress default "",
+		"StreetAddress1": vars.CustomerMailingAddressFrPayload[0].StreetAddress1 default "",
+		"StreetAddress2": vars.CustomerMailingAddressFrPayload[0].StreetAddress2 default "",
+		"City": vars.CustomerMailingAddressFrPayload[0].City default "",
+		"State": vars.CustomerMailingAddressFrPayload[0].State default "",
+		"Zip": vars.CustomerMailingAddressFrPayload[0].Zip default ""
+	}	
+]]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerPrimaryAddress"><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.CustomerPrimaryAddressFrPayload[0]==null) 
+	[null]
+else [
+	if (vars.CustomerPrimaryAddressFrPayload[0].IsForeignAddress == true) 
+	{
+		"IsForeignAddress": vars.CustomerPrimaryAddressFrPayload[0].IsForeignAddress,
+		"ForeignAddress": {
+	        "AddressLine1": vars.CustomerPrimaryAddressFrPayload[0].StreetAddress1 default "",
+	        "AddressLine2": vars.CustomerPrimaryAddressFrPayload[0].StreetAddress2 default "",
+	        "AddressLine3": vars.CustomerPrimaryAddressFrPayload[0].StreetAddress3 default "",
+	        "CountryCode": vars.CustomerPrimaryAddressFrPayload[0].CountryCode default "",
+	        "Country": vars.CustomerPrimaryAddressFrPayload[0].Country default ""
+	    }	
+	} 
+	else 
+	{
+		"IsForeignAddress": vars.CustomerPrimaryAddressFrPayload[0].IsForeignAddress default "",
+		"StreetAddress1": vars.CustomerPrimaryAddressFrPayload[0].StreetAddress1 default "",
+		"StreetAddress2": vars.CustomerPrimaryAddressFrPayload[0].StreetAddress2 default "",
+		"City": vars.CustomerPrimaryAddressFrPayload[0].City default "",
+		"State": vars.CustomerPrimaryAddressFrPayload[0].State default "",
+		"Zip": vars.CustomerPrimaryAddressFrPayload[0].Zip default ""
+	}	
+]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+	<sub-flow name="buildIncomingAndOutgoingWires" doc:id="d1872368-2aba-4993-bd51-9f43f8a6e386" >
+		<ee:transform doc:name="Transform Message" doc:id="13473bf5-c434-4386-bb99-c79c574ae73f" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="intendInternationalWires" ><![CDATA[%dw 2.0
+output application/json
+---
+if(
+	payload.CustomerInformation.NonResidentAccountInformation != null 
+	and 
+	(payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit != null and payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit != null)
+	and 
+	upper(payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit) == "NO PLAN"
+	and
+	upper(payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit) == "NO PLAN"
+) 
+	false 
+else 
+	true 
+]]></ee:set-variable>
+					<ee:set-variable variableName="intendIncomingWires" ><![CDATA[%dw 2.0
+output application/json
+---
+if(
+	payload.CustomerInformation.NonResidentAccountInformation != null 
+	and payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit != null
+	and upper(payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit) == "NO PLAN"
+) 
+	false 
+else 
+	true  
+	]]></ee:set-variable>
+					<ee:set-variable variableName="incomingWiresLimit" ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.CustomerInformation.NonResidentAccountInformation != null 
+	and payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit != null
+	and upper(payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit) == "NO PLAN"
+) 
+"" 
+else 
+	payload.CustomerInformation.NonResidentAccountInformation.IncomingWiresLimit ]]></ee:set-variable>
+					<ee:set-variable variableName="intendOutgoingWires" ><![CDATA[%dw 2.0
+output application/json
+---
+if(
+	payload.CustomerInformation.NonResidentAccountInformation != null 
+	and payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit != null
+	and upper(payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit) == "NO PLAN"
+) 
+false 
+else 
+true 
+]]></ee:set-variable>
+					<ee:set-variable variableName="outgoingWiresLimit" ><![CDATA[%dw 2.0
+output application/json
+---
+if(
+	payload.CustomerInformation.NonResidentAccountInformation != null 
+	and 
+	payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit != null
+	and 
+	upper(payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit) == "NO PLAN"
+) "" 
+else 
+	payload.CustomerInformation.NonResidentAccountInformation.OutgoingWiresLimit ]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			
+	</sub-flow>
+	<sub-flow name="getPartnerDetails" doc:id="8b997ba2-3f16-4493-8703-129df755f95a" >
+		<logger level="INFO" doc:name="Logger" doc:id="633e1b6a-ada7-4b24-acca-aed609a813af" message="BeforePartnerDetails"/>
+		<ee:transform doc:name="Transform Message" doc:id="44648368-d494-4654-b525-a7aa6c4187c6" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="PARTNER_CONFIGS" ><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.Partner.PartnerName == p('PARTNER.BBAE.PARTNER_NAME') and  payload.Partner.PartnerId == p('PARTNER.BBAE.PARTNER_CODE'))
+{
+	userCode : p('PARTNER.BBAE.USER_CODE'),
+	categoryCode1 : p('PARTNER.VELO.CATEGORY_CODE'),
+	categoryCode2 : p('PARTNER.BBAE.CATEGORY_CODE')
+	
+} else if(payload.Partner.PartnerName == p('PARTNER.WEBULL.PARTNER_NAME') and  payload.Partner.PartnerId == p('PARTNER.WEBULL.PARTNER_CODE') ) {
+	
+	userCode : p('PARTNER.WEBULL.USER_CODE') ,
+	categoryCode1 : p('PARTNER.VELO.CATEGORY_CODE'),
+	categoryCode2 : p('PARTNER.WEBULL.CATEGORY_CODE')
+} 
+else {
+	userCode : null ,
+	categoryCode1 : p('PARTNER.VELO.CATEGORY_CODE'),
+	categoryCode2 : null
+	
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+
+	<flow name="PartnerAccountIdVerificationObjectBuilder" doc:id="44a320fd-cfe9-479e-b2e6-140fcd72ee87" >
+		<ee:transform doc:name="Transform Message" doc:id="f1cdb0e5-50f3-417b-b6c3-09226e1e1c0e" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="truliooVerificationReqData" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"YearOfBirth": (vars.truliooIdAuthenticationResp..AppendedFields[0] filter ($.FieldName == "YearOfBirth"))[0].Data default null,
+	"FullName": (vars.truliooIdAuthenticationResp..AppendedFields[0] filter ($.FieldName == "FullName"))[0].Data default null,
+	"DayOfBirth": (vars.truliooIdAuthenticationResp..AppendedFields[0] filter ($.FieldName == "DayOfBirth"))[0].Data default null,
+	"MonthOfBirth": (vars.truliooIdAuthenticationResp..AppendedFields[0] filter ($.FieldName == "MonthOfBirth"))[0].Data default null,
+	"YearOfBirth": (vars.truliooIdAuthenticationResp..AppendedFields[0] filter ($.FieldName == "YearOfBirth"))[0].Data default null,
+	"DocumentNumber": (vars.truliooIdAuthenticationResp..AppendedFields[0] filter ($.FieldName == "DocumentNumber"))[0].Data default null
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="3c6033d4-dd28-41a0-a31d-2c1fd534f4ce" message="Partner API request #[correlationId] #[vars.ApplicationId] ::::::: Extracted IdVerification details from idAuth #[vars.truliooVerificationReqData]"/>
+		<ee:transform doc:name="Transform Message" doc:id="34921f40-3292-4272-904e-1c739624e8f4" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="idVerificationReq" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "AcceptTruliooTermsAndConditions": true,
+    "CleansedAddress": false,
+    "VerboseMode": true,
+    "ConfigurationName": "Identity Verification",
+    "CountryCode": "CN",
+    "DataFields": {
+      "PersonInfo": {        
+		"DayOfBirth": if(vars.truliooVerificationReqData.DayOfBirth != null) vars.truliooVerificationReqData.DayOfBirth else  payload.Customer.DateOfBirth[8 to 9],
+		"MonthOfBirth": if(vars.truliooVerificationReqData.MonthOfBirth != null) vars.truliooVerificationReqData.MonthOfBirth else payload.Customer.DateOfBirth[5 to 6],
+		"YearOfBirth": if(vars.truliooVerificationReqData.YearOfBirth != null) vars.truliooVerificationReqData.YearOfBirth else  payload.Customer.DateOfBirth[0 to 3],
+		"AdditionalFields": {
+			"FullName": if(vars.truliooVerificationReqData.FullName != null) vars.truliooVerificationReqData.FullName else  (vars.CustomerNameChinese.LastName[0] ++ vars.CustomerNameChinese.FirstName[0])
+		}
+      },
+      "NationalIds": [
+        {
+          "IDNumber": if(vars.truliooVerificationReqData.DocumentNumber != null) vars.truliooVerificationReqData.DocumentNumber else  payload.Customer.NonResidentAccountInformation.ForeignTaxNumber,
+          "Type": "NationalID"
+        }
+      ],
+      "Communication": {
+      			"MobileNumber": vars.primaryContactNumber.Number[0]
+                        }
+      
+    }    
+}
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f3d61a0b-3df8-46e9-8c66-0425d0aeb174" message="Partner API request #[correlationId] #[vars.ApplicationId] ::::::: Trulioo Id Verification request #[vars.idVerificationReq]"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="41f83002-5c7f-4d42-8458-dd89a296bd42" >
+				<logger level="INFO" doc:name="Logger" doc:id="0fcbef9d-558d-4579-88d1-779abb51d67a" message="Partner API request #[correlationId] ::::::: Error in processing Trulioo Id Authentication" />
+			
+						<flow-ref doc:name="api-exceptions-response-build" doc:id="6656ab88-ffec-4110-9ba9-4d4ea902c5c8" name="api-exceptions-response-build"/>
+				<ee:transform doc:name="Transform Message" doc:id="6464b4c9-de8b-44a1-8677-ac6ea9e19c32" >
+					
+					<ee:variables >
+						<ee:set-variable variableName="exceptionFlag" ><![CDATA[%dw 2.0
+output application/json
+---
+"true"]]></ee:set-variable>
+						<ee:set-variable variableName="genericException" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.tempApiExceptionVar]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+						
+						</on-error-continue>
+		</error-handler>
+	</flow>
+
+	<flow name="NonNraPartnerSubmissionFlow" doc:id="5c968867-9b6a-4f9e-9f52-733e62e3b5f9" >
+		<set-variable value="#[payload]" doc:name="SetOriginalPayload" doc:id="8116309e-ab94-4eec-8cf7-fa5f613508f6" variableName="originalPayload"/>
+		<logger level="INFO" doc:name="Logger" doc:id="309e91b2-cdee-40fc-9538-7b506b771c92" message="#[vars.originalPayload]"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="ef865792-ed5f-4b95-a111-0f1adb14fbb0" >
+			<route >
+				<flow-ref doc:name="ofacCallSubFlow" doc:id="28b8a688-dc57-462b-8283-2db339b11722" name="ofacCallSubFlow" />
+			</route>
+			<route >
+				<flow-ref doc:name="idauthcheckFlow" doc:id="1289ce7a-7b1e-46af-a30b-7da456eb650e" name="idauthcheckFlow" />
+			</route>
+			<route >
+				<flow-ref doc:name="partneridverificationflowFlow" doc:id="7774f4fb-b677-4136-9108-fba469990566" name="partneridverificationflowFlow"/>
+			</route>
+		</scatter-gather>
+		<set-payload value="#[vars.originalPayload]" doc:name="Set Payload" doc:id="4dbc554f-4e52-459b-b290-19b57da28af5" />
+		<choice doc:name="Choice" doc:id="aca9d3e4-8a43-43b1-9031-37d4389519c7" >
+			<when expression="vars.selEnv != 'prd' and vars.tmpPass == true" >
+				<logger level="INFO" doc:name="ByPass" doc:id="e46bf048-bcaa-4c7c-b628-591bef535a0a" message="#[vars.ApplicationId] ByPass Method called"/>
+				<set-variable value="${variables.caseStatus.APRROVED}" doc:name="SetCaseStatus" doc:id="63faec01-ee10-4483-b15e-80c90662114f" variableName="caseStatus"/>	
+			</when>
+			<when expression="#[not isEmpty(vars.exceptionFlag)]">
+				<logger level="INFO" doc:name="ExceptionCaseCreation" doc:id="fcad6be2-133a-48b0-934b-cfef1f131196" message="Partner API request #[correlationId] ::::::: Create a Case Request for Exception found"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="63f68155-5d17-4486-9e45-8355b3e655e9" variableName="caseStatus" />							
+			</when>			
+			<when expression="#[(vars.kbaTransactionStatus == 'failed' or vars.kbaTransactionStatus == 'passed') and vars.transactionReasonCodeDesc == 'FAIL']">
+				<logger level="INFO" doc:name="InstantId_Auth_KBA" doc:id="cc7040b2-a0f5-4f97-b164-4dc9e2c9d1c6" message="Partner API request #[correlationId] ::::::: Create a Case Request for Exception found"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatusToPending" doc:id="e75e4160-c614-407f-9f64-7d74a5c8802b" variableName="caseStatus"/>
+				<!-- <set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="f35380d6-53a8-4740-babd-561bf27f36f9" variableName="caseStatus" /> -->
+				<ee:transform doc:name="Transform Message" doc:id="fde8fab0-2b4f-4c36-b51a-11335d11a56b">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="kbaTransactionStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.kbaTransactionStatus == 'failed' and vars.transactionReasonCodeDesc == 'FAIL')
+	"-"
+else if (vars.kbaTransactionStatus == 'passed' and vars.transactionReasonCodeDesc == 'FAIL')
+	"Failed"
+else 
+	"-"
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>							
+			</when>
+			<when expression="#[vars.kbaTransactionStatus =='passed' and vars.transactionReasonCodeDesc == 'PENDING']">
+				<logger level="INFO" doc:name="InstantId_KBA" doc:id="cc7040b2-a0f5-4f97-b164-4dc9e2c9d1c6" message="Partner API request #[correlationId] ::::::: Create a Case Request"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="f35380d6-53a8-4740-babd-561bf27f36f9" variableName="caseStatus" />
+				<set-variable value="Pending" doc:name="SetKbaTransactionStatus" doc:id="200b6601-c0a7-4c84-b802-4959166805cf" variableName="kbaTransactionStatus"/>							
+			</when>
+			<when expression="#[vars.docAuthResultFlag =='Failed']">
+				<logger level="INFO" doc:name="ID Auth Failed" doc:id="cc7040b2-a0f5-4f97-b164-4dc9e2c9d1c6" message="#[vars.ApplicationId] #[correlationId] Doc Auth result failed"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="f35380d6-53a8-4740-babd-561bf27f36f9" variableName="caseStatus" />							
+			</when>
+			<when expression="#[vars.pepFlag=='Yes' or vars.pepResponse.ResultStatus == &quot;Match&quot; or vars.ofacResponse.ResultStatus == &quot;Match&quot;]">
+				<logger level="INFO" doc:name="PEP_OFAC" doc:id="41068574-d1b5-4eca-9ac3-001f45f7c6b8" message="Partner API request #[correlationId] ::::::: Create a Case Request for Exception found"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="4c2c6b83-2ad3-4ae7-bdc5-09497311e893" variableName="caseStatus" />							
+			</when>
+			<when expression="#[vars.IsPartnerRequest and vars.kbaTransactionStatus =='passed' and vars.transactionReasonCodeDesc == 'PASS' and vars.pepFlag=='No' and (vars.pepResponse.ResultStatus == &quot;No Match&quot; or vars.pepResponse.ResultStatus == &quot;Automatic False Positive&quot;) and vars.ofacResponse.ResultStatus == &quot;No Match&quot;]" >
+				<logger level="INFO" doc:name="Request from Partner" doc:id="f12ff30b-3906-48a1-9bfc-85ae536e74f7" message="Partner API request #[correlationId] ::::::: Request from Partner Application Id #[vars.ApplicationId]"/>
+				<set-variable value="Passed" doc:name="SetkbaTransactionStatus" doc:id="2db834f8-d819-469c-b2ad-b2a67e079cb7" variableName="kbaTransactionStatus"/>				
+				<set-variable value="${variables.caseStatus.APRROVED}" doc:name="SetCaseStatus" doc:id="1de81d58-fc6d-460f-9550-ab6d7b6a3da6" variableName="caseStatus"/>
+			</when>			
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="fcad6be2-133a-48b0-934b-cfef1f131196" message="Create a Case Request"/>
+				<set-variable value="null" doc:name="Set Variable" doc:id="7730e447-625d-4a40-af61-44a8fa089908" variableName="kbaTransactionStatus"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="63f68155-5d17-4486-9e45-8355b3e655e9" variableName="caseStatus"/>
+			</otherwise>
+		</choice>
+	<logger level="INFO" doc:name="Logger" doc:id="c33abfd3-9eb7-4c7e-8f7e-727f8da7f170" message="Partner API request #[correlationId] ::::::: Application status is #[vars.caseStatus]"/>
+		<set-variable value="${variables.caseStatus.APRROVED}" doc:name="Get Approved Variable" doc:id="1cc2af2c-c67a-4a05-a0ad-f022e4d86729" variableName="approvedVar"/>
+		
+		<try doc:name="Try" doc:id="002dd7f1-7f70-413f-90a6-bd546c3780f4" >
+			<ee:transform doc:name="Transform Message" doc:id="42b7978c-63c3-4733-a032-ef5d5a5312aa">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="idvPassthroughVar"><![CDATA[%dw 2.0
+output application/json
+---
+if(null != vars.instantIdResponse){
+PassThroughs: [
+		  {
+			"Type": if (null != vars.instantIdResponse.PassThroughs[0].Type)
+						vars.instantIdResponse.PassThroughs[0].Type 
+					else "",
+			"Data": if (null != vars.instantIdResponse.PassThroughs[0].Data)
+						read(vars.instantIdResponse.PassThroughs[0].Data, "application/json")
+					else ""	    		 
+			}
+		]
+
+	}
+else {}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a0119f9e-416b-481f-9f32-30e89bde5ced" >
+					<logger level="INFO" doc:name="Logger" doc:id="367870b3-633e-47a3-9d6f-ed2d19775c69" message="Error Setting Pass through variable for idv"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="SetPartnerInstantIDResponse" doc:id="1ffc1b11-b006-49e7-82da-4255e71645fc" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="PartnerInstantID" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.ApplicantType == "NONNRA" and vars.isCaseApprovedFlow == "false" and null != vars.instantIdResponse) {
+		Status: {
+			ConversationId: vars.instantIdResponse.Status.ConversationId default null,
+			RequestId: vars.instantIdResponse.Status.RequestId default null,
+			TransactionStatus:   if(vars.instantIdResponse..TransactionStatus[0] == "passed" and vars.instantIdResponse..Description[0] == "PASS")
+									"Passed" 
+								else if (vars.instantIdResponse..TransactionStatus[0] == "passed" and vars.instantIdResponse..Description[0] == "PENDING")
+									"Passed"
+								else if (vars.instantIdResponse..TransactionStatus[0] == "failed" and vars.instantIdResponse..Description[0] == "FAIL")
+									"Failed"
+								else if (vars.instantIdResponse..TransactionStatus[0] == "passed" and null == vars.instantIdResponse..Description[0])
+									"Passed"
+								else "Failed",
+			Reference: vars.instantIdResponse.Status.Reference	,
+			KBA:  if(null != vars.instantIdResponse..Description[0])
+					vars.instantIdResponse..Description[0]
+				  else
+				  	"Unknown"
+		},		
+		Products: vars.instantIdResponse.Products map ( product , indexOfProduct ) -> product
+  }
+  else {}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="8ab89410-8fa2-40c1-8f85-0c53f5b42515" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="PartnerInstantIDResponse" ><![CDATA[%dw 2.0
+output application/json
+---
+if(null != vars.instantIdResponse)
+	vars.PartnerInstantID ++ vars.idvPassthroughVar
+else
+	null]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="083e6b39-e9f4-4afc-a163-b729755a0220" >
+			<when expression="vars.caseStatus == vars.approvedVar" >
+				<logger level="INFO" doc:name="Logger" doc:id="af139633-2f45-442f-b40a-fcbf626d5812" message="Partner API request #[correlationId] ::::::: Application #[vars.ApplicationId] Approved . Updating FIS"/>
+				<flow-ref doc:name="fis-system-api-callFlow" doc:id="1cda1fb5-2de8-4af3-a563-dc5f64303ed1" name="fis-system-api-callFlow"/>
+				<async doc:name="Async" doc:id="e815dc80-3e46-4ea5-94a2-3d22690360d0" >
+					<flow-ref doc:name="enrollEstatementcheck_sub_flow" doc:id="4162245a-3979-4d1c-8b85-24e64a878691" name="enrollEstatementcheck_sub_flow" />
+				</async>
+				<choice doc:name="Choice" doc:id="82fc7642-3928-42f9-b3a3-0b4707654302" >
+				<when expression="vars.skipOktaUpdate == 'true'" >
+					<logger level="INFO" doc:name="Logger" doc:id="7a652c9b-d50f-4e0c-9392-ab5dd5a1c196" message="Request UUID #[correlationId] Flow Name #[flow.name]::Skipping Okta Update because as FIS update was unsuccessfull"/>
+				</when>
+				<otherwise >
+					<!-- <flow-ref doc:name="okta-flow-update-partner-Sub_Flow" doc:id="80c91fb4-893e-4344-8144-888020f61523" name="okta-flow-update-partner-Sub_Flow"/> -->
+					<flow-ref doc:name="OktaValidation" doc:id="d571bf09-6fe3-4b6a-a052-68dbc20b4492" name="OktaValidation"/>
+				</otherwise>
+			</choice>
+				<!-- <flow-ref doc:name="OktaUpdateUserprofile" doc:id="02fd0d60-c2fe-444d-a6a6-4e341c64b4f5" name="OktaUpdateUserprofile"/> -->
+		<set-payload value="#[vars.originalPayload]" doc:name="Set Payload" doc:id="3a27d0c4-a797-4ff9-89a6-d9cd33cdf0d6" />
+		<logger level="INFO" doc:name="Logger" doc:id="5d59822e-272d-4143-956e-3174563a3479" message="Original Payload   #[vars.originalPayload]"/>
+				<choice doc:name="Choice" doc:id="357d1bf1-fa80-4488-ab60-7dda81717456" >
+			<when expression="vars.isCaseApprovedFlow == 'true' and vars.caseStatus == 'Approved'" >
+				<logger level="INFO" doc:name="Logger" doc:id="afb1dad9-b3c6-41bc-a205-43d55ba73cbb" message="Request UUID #[correlationId] Flow Name #[flow.name]::Case Creation not Required for Case Approved from Pending from MSD"/>
+			</when>
+			<otherwise >
+				<flow-ref doc:name="caseCreationFlow" doc:id="66b28a3a-d185-4720-b88c-8e40614e8a12" name="caseCreationFlow"/>
+			</otherwise>
+		</choice>
+				<!-- <flow-ref doc:name="caseCreationFlow" doc:id="139b009e-288e-40ed-83ce-dec0517bead0" name="caseCreationFlow"/> -->
+			
+
+</when>
+			<otherwise>
+				<logger level="INFO" doc:name="Logger" doc:id="7039e496-fbb4-4896-9df4-15ab3973ac65" message="Partner API request #[correlationId] ::::::: Application #[vars.ApplicationId] is in Pending status. Updating MSD"/>
+				<flow-ref doc:name="caseCreationFlow" doc:id="139b009e-288e-40ed-83ce-dec0517bead0" name="caseCreationFlow"/>
+			
+</otherwise>
+		</choice>
+		
+</flow>
+<flow name="partner-case-approved" doc:id="a1c219ea-f0cc-48c2-8569-76bb38d87fe0" >
+		<logger level="INFO" doc:name="Input Request" doc:id="7c3d0fda-f852-4cab-863e-02b846ad3c2a" message="Partner Case Approved Request :::::::::::: #[payload]"/>
+		<set-variable value="true" doc:name="isCaseApprovedFlow" doc:id="ebf56832-eb1d-4625-827a-74508e17aa03" variableName="isCaseApprovedFlow"/>
+		<ee:transform doc:name="Transform Message" doc:id="67c00084-c6ea-4994-b6be-8ead546ac0a6">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="caseStatus"><![CDATA[%dw 2.0
+output application/json
+---
+payload.CaseStatus]]></ee:set-variable>
+				<ee:set-variable variableName="IsPartnerRequest"><![CDATA[%dw 2.0
+output application/json
+---
+true]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerPrimaryAddressFrPayload"><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.Addresses filter ($.Type == "PrimaryAddress")]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerName"><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.Names filter ($.Type == "English")]]></ee:set-variable>
+				<ee:set-variable variableName="ApplicationId"><![CDATA[%dw 2.0
+output application/json
+---
+payload.ApplicationId]]></ee:set-variable>
+				<ee:set-variable variableName="applicantType"><![CDATA[%dw 2.0
+output application/json
+---
+if(payload.ApplicantType == "NonNRA") "NONNRA" 
+else if(payload.ApplicantType == "NRA-CHN") "NRA" 
+else if (payload.ApplicantType == "NONNRA") "NONNRA"
+else ""
+]]></ee:set-variable>
+				<ee:set-variable variableName="CustomerMailingAddressFrPayload"><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.Addresses filter ($.Type == "MailingAddress")]]></ee:set-variable>
+				<ee:set-variable variableName="primaryContactNumber" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Customer.ContactInformation filter ($.Type == "Primary") default null]]></ee:set-variable>
+				<ee:set-variable variableName="MID" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.MID]]></ee:set-variable>
+				<ee:set-variable variableName="partnerPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+				<ee:set-variable variableName="originalApplicantType" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.ApplicantType default null]]></ee:set-variable>
+				<ee:set-variable variableName="AccountName" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.Accounts[0].AccountName default null]]></ee:set-variable>
+				<ee:set-variable variableName="originalPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+
+		<flow-ref doc:name="BuildPrimaryAndMailingAddressFlow"
+			doc:id="0c3d5ddc-2005-4faf-9524-266beda90ecf" name="BuildPrimaryAndMailingAddressFlow" />
+		<flow-ref doc:name="getPartnerDetails" doc:id="0b076c42-ca2e-4df5-a39a-de9717613359" name="getPartnerDetails"/>
+		<ee:transform doc:name="Transform Message"
+			doc:id="180d7013-b817-4fa3-9b2f-11acd433f23d">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	ApplicationId: payload.ApplicationId,
+	ApplicantType: (payload.ApplicantType default ""),
+	RequestUUID: payload.RequestUUID,
+	CaseNumber: payload.CaseNumber,
+	AccountInformation: {
+		AccountType: payload.Accounts[0].AccountType default "",
+		CustomerToAccountRelationship: {
+			Customer1AccountRelationshipCode: if(payload.Accounts[0].CustomerToAccountRelationship[0].CustomerAccountRelationshipCode == "Individual")
+												"000"
+												else "",
+			Customer1AccountAssociationType: payload.Accounts[0].CustomerToAccountRelationship[0].CustomerAccountAssociationType,
+			Customer2AccountAssociationType: null,
+			NumberOfStatementCopies: payload.Accounts[0].CustomerToAccountRelationship[0].NumberOfStatementCopies,
+			AddressLineOfTINOwner: null
+		},
+		DepositAccount: {
+			"WithholdingIndicator": if(payload.ApplicantType == "NRA-CHN") 
+								"ExemptForeignAccount"
+								else "ExemptConfirmed",
+			"UserCode": if (null != payload.Customer.CampaignId ) 
+			  				payload.Customer.CampaignId 
+			  			else
+			  				vars.PARTNER_CONFIGS.userCode,
+			"StatusCodes": if(payload.Accounts[0].AccountType != "CHK_I_VELO") [
+			  "NeverClose"
+			] else null,
+			"BulkFileType": "ImageFile"
+		},
+		CardAccount: {
+			"NameOnCard": payload.Accounts[0].CardHolderName1,
+			"CardDesign": "Black"
+		}
+	},
+	CustomerInformation: {
+		Address: vars.CustomerPrimaryAddress[0],
+		MailingAddress: vars.CustomerMailingAddress[0],
+		GivenAddresses: payload.Customer.Addresses,		
+		VisaType: payload.Customer.VisaType,		
+		BranchNumber: if(null!=payload.Customer.BranchNumber) payload.Customer.BranchNumber else "8161",
+		CitizenshipCode: payload.Customer.CitizenshipCode,
+		CountryofDualCitizenship: payload.Customer.CountryofDualCitizenship,
+		AnnualIncome: payload.Customer.AnnualIncome default null,
+		CostCenterNumber: if(null!=payload.Customer.CostCenterNumber)payload.Customer.CostCenterNumber else "161",
+		DateOfBirth: payload.Customer.DateOfBirth,
+		EmailAddress: payload.Customer.EmailAddress,
+		EmploymentDate: payload.Customer.EmploymentDate,
+		EmploymentOrSchool: payload.Customer.EmploymentOrSchool,
+		EmploymentStatus: payload.Customer.Employer,
+		Ethnicity: null,
+		FirstName: vars.CustomerName.FirstName[0],
+		LastName: vars.CustomerName.LastName[0],
+		MiddleName: vars.CustomerName.MiddleInitial[0],
+		Gender: payload.Customer.Gender,
+		CategoryCode1: vars.PARTNER_CONFIGS.categoryCode1,
+		CategoryCode2: vars.PARTNER_CONFIGS.categoryCode2, 
+		Identification: {
+			IdentificationInformation1: payload.Customer.Identification.IdentificationInformation1,
+			IdentificationInformation2: payload.Customer.Identification.IdentificationInformation2,
+			IsTINAppliedFor: payload.Customer.Identification.IsTINAppliedFor,
+			Status: payload.Customer.Identification.Status
+		},
+		MailCode: payload.Customer.MailCode,
+		MaritalStatus: payload.Customer.MaritalStatus,
+		MothersMaidenName: payload.Customer.MothersMaidenName,
+		Occupation: payload.Customer.Occupation,
+		//PEP: payload.Customer.PEP,
+		CISNumber: payload.Customer.CISNumber,
+		PrimaryID: payload.Customer.PrimaryID,
+		PrimaryLanguage: payload.Customer.PrimaryLanguage,
+		PrimaryOfficerNumber: payload.Customer.PrimaryOfficerNumber,
+		MobilePhoneNumber: payload.Customer.ContactInformation[0].Number default null,
+		CountryCode:payload.Customer.ContactInformation[0].CountryCode default null,
+		SecondaryOfficerNumber: payload.Customer.SecondaryOfficerNumber,
+		TaxIdType: payload.Customer.TaxIdType default null,
+		PEP: if(payload.Customer.IsPoliticallyExposedPerson == true)"Yes" else "No",
+		W8CertificateType:payload.Customer.W8CertificateType default null,
+		W8CertificateDate:payload.Customer.W8CertificateDate default null,
+		TaxNumber: payload.Customer.TaxNumber default null,
+		ForeignTaxID: if(null!=payload.Customer.NonResidentAccountInformation) payload.Customer.NonResidentAccountInformation.ForeignTaxNumber else null,
+		ForeignTaxNumber: if(null!=payload.Customer.NonResidentAccountInformation) payload.Customer.NonResidentAccountInformation.ForeignTaxNumber else null,
+		Title: null,
+		EStatementAccepted: payload.Customer.EStatementAccepted,
+		EStatementAcceptedDate: payload.Customer.EStatementAccepted,
+		EStatementAcceptedTime: payload.Customer.EStatementAcceptedTime,
+		NonResidentAccountInformation: payload.Customer.NonResidentAccountInformation default null
+			
+	},
+	"Documents" : payload.Documents
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="originalPayload" ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<logger level="INFO" doc:name="Account Creation Request" doc:id="4a9d83ed-bdca-4041-ab85-a0daa0a20333" message="Acccount Creation Request for Application Id #[vars.ApplicationId] :::::::::::: #[payload]"/>
+		<flow-ref doc:name="fis-system-api-callFlow" doc:id="c730171b-83c6-433b-b85e-1b6c0fb6e4c3" name="fis-system-api-callFlow"/>
+		<async doc:name="Async" doc:id="3a03e48e-5b22-44e6-8733-3e4b71c0f67b" >
+			<flow-ref doc:name="enrollEstatementcheck_sub_flow" doc:id="e35927e8-1f36-4963-83c5-a30681859ca6" name="enrollEstatementcheck_sub_flow" />
+		</async>
+		<choice doc:name="Choice" doc:id="1605ca44-aaba-44e9-9e2a-c940bb06a15f" >
+			<when expression="#[vars.skipOktaUpdate != 'true']">
+				<!-- <flow-ref doc:name="okta-flow-update-partner-Sub_Flow" doc:id="fda8a182-db40-4c08-b1c5-34d617bd672a" name="okta-flow-update-partner-Sub_Flow"/> -->
+		<flow-ref doc:name="OktaValidation" doc:id="93bca591-9a98-4d7e-afd9-c72291bfa402" name="OktaValidation" />
+				<ee:transform doc:name="Transform Message" doc:id="51564857-2bbc-44a8-9ec8-67c3859b79d4">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+						<ee:set-variable variableName="encryptValue" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.FISResponse..AccountNumber[0] default null]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<flow-ref doc:name="encrypt-flow" doc:id="50caa4d7-4e18-431e-a4d6-307beb2beb70" name="encrypt-flow" target="enAccountNumber" targetValue="#[payload]" />
+				<ee:transform doc:name="Transform Message" doc:id="9dc22ed3-6b83-4022-8e4b-6e2489996c9d" >
+					<ee:message >
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="encryptValue" ><![CDATA[%dw 2.0
+output application/json
+---
+if (null != vars.FisResponse..CustomerNumber[0])
+	vars.FisResponse..CustomerNumber[0]
+else if (vars.CISNumber != null)
+	vars.CISNumber
+else ""
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<flow-ref doc:name="encrypt-flow" doc:id="d7896605-510c-4876-9711-9bb4091d1fd1" name="encrypt-flow" target="enCustomerNumber" targetValue="#[payload]" />
+			</when>
+			<otherwise >
+				<!-- <flow-ref doc:name="caseCreationFlow" doc:id="daa6803e-cc35-46de-82e5-27cc40c61525" name="caseCreationFlow"/> -->
+				<logger level="INFO" doc:name="Logger" doc:id="163e0f07-ad09-47d0-a173-cbe4a631354c" />
+			</otherwise>
+		</choice>
+		
+		<ee:transform doc:name="Transform Message" doc:id="706aa208-e328-4b3b-9d25-2e03fd3e0bb6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{	
+	"ApplicationId": vars.originalPayload.ApplicationId,
+	"ApplicationStatus": vars.caseStatus,
+	"CaseNumber": payload.CaseNumber default null,
+	
+	"OktaId": if (isEmpty(vars.oktaUserProfileResponse.id)) 
+					vars.oktaCrtUsrResp.id default null 
+					else 
+					vars.oktaUserProfileResponse.id,
+	"CustomerNumber": if (null != vars.FisResponse.data.CustomerNumber)
+						vars.FisResponse.data.CustomerNumber
+					  else if (vars.CISNumber != null)
+						vars.CISNumber
+					  else "",
+	"EnCustomerNumber": vars.enCustomerNumber default null,
+    "AccountNumber": vars.FisResponse.data.AccountNumber default "",    
+    //"AccountNumber": vars.enAccountNumber default "",
+    "EnAccountNumber": vars.enAccountNumber default "",
+    "RequestUUID": vars.FisResponse.data.RequestUUID default "",
+    //"ErrorMessageList": vars.FisResponse.data.ErrorMessageList
+    "ErrorMessageList": if(null != vars.fisSystemAPIException)  ([
+         {
+             "Source": "FIS",
+             "Error": if(null != vars.fisException.errorDescription)
+             			vars.fisException.errorDescription
+                      else
+                      	vars.fisSystemAPIException.errorLst joinBy " \r\n " default ""
+          }])
+          else [] 
+    
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		
+		<async doc:name="Async" doc:id="4763ea76-e9c7-4de0-b121-6e9d8364939c" >
+			<choice doc:name="Choice" doc:id="c93f4e8d-236b-42eb-93f6-256519346334" >
+				<when expression="vars.partnerPayload.Partner.PartnerId == p('PARTNER.BBAE.PARTNER_CODE')">
+					<flow-ref doc:name="adobeAnalyticRequestBuilder" doc:id="00aa0f00-578c-4314-a237-73999f15754a" name="adobeAnalyticRequestBuilder"/>
+					<ee:transform doc:name="Transform Message" doc:id="1d60495e-63be-421b-9f85-4d71d85ec4d5">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="analyticRequest"><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	request: vars.tempAnalyticRequest ++ 
+	{	
+		"pageName": "bbae:onboarding:decisioned",
+  		"channel": "bbae",
+		"eVar43": "bbae"
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+					<choice doc:name="Choice" doc:id="7c74213b-035c-4133-aeb5-2e8790a4f96d">
+						<when expression="vars.caseStatus == p('variables.caseStatus.APRROVED') or vars.caseStatus == p('variables.caseStatus.DECLINE')">
+							<flow-ref doc:name="adobeAnalyticsFlow" doc:id="ddd9b949-0aa3-49a5-adf7-86b3f7a50c7e" name="adobeAnalyticsFlow" />
+						</when>
+						<otherwise >
+							<logger level="INFO" doc:name="Logger" doc:id="e89933cf-e1aa-4977-a39f-32f4d17125dd" message="Case status PENDING .Request not sent to Analytics"/>
+						</otherwise>
+					</choice>
+				</when>
+				<when expression="vars.partnerPayload.Partner.PartnerId == p('PARTNER.WEBULL.PARTNER_CODE')">
+					<flow-ref doc:name="adobeAnalyticRequestBuilder" doc:id="00aa0f00-578c-4314-a237-73999f15754a" name="adobeAnalyticRequestBuilder"/>
+					<ee:transform doc:name="Transform Message" doc:id="1d60495e-63be-421b-9f85-4d71d85ec4d5">
+			<ee:message>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="analyticRequest"><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	request: vars.tempAnalyticRequest ++ 
+	{	"pageName": "webull : onboarding : decisioned",
+  		"channel": "webull",
+		"eVar43": "webull"
+	}
+}]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+					<choice doc:name="Choice" doc:id="2d537a17-3f29-445c-ac1e-99f3da15c22c">
+						<when expression="vars.caseStatus == p('variables.caseStatus.APRROVED') or vars.caseStatus == p('variables.caseStatus.DECLINE')">
+							<flow-ref doc:name="adobeAnalyticsFlow" doc:id="ddd9b949-0aa3-49a5-adf7-86b3f7a50c7e" name="adobeAnalyticsFlow" />
+						</when>
+						<otherwise >
+							<logger level="INFO" doc:name="Logger" doc:id="d7fcb4c0-81e8-4634-87c6-4ce5c6320cf4" message="Case status PENDING .Request not sent to Analytics"/>
+						</otherwise>
+					</choice>
+				</when>
+				<otherwise >
+					<logger level="INFO" doc:name="Logger" doc:id="655bcf95-3169-4066-9af7-e8251de1cf44" message="Partner is Neither BBAE nor WEBULL"/>
+					<json-logger:logger doc:name="Logger" doc:id="06f09cd5-9c01-4e5d-9701-96f065a67b13" config-ref="JSON_Logger_Config" tracePoint="PRINT" message="Partner is Neither BBAE nor WEBULL">
+						<json-logger:content ><![CDATA[#[output application/json ---
+{
+}]]]></json-logger:content>
+					</json-logger:logger>
+				</otherwise>
+			</choice>
+		</async>
+
+
+		<flow-ref doc:name="global-return-response-build" doc:id="27c9c388-4200-4363-b290-f0d616b5324f" name="global-return-response-build"/>
+	</flow>
+	<sub-flow name="adobeAnalyticRequestBuilder" doc:id="130eccfb-c898-460e-bf50-61797a58bfb3" >
+		<ee:transform doc:name="AnalyticRequestBuilder" doc:id="52b9c792-f570-44cf-ac38-611549f906d5" >
+			<ee:message />
+			<ee:variables >
+				<ee:set-variable variableName="tempAnalyticRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+		"sc_xml_ver": "1.0",
+   		"reportSuiteID": p('analytics.REPORTSUITEID'),
+   		"visitorID" : vars.MID default null,
+   		"marketingCloudVisitorID": vars.MID default null,
+   		"campaign" :  vars.PARTNER_CONFIGS.userCode default null,
+   		"products": ";" ++ vars.AccountName,
+   		"campaign": vars.originalPayload.Customer.CampaignId default null,
+   		"eVar9": vars.ApplicationId,
+   		"eVar11": payload.CustomerNumber default null,
+   		"eVar12": vars.MID default null,
+   		"eVar46": vars.originalApplicantType default null,
+   		"eVar47": vars.caseStatus,
+   		"prop47": vars.caseStatus,
+   		"prop48": vars.CustomerPrimaryAddress..CountryCode[0],
+   		"prop49": vars.originalPayload.Documents[0].DocumentName default null
+	}
+]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</sub-flow>
+
+</mule>

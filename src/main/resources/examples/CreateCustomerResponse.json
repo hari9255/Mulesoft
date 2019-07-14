@@ -1,0 +1,15 @@
+{
+    "data": {
+        "CreateCustomerResponse": {
+            "CustomerNumber": "00000063579",
+            "ApplicationCode": "CUST"
+        },
+        "RequestUUID": "123456",
+        "ErrorMessageList": []
+    },
+    "result": {
+        "success": true,
+        "code": "200",
+        "message": null
+    }
+}

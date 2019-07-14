@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="createaccountcommonflow-test-suite.xml" />
+	<munit:test name="createaccountcommonflow-test-suite-synergyUpdateSubFlowTest" description="Test" doc:id="ab8843f6-4d63-4b73-be62-4c500002955c" >
+		<munit:behavior >
+			<flow-ref doc:name="SynergySuccessMockForDeferredFlow" doc:id="c35c6cd8-373d-4ba7-9689-08ccd07f5e52" name="SynergySuccessMockForDeferredFlow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="84a12d9e-f168-4530-bd7c-19760d44ddc3" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="synergy" ><![CDATA[%dw 2.0
+output application/json
+---
+[{
+  "DocumentExtension": "JPG",
+  "DocumentSource": "Deposit",
+  "DocumentContent": "1110000000000000000000000000000000000001",
+  "DocumentType": "DriversLicense",
+  "SourceIdentifierId": "tererwerwere",
+  "RequestUUID": "YYYYYYY",
+  "AccountNumber": "1234",
+  "CustomerNumber": "5678",
+  "DocumentDate": "2018-02-28T16:41:41-07:00",
+  "OfficerCode": "Jonh Doe",
+  "DocumentService": "Terafina"
+},
+{
+  "DocumentExtension": "JPG",
+  "DocumentSource": "Deposit",
+  "DocumentContent": "1110000000000",
+  "DocumentType": "DriversLicense",
+  "SourceIdentifierId": "tererwerwere",
+  "RequestUUID": "YYYYYYY",
+  "AccountNumber": "1234",
+  "CustomerNumber": "5678",
+  "DocumentDate": "2018-02-28T16:41:41-07:00",
+  "OfficerCode": "Jonh Doe",
+  "DocumentService": "Web"
+}]]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to synergyUpdateSubFlow" doc:id="2fc317f0-65c9-4121-9e98-fe049886ef8f" name="synergyUpdateSubFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="adec4d2b-45d4-4c76-93ff-57caab672a75" message="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="createaccountcommonflow-test-suite-synergyUpdateSubFlowTestException" description="Test" doc:id="dbc279c3-2fa9-4691-b14b-d42e0095014e" >
+		<munit:behavior >
+			<flow-ref doc:name="SynergySuccessMockForDeferredExceptionFlow" doc:id="173ff255-01e4-41ef-be36-7532786b7d5b" name="SynergySuccessMockForDeferredExceptionFlow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Transform Message" doc:id="372f12ad-15b5-4230-b930-01ab32e4647a" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="synergy" ><![CDATA[%dw 2.0
+output application/json
+---
+[{
+  "DocumentExtension": "JPG",
+  "DocumentSource": "Deposit",
+  "DocumentContent": "1110000000000000000000000000000000000001",
+  "DocumentType": "DriversLicense",
+  "SourceIdentifierId": "tererwerwere",
+  "RequestUUID": "YYYYYYY",
+  "AccountNumber": "1234",
+  "CustomerNumber": "5678",
+  "DocumentDate": "2018-02-28T16:41:41-07:00",
+  "OfficerCode": "Jonh Doe",
+  "DocumentService": "Terafina"
+},
+{
+  "DocumentExtension": "JPG",
+  "DocumentSource": "Deposit",
+  "DocumentContent": "1110000000000",
+  "DocumentType": "DriversLicense",
+  "SourceIdentifierId": "tererwerwere",
+  "RequestUUID": "YYYYYYY",
+  "AccountNumber": "1234",
+  "CustomerNumber": "5678",
+  "DocumentDate": "2018-02-28T16:41:41-07:00",
+  "OfficerCode": "Jonh Doe",
+  "DocumentService": "Web"
+}]]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to synergyUpdateSubFlow" doc:id="1d22d345-7f67-4e02-84c2-d8c534b6cc0e" name="synergyUpdateSubFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger" doc:id="ce32a63e-b2c3-48dc-9722-a84d496630a8" message="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

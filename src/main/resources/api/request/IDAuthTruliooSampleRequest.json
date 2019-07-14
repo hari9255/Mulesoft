@@ -1,0 +1,28 @@
+{
+  "id": "NationalID",
+  "request": {
+    "AcceptTruliooTermsAndConditions": true,
+    "ConfigurationName": "Identity Verification",
+    "CountryCode": "CN",
+    "DataFields": {
+      "Document": {
+        "DocumentFrontImage": "/9j/4QAYRXhpZgA …. ",
+        "DocumentBackImage": "/9j/4QAYRXhpZgA …. ",
+        "DocumentType": "DrivingLicence"
+      }
+    }
+  },
+  "id2": "Passport",
+  "request2": {
+    "AcceptTruliooTermsAndConditions": true,
+    "ConfigurationName": "Identity Verification",
+    "CountryCode": "CN",
+    "DataFields": {
+      "Document": {
+        "DocumentFrontImage": "/9j/4QAYRXhpZgA …. ",
+        "DocumentBackImage": "/9j/4QAYRXhpZgA …. ",
+        "DocumentType2": "Passport"
+      }
+    }
+  }
+}

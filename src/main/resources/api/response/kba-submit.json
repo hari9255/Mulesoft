@@ -1,0 +1,32 @@
+{
+   "Status":{
+      "ConversationId":"31000095253376",
+      "RequestId":"285601826",
+      "TransactionStatus":"passed",
+      "Reference":"Reference1"
+   },
+   "Products":[
+      {
+         "ProductType":"InstantVerify",
+         "ExecutedStepName":"verification",
+         "ProductConfigurationName":"public.testing.redherrings_verification_open",
+         "ProductStatus":"pass",
+         "Items":[
+            {
+               "ItemName":"TaskAgeUnder18WillNotBeFoundCheck",
+               "ItemStatus":"pass"
+            },
+            {
+               "ItemName":"LexIDDeathMatch",
+               "ItemStatus":"pass"
+            }
+         ]
+      },
+      {
+         "ProductType":"IIDQA",
+         "ExecutedStepName":"authentication",
+         "ProductConfigurationName":"public.testing.redherrings_authentication_open",
+         "ProductStatus":"pass"
+      }
+   ]
+}

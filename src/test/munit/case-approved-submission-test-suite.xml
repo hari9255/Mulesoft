@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="case-approved-submission-test-suite.xml" />
+	<munit:test name="case-approved-submission-test-suite-FISCheckingTest" description="Test" doc:id="36d02058-0497-4026-9b10-39f32a2683b3">
+		<munit:behavior >
+			<flow-ref doc:name="PromoUpdateCaseApprovedMockSub_Flow" doc:id="9c4e9d76-2fd1-4789-9b9d-0e897f42929a" name="PromoUpdateCaseApprovedMockSub_Flow"/>
+			<flow-ref doc:name="FISCheckingAccountMock" doc:id="1f31b3fb-3eaf-4c14-b109-e9989f061e7f" name="FISCheckingAccountMock"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="49e24455-a13c-4b4f-a5b9-0845709a2320" name="OktaUpdateUserProfileMockSub_Flow"/>
+			<flow-ref doc:name="CaseCreationMockSub_Flow" doc:id="cba62891-8ffd-4f66-9329-270bba498c1a" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Payload" doc:id="02f88fea-51ab-4888-afdc-b92736f21479" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{  
+  "ApplicationId": "APP-M-0123",
+  "ApplicantType": "NRA",
+  "CustomerInformation": {
+    "DateOfBirth": "1980-05-16T16:55:15.467Z",
+    "FirstName": "John",
+    "LastName": "Doe",
+    "MiddleInitial": "M",
+    "CISNumber": "00000061099",
+    "Title": "Mr",
+    "EntityType": "Unknown",
+    "SearchName": "WatchList",
+    "PEP": "Yes",
+    "CountryOfBirth": "USA",
+    "Address": {
+      "StreetAddress1": "9300 Flair Dr",
+      "StreetAddress2": "300",
+      "City": "El Monte",
+      "State": "CA",
+      "Zip": "91731",
+      "CountryCode": "USA",
+      "TimeAtAddress": {
+        "Years": 2,
+        "Month": 1
+      },
+      "IsForeignAddress": false
+    },
+    "MailingAddress": {
+      "StreetAddress1": "9301 Flair Dr",
+      "StreetAddress2": "300",
+      "City": "El Monte",
+      "State": "CA",
+      "Zip": "91731",
+      "CountryCode": "USA"
+    },
+    "SourceofFunds": {
+      "Source": "FundfromEMP",
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": true,
+        "ForeignInActivity": {
+          "ForeignIncomingActivity": true,
+          "IncomingWires": 3,
+          "IncomingWiresAmount": 233445.34
+        },
+        "ForeignOutActivity": {
+          "ForeignOutgoingActivity": true,
+          "OutgoingWires": 3,
+          "OutgoingWiresAmount": 233445.34
+        }
+      }
+    },
+    "PrimaryPhoneNumber": "6662367234",
+    "FaxPhoneNumber": "6662367234",
+    "SecondaryPhoneNumber": "6662367234",
+    "MobilePhoneNumber": "6662367234",
+    "TaxNumber": "666176172",
+    "TaxIdType": "SocialSecurityNumber",
+    "CitizenshipCode": "USA",
+    "W8CertificateType": "Blank",
+    "PrimaryID": "DL",
+    "BranchNumber": "8034",
+    "CostCenterNumber": 1145,
+    "MailCode": "NoSpecialAction",
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": 30744,
+    "SecondaryOfficerNumber": 30744,
+    "Gender": "Female",
+    "CategoryCode1": "903",
+    "CountryofDualCitizenship": "USA",
+    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+    "EmploymentOrSchool": "EWB",
+    "Ethnicity": "AfricanAmerican",
+    "MaritalStatus": "Married",
+    "MothersMaidenName": "Name",
+    "Occupation": "AdminManagerial",
+    "W8CertificateDate": "2018-05-16T16:55:15.467Z",    
+    "Identification": {
+      "Status": "VerifiedByBanker",
+      "IsTINAppliedFor": true,
+      "NonDocumentaryIdentificationInformation": "VLN",
+      "IdentificationInformation1": {
+        "Type": "DL",
+        "Number": "F4567",
+        "IssuingEntity": "DMV",
+        "IssuingLocation": "Pasadena",
+        "IssueDate": "2010-05-16T16:55:15.468Z",
+        "ExpirationDate": "2020-05-16T16:55:15.468Z"
+      },
+      "IdentificationInformation2": {
+        "Type": "Passport",
+        "Number": "R4567",
+        "IssuingEntity": "US",
+        "IssuingLocation": "Pasadena",
+        "IssueDate": "2008-05-16T16:55:15.468Z",
+        "ExpirationDate": "2028-05-16T16:55:15.468Z"
+      }
+    },
+    "EmailAddress": "dds@dds.com"
+  },
+  "Promotions": {
+    "Status": "Finished",
+    "PromoCode": "Y834KCUH",
+    "OnboardingInvitation": {
+      "EmailAddress": "dds@dds.com",
+      "PhoneNumber": "7656065125"
+    }
+  },  
+  "AccountInformation": {
+    "AccountType": "CHK_I_PERS_PREMIER",
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptAssumed",
+      "UserCode": "D",
+      "StatusCodes": [
+        "NeverClose"
+      ],
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+			"CardNameLine1": "Nk XIN"
+	},
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": "Primary",
+      "NumberOfStatementCopies": 1,
+      "AddressLineOfTINOwner": 1
+    }
+  }
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\caseapproved\submission:application\json:velo-process-api-config" doc:id="116686c9-651d-41fb-88ea-a8a5c3ab1d99" name="post:\process\caseapproved\submission:application\json:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Application ID" doc:id="b0c00065-d7e5-44c9-abb9-9bd272c31ab8" expression="#[payload.data.ApplicationId]" is="#[MunitTools::notNullValue()]" message="Application ID not present"/>
+			<munit-tools:assert-that doc:name="Assert Result" doc:id="624f4760-edce-4288-915d-a338d8b2a238" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Case Approved Submission was not Successfull"/>
+			<munit-tools:verify-call doc:name="Verify call to FIS Checking" doc:id="3c611f1d-63d6-43e2-89c8-8476a1518f54" processor="http:request" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="f478a6a9-f63c-4ac2-bc3b-7e56c73d3dfc" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="case-approved-submission-test-suite-FISSavingTest" description="Test" doc:id="57cd9e00-002a-4b24-8c40-45665e1b0db9">
+		<munit:behavior >
+			<flow-ref doc:name="PromoUpdateCaseApprovedMockSub_Flow" doc:id="df29714f-f79c-47cb-ab4b-cab68417860d" name="PromoUpdateCaseApprovedMockSub_Flow"/>
+			<flow-ref doc:name="FISSavingsAccountMock" doc:id="9b481c95-63aa-424b-97ee-c5ac1678ae4e" name="FISSavingAccountMock"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="aaafac9c-6d9e-4426-a33c-ea6ffa91d1b6" name="OktaUpdateUserProfileMockSub_Flow"/>
+			<flow-ref doc:name="CaseCreationMockSub_Flow" doc:id="d5c043ca-0142-4b7e-872a-1b776f07cfbf" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Payload" doc:id="f9179b22-91ee-4bb2-8158-bcb3a9b4c8b5" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{  
+  "ApplicationId": "APP-M-04179",
+  "ApplicantType": "NONNRA",
+  "CustomerInformation": {
+    "DateOfBirth": "1980-05-16T16:55:15.467Z",
+    "FirstName": "John",
+    "LastName": "Doe",
+    "MiddleInitial": "M",
+    "CISNumber": "00000061099",
+    "Title": "Mr",
+    "EntityType": "Unknown",
+    "SearchName": "WatchList",
+    "PEP": "Yes",
+    "CountryOfBirth": "USA",
+    "Address": {
+      "StreetAddress1": "9300 Flair Dr",
+      "StreetAddress2": "300",
+      "City": "El Monte",
+      "State": "CA",
+      "Zip": "91731",
+      "CountryCode": "USA",
+      "TimeAtAddress": {
+        "Years": 2,
+        "Month": 1
+      },
+      "IsForeignAddress": false
+    },
+    "MailingAddress": {
+      "StreetAddress1": "9301 Flair Dr",
+      "StreetAddress2": "300",
+      "City": "El Monte",
+      "State": "CA",
+      "Zip": "91731",
+      "CountryCode": "USA"
+    },
+    "SourceofFunds": {
+      "Source": "FundfromEMP",
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": true,
+        "ForeignInActivity": {
+          "ForeignIncomingActivity": true,
+          "IncomingWires": 3,
+          "IncomingWiresAmount": 233445.34
+        },
+        "ForeignOutActivity": {
+          "ForeignOutgoingActivity": true,
+          "OutgoingWires": 3,
+          "OutgoingWiresAmount": 233445.34
+        }
+      }
+    },
+    "PrimaryPhoneNumber": "6662367234",
+    "FaxPhoneNumber": "6662367234",
+    "SecondaryPhoneNumber": "6662367234",
+    "MobilePhoneNumber": "6662367234",
+    "TaxNumber": "666179532",
+    "TaxIdType": "SocialSecurityNumber",
+    "CitizenshipCode": "USA",
+    "W8CertificateType": "Blank",
+    "PrimaryID": "DL",
+    "BranchNumber": "8034",
+    "CostCenterNumber": 1145,
+    "MailCode": "NoSpecialAction",
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": 30744,
+    "SecondaryOfficerNumber": 30744,
+    "Gender": "Female",
+    "CategoryCode1": "903",
+    "CountryofDualCitizenship": "CHN",
+    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+    "EmploymentOrSchool": "EWB",
+    "Ethnicity": "AfricanAmerican",
+    "MaritalStatus": "Married",
+    "MothersMaidenName": "Name",
+    "Occupation": "AdminManagerial",
+    "W8CertificateDate": "2018-05-16T16:55:15.467Z",    
+    "Identification": {
+      "Status": "VerifiedByBanker",
+      "IsTINAppliedFor": true,
+      "NonDocumentaryIdentificationInformation": "VLN",
+      "IdentificationInformation1": {
+        "Type": "DL",
+        "Number": "F4567",
+        "IssuingEntity": "DMV",
+        "IssuingLocation": "Pasadena",
+        "IssueDate": "2010-05-16T16:55:15.468Z",
+        "ExpirationDate": "2020-05-16T16:55:15.468Z"
+      },
+      "IdentificationInformation2": {
+        "Type": "Passport",
+        "Number": "R4567",
+        "IssuingEntity": "US",
+        "IssuingLocation": "Pasadena",
+        "IssueDate": "2008-05-16T16:55:15.468Z",
+        "ExpirationDate": "2028-05-16T16:55:15.468Z"
+      }
+    },
+    "EmailAddress": "dds@dds.com"
+  },
+  "Promotions": {"Status": "Finished","PromoCode": "XAI1Q91L","OnboardingInvitation": {"EmailAddress": "sandesh.naik@terafinainc.com","PhoneNumber": "9964379952"}},  
+  "AccountInformation": {"AccountType": "SVG_PERS_PREM_SAVINGS_STMT","DepositAccount": {"WithholdingIndicator": "ExemptConfirmed","UserCode" : "D","StatusCodes" : ["NeverClose"],"BulkFileType": "ImageFile"},"CustomerToAccountRelationship": {"Customer1AccountRelationshipCode": "000","Customer1AccountAssociationType": "Primary","Address": {"StreetAddress1": "685  Quiet Valley Lane", "City": "Wilmot","State": "WI","Zip": "53192","IsForeignAddress": false},"NumberOfStatementCopies": 1,"AddressLineOfTINOwner": 1}}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\caseapproved\submission:application\json:velo-process-api-config" doc:id="b04abcd8-847d-474e-8624-6f91adb0fcd8" name="post:\process\caseapproved\submission:application\json:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Application ID" doc:id="0b088397-1f30-4458-9e1f-8e16d9437eaf" expression="#[payload.data.ApplicationId]" is="#[MunitTools::notNullValue()]" message="Application ID not present"/>
+			<munit-tools:assert-that doc:name="Assert Result" doc:id="bf9d0353-7923-4b9e-8869-2d887e6e660f" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Case Approved Submission was not Successfull"/>
+			<munit-tools:verify-call doc:name="Verify call to FIS Saving" doc:id="f4b8e647-1cff-4d99-977f-5acf1ad47bbb" processor="http:request" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="caae1ac4-46e9-4b50-8cd6-fa158b454d91" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="case-approved-submission-test-suite-CupcardTest" description="Test" doc:id="009015e7-7f37-477a-bef2-eb6bcb59430b" >
+		<munit:behavior >
+			<flow-ref doc:name="PromoUpdateCaseApprovedMockSub_Flow" doc:id="7ce9d06f-3d1d-45a3-92bb-55b20399c7eb" name="PromoUpdateCaseApprovedMockSub_Flow"/>
+			<flow-ref doc:name="CreateCustomerNumberMockSub_Flow" doc:id="4c13147b-c426-462b-a8b4-2813ff7740b2" name="CreateCustomerNumberMockSub_Flow"/>
+			<flow-ref doc:name="CreateCupcardNumberMockSub_Flow" doc:id="c7c0821d-68be-4b5e-a22e-63d55c333152" name="CreateCupcardNumberMockSub_Flow"/>
+			<flow-ref doc:name="CreateCupcardAccountMockSub_Flow" doc:id="aeb66f7d-0298-4850-a6af-93bb3b98d60c" name="CreateCupcardAccountMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="9594a206-7e92-4449-a3af-77d4a463a0be" name="OktaUpdateUserProfileMockSub_Flow"/>
+			<flow-ref doc:name="CaseCreationMockSub_Flow" doc:id="eb6b5061-f2e6-4b98-a63e-6ec224c35f51" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Payload" doc:id="3ce34daa-17e1-494c-87b2-075a38147827" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "PinPointRequest": [
+    {
+      "handler": "session_info",
+      "customer_session_id": "KcuZfVhVO7F4gEcjRPEC4b2X8",
+      "remote_addr": "136.179.39.30",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36",
+      "result": "pass",
+      "channel": "online",
+      "new_account_data": {
+        "new_account": true,
+        "first_name": "Nageswara",
+        "last_name": "gun",
+        "phone_number": "16508479693",
+        "email": "n.g2@ewb1.com"
+      }
+    },
+    {
+      "handler": "pinpoint_eval",
+      "customer_session_id": "KcuZfVhVO7F4gEcjRPEC4b2X8",
+      "remote_addr": "136.179.39.30",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36",
+      "activity": "new_account",
+      "url": "https://dodev-eastwestbank.cs14.force.com/tf4sf__dsp#/get-started",
+      "timestamp": "2018-12-11 22:05:05"
+    }
+  ],
+  "IdVerificationRequest": {
+    "Settings": {
+      "AccountNumber": "45065",
+      "Workflow": "public.testing.redherrings.open",
+      "Mode": "testing",
+      "Reference": "Reference1",
+      "Locale": "en_US",
+      "Venue": "online"
+    },
+    "Person": {
+      "Name": {
+        "FirstName": "Nageswara",
+        "LastName": "gun"
+      },
+      "Addresses": [
+        {
+          "StreetAddress1": "1300 El Camino Real",
+          "City": "Los Angeles",
+          "State": "CA",
+          "Zip5": "91326",
+          "Country": "US",
+          "Context": "primary"
+        }
+      ],
+      "SSN": {
+        "Number": "578563452",
+        "Type": "ssn9"
+      },
+      "DateOfBirth": {
+        "Year": "1987",
+        "Month": "11",
+        "Day": "11"
+      },
+      "Phones": [
+        {
+          "Number": "6508479693",
+          "Context": "mobile"
+        }
+      ]
+    }
+  },
+  "IdAuthenticationResponse": [
+    
+  ],
+  "RequestUUID": "a04c0000009pliuAAA",
+  "CaseId": "",
+  "CaseStatus": "",
+  "ApplicationId": "APP-M-03380",
+  "ApplicantType": "NONNRA",
+  "Settings": {
+    "AccountNumber": "45065",
+    "Workflow": "public.testing.redherrings.open",
+    "Mode": "testing",
+    "Reference": "Reference1",
+    "Locale": "en_US",
+    "ConversationId": "31000095253376",
+    "Venue": "online"
+  },
+  "Promotions": {
+    "Status": "Finished",
+    "PromoCode": "UATP449",
+    "OnboardingInvitation": {
+      "EmailAddress": "n.g2@ewb1.com",
+      "PhoneNumber": "6508479693"
+    }
+  },
+  "AccountInformation": {
+    "AccountType": "CUP_CARD",
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptConfirmed",
+      "UserCode": "D",
+      "StatusCodes": [
+        "NeverClose"
+      ],
+      "BulkFileType": "ImageFile"
+    },
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Address": {
+        "StreetAddress1": "1300 El Camino Real",
+        "City": "Los Angeles",
+        "State": "CA",
+        "Zip": "91326",
+        "IsForeignAddress": false
+      },
+      "NumberOfStatementCopies": 1,
+      "AddressLineOfTINOwner": 1
+    }
+  },
+  "CustomerInformation": {
+    "DateOfBirth": "1987-11-11",
+    "FirstName": "Nageswara",
+    "LastName": "gun",
+    "VisaType": null,
+    "ForeignTaxID": null,
+    "PrimaryPurposeofAccOpening": null,
+    "SourceofFunds": {
+      "Source": null,
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": false,
+        "ForeignOutActivity": {
+          "OutgoingWiresAmount": null,
+          "OutgoingWires": null,
+          "ForeignOutgoingActivity": false
+        },
+        "ForeignInActivity": {
+          "IncomingWiresAmount": null,
+          "IncomingWires": null,
+          "ForeignIncomingActivity": false
+        }
+      }
+    },
+    "CISNumber": "",
+    "PEP": "No",
+    "Address": {
+      "StreetAddress1": "1300 El Camino Real",
+      "CountryCode": "USA",
+      "IsForeignAddress": false,
+      "City": "Los Angeles",
+      "State": "CA",
+      "Zip": "91326"
+    },
+    "CountryCode": "+1",
+    "MobilePhoneNumber": "6508479693",
+    "TaxNumber": "578563905",
+    "TaxIdType": "SocialSecurityNumber",
+    "CitizenshipCode": "ALB",
+    "BranchNumber": "8088",
+    "CostCenterNumber": "88",
+    "CategoryCode1": "903",
+    "Occupation": "AgricultureOrFishing",
+    "Identification": {
+      "Status": "NonDocVerification",
+      "NonDocumentaryIdentificationInformation1": "VLN"
+    },
+    "EmailAddress": "n.g2@ewb1.com"
+  },
+  "Documents": [
+    
+  ]
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\caseapproved\submission:application\json:velo-process-api-config" doc:id="57d2a50d-50f4-47a8-aea8-914a4078984e" name="post:\process\caseapproved\submission:application\json:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Application ID" doc:id="839db443-e566-411d-8b82-3cafbea411c4" expression="#[payload.data.ApplicationId]" is="#[MunitTools::notNullValue()]" message="Application ID not present"/>
+			<munit-tools:assert-that doc:name="Assert Result" doc:id="5894209b-f909-4a2b-afdf-f3b29a45ed76" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Case Approved Submission was not Successfull"/>
+			<munit-tools:verify-call doc:name="Verify call to Cupcard" doc:id="7cac5f39-3223-4606-bbe0-aa8ee1af19f9" processor="mule:flow-ref" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="36b807cc-4d81-4d6a-9a55-713c0dcd5c27" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="case-approved-submission-test-suite-UnknownAccountTest" description="Test" doc:id="d1bc79c8-4a88-445b-a205-5f3089c85d71">
+		<munit:behavior >
+			<flow-ref doc:name="PromoUpdateCaseApprovedMockSub_Flow" doc:id="2f3b00db-1e58-4a38-863a-3491473e92a2" name="PromoUpdateCaseApprovedMockSub_Flow"/>
+			<flow-ref doc:name="FISCheckingAccountMock" doc:id="9008da9b-a832-4d79-a733-59bf17398baa" name="FISCheckingAccountMock"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="ea700466-21f5-4f81-a53b-fd75b0fd90dd" name="OktaUpdateUserProfileMockSub_Flow"/>
+			<flow-ref doc:name="CaseCreationMockSub_Flow" doc:id="b8c6e6f6-2da5-42b9-a17a-79e44c5dc63b" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set Payload" doc:id="8e2a39fe-b0b8-4101-98d1-f707429d0a41" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{  
+  "ApplicationId": "APP-M-0123",
+  "ApplicantType": "NRA",
+  "CustomerInformation": {
+    "DateOfBirth": "1980-05-16T16:55:15.467Z",
+    "FirstName": "John",
+    "LastName": "Doe",
+    "MiddleInitial": "M",
+    "CISNumber": "00000061099",
+    "Title": "Mr",
+    "EntityType": "Unknown",
+    "SearchName": "WatchList",
+    "PEP": "Yes",
+    "CountryOfBirth": "USA",
+    "Address": {
+      "StreetAddress1": "9300 Flair Dr",
+      "StreetAddress2": "300",
+      "City": "El Monte",
+      "State": "CA",
+      "Zip": "91731",
+      "CountryCode": "USA",
+      "TimeAtAddress": {
+        "Years": 2,
+        "Month": 1
+      },
+      "IsForeignAddress": false
+    },
+    "MailingAddress": {
+      "StreetAddress1": "9301 Flair Dr",
+      "StreetAddress2": "300",
+      "City": "El Monte",
+      "State": "CA",
+      "Zip": "91731",
+      "CountryCode": "USA"
+    },
+    "SourceofFunds": {
+      "Source": "FundfromEMP",
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": true,
+        "ForeignInActivity": {
+          "ForeignIncomingActivity": true,
+          "IncomingWires": 3,
+          "IncomingWiresAmount": 233445.34
+        },
+        "ForeignOutActivity": {
+          "ForeignOutgoingActivity": true,
+          "OutgoingWires": 3,
+          "OutgoingWiresAmount": 233445.34
+        }
+      }
+    },
+    "PrimaryPhoneNumber": "6662367234",
+    "FaxPhoneNumber": "6662367234",
+    "SecondaryPhoneNumber": "6662367234",
+    "MobilePhoneNumber": "6662367234",
+    "TaxNumber": "666176172",
+    "TaxIdType": "SocialSecurityNumber",
+    "CitizenshipCode": "USA",
+    "W8CertificateType": "Blank",
+    "PrimaryID": "DL",
+    "BranchNumber": "8034",
+    "CostCenterNumber": 1145,
+    "MailCode": "NoSpecialAction",
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": 30744,
+    "SecondaryOfficerNumber": 30744,
+    "Gender": "Female",
+    "CategoryCode1": "903",
+    "CountryofDualCitizenship": "USA",
+    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+    "EmploymentOrSchool": "EWB",
+    "Ethnicity": "AfricanAmerican",
+    "MaritalStatus": "Married",
+    "MothersMaidenName": "Name",
+    "Occupation": "AdminManagerial",
+    "W8CertificateDate": "2018-05-16T16:55:15.467Z",    
+    "Identification": {
+      "Status": "VerifiedByBanker",
+      "IsTINAppliedFor": true,
+      "NonDocumentaryIdentificationInformation": "VLN",
+      "IdentificationInformation1": {
+        "Type": "DL",
+        "Number": "F4567",
+        "IssuingEntity": "DMV",
+        "IssuingLocation": "Pasadena",
+        "IssueDate": "2010-05-16T16:55:15.468Z",
+        "ExpirationDate": "2020-05-16T16:55:15.468Z"
+      },
+      "IdentificationInformation2": {
+        "Type": "Passport",
+        "Number": "R4567",
+        "IssuingEntity": "US",
+        "IssuingLocation": "Pasadena",
+        "IssueDate": "2008-05-16T16:55:15.468Z",
+        "ExpirationDate": "2028-05-16T16:55:15.468Z"
+      }
+    },
+    "EmailAddress": "dds@dds.com"
+  },
+  "Promotions": {
+    "Status": "Finished",
+    "PromoCode": "Y834KCUH",
+    "OnboardingInvitation": {
+      "EmailAddress": "dds@dds.com",
+      "PhoneNumber": "7656065125"
+    }
+  },  
+  "AccountInformation": {
+    "AccountType": "",
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptAssumed",
+      "UserCode": "D",
+      "StatusCodes": [
+        "NeverClose"
+      ],
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": {
+			"CardNameLine1": "Nk XIN"
+	},
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": "Primary",
+      "NumberOfStatementCopies": 1,
+      "AddressLineOfTINOwner": 1
+    }
+  }
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\caseapproved\submission:application\json:velo-process-api-config" doc:id="ee7ff666-f966-45a3-8513-d97f9cf8ad65" name="post:\process\caseapproved\submission:application\json:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Application ID" doc:id="9b750d2e-83d5-47c2-bb58-48318d4d9473" expression="#[payload.data.ApplicationId]" is="#[MunitTools::notNullValue()]" message="Application ID not present"/>
+			<munit-tools:assert-that doc:name="Assert Result" doc:id="6c92cf6e-c53f-4392-9405-3cc510d02226" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Case Approved Submission was not Successfull"/>
+			<munit-tools:verify-call doc:name="Verify call to Default branch" doc:id="76ad590a-8230-4ba8-8267-839189b57e37" processor="mule:set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="7be9353d-0e42-4714-b354-aa95baa1925a" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+</mule>

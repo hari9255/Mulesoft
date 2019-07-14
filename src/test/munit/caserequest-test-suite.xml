@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="caserequest-test-suite.xml" />
+	<sub-flow name="case-payload" doc:id="b8e0216a-2ff5-4b8b-b530-a19846d9e26a" >
+		<ee:transform doc:name="Set Payload and Variables" doc:id="91558acc-e044-451a-b531-d581ff0742a9">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+ {
+    "ApplicationId": "a04m000000BAcfJAAT",
+    "ApplicantType": "NRA/NONNRA/USCitizen",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "AccountInformation": {
+      "AccountType": "CHK_I_PERS_PREMIER",
+      "CustomerToAccountRelationship": {
+        "AddressLineOfTINOwner": 1,
+        "Customer1AccountAssociationType": "Primary",
+        "Customer1AccountRelationshipCode": "000",
+        "Customer2AccountAssociationType": "Primary",
+        "NumberOfStatementCopies": 1
+      },
+      "CardAccount": {
+        "CardNameLine1": "Vamsi  Sakhineti"
+      },
+      "DepositAccount": {
+        "WithholdingIndicator": "ExemptAssumed",
+        "UserCode": "D",
+        "StatusCodes": [
+          "NeverClose"
+        ],
+        "BulkFileType": "ImageFile"
+      }
+    },
+    "CustomerInformation": {
+      "Address": {
+        "City": "San Francisco",
+        "CountryCode": "US",
+        "IsForeignAddress": false,
+        "State": "CA",
+        "StreetAddress1": "1100 Market St",
+        "StreetAddress2": "null",
+        "Zip": "94102-3804"
+      },
+      "MailingAddress": {
+        "StreetAddress1": "9301 Flair Dr",
+        "StreetAddress2": "300",
+        "City": "El Monte",
+        "State": "CA",
+        "Zip": "91731",
+        "CountryCode": "USA"
+      },
+      "SourceofFunds": {
+        "Source": "FundfromEMP",
+        "MiscDemographic": 2,
+        "CustomerIntentforIntWireTransfer": {
+          "TransferServices": "Yes/No",
+          "ForeignInActivity": {
+            "ForeignIncomingActivity": "Yes/No",
+            "IncomingWires": 3,
+            "IncomingWiresAmount": 233445.34
+          },
+          "ForeignOutActivity": {
+            "ForeignOutgoingActivity": "Yes/No",
+            "OutgoingWires": 3,
+            "OutgoingWiresAmount": 233445.34
+          }
+        }
+      },
+      "BranchNumber": "8034",
+      "CitizenshipCode": "USA",
+      "CostCenterNumber": 1145,
+      "CountryOfBirth": "India",
+      "DateOfBirth": "1989-03-04",
+      "EmailAddress": "dds@dds.com",
+      "EmploymentDate": "2015-05-16T16:55:15.467Z",
+      "EmploymentOrSchool": "EWB",
+      "EntityType": "Unknown",
+      "Ethnicity": "AfricanAmerican",
+      "FirstName": "VAMSI",
+      "Gender": "Female",
+      "CategoryCode1": "903",
+      "CountryofDualCitizenship": "USA",
+      "Identification": {
+        "IdentificationInformation1": {
+          "ExpirationDate": "2020-05-16T16:55:15.468Z",
+          "IssueDate": "2010-05-16T16:55:15.468Z",
+          "IssuingEntity": "DMV",
+          "IssuingLocation": "Pasadena",
+          "Number": "F4567",
+          "Type": "DL"
+        },
+        "IdentificationInformation2": {
+          "ExpirationDate": "2028-05-16T16:55:15.468Z",
+          "IssueDate": "2008-05-16T16:55:15.468Z",
+          "IssuingEntity": "US",
+          "IssuingLocation": "Pasadena",
+          "Number": "R4567",
+          "Type": "Passport"
+        },
+        "IsTINAppliedFor": true,
+        "Status": "VerifiedByBanker",
+        "NonDocumentaryIdentificationInformation": "VLN"
+      },
+      "LastName": "SAKHINETI",
+      "MailCode": "NoSpecialAction",
+      "MaritalStatus": "Married",
+      "MothersMaidenName": "Name",
+      "Occupation": "Architecture / Engineering",
+      "PEP": "No",
+      "CISNumber": "00000061099",
+      "PrimaryID": "DL",
+      "PrimaryLanguage": "Chinese",
+      "PrimaryOfficerNumber": 30744,
+      "PrimaryPhoneNumber": "7656065125",
+      "RequestUUID": "a04m000000BAcfJAAT",
+      "SSN": "991666666",
+      "SSN_Type": "ssn9",
+      "SearchName": "WatchList",
+      "SecondaryOfficerNumber": 30744,
+      "TaxIdType": "SocialSecurityNumber",
+      "TaxNumber": "666176172",
+      "Title": "",
+      "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+      "W8CertificateType": "Blank"
+    },
+    "Documents": [],
+    "IdAuthenticationResponse": [
+      {
+        "PassThroughs": [
+          {
+            "Data": "{\"IDAuthResultResponse\":{\"Header\":{\"TransactionId\":\"2050861R41753\"},\"Success\":true,\"AuthenticationResult\":{\"DocumentName\":\"California (CA) Driver License\",\"DocAuthResult\":\"Attention\",\"DocIssuerCode\":\"CA\",\"DocIssuerName\":\"California\",\"DocClassCode\":\"DriversLicense\",\"DocClass\":\"DriversLicense\",\"DocClassName\":\"Drivers License\",\"DocIsGeneric\":\"false\",\"DocIssue\":\"2010\",\"DocIssueType\":\"Driver License\",\"DocSize\":\"ID1\",\"ClassificationMode\":\"Automatic\",\"OrientationChanged\":\"false\",\"PresentationChanged\":\"false\",\"FullName\":\"VAMSI SAKHINETI\",\"Sex\":\"Male\",\"Age\":\"29\",\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4},\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4},\"Portrait\":\"\",\"Signature\":\"\",\"Alerts\":{\"IDAuthAlertData\":[{\"AlertID\":\"97aaa371-16b5-404e-8922-116b8afe5932\",\"AlertName\":\"2D Barcode Read\",\"AlertKey\":\"2D Barcode Read\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the two-dimensional barcode on the document was read successfully.\"},{\"AlertID\":\"113de986-ab10-497f-bc8b-6f1f2e105509\",\"AlertName\":\"Document Classification\",\"AlertKey\":\"Document Classification\",\"AuthenticationResult\":\"Attention\",\"AlertDescription\":\"Verified that the type of document is supported and is able to be fully authenticated.\"},{\"AlertID\":\"9b53da13-250c-4c15-80b0-1fef73ff5b67\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Waves\"]}},{\"AlertID\":\"2cbe67a7-87a8-4927-be78-ab77499e14d7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Bear\"]}},{\"AlertID\":\"025c450f-a358-47c9-81d5-97e3443bcaed\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Failed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Seal\"]}},{\"AlertID\":\"7400df02-127d-4efa-8503-2ea977e0c100\",\"AlertName\":\"Birth Date Valid\",\"AlertKey\":\"Birth Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the birth date is valid.\"},{\"AlertID\":\"08d4b99c-c147-4596-8d85-a2a52bcd862f\",\"AlertName\":\"Document Expired\",\"AlertKey\":\"Document Expired\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Checked if the document is expired.\"},{\"AlertID\":\"2da1438f-f5d0-40c2-be2c-9ebe7cda3ec4\",\"AlertName\":\"Expiration Date Valid\",\"AlertKey\":\"Expiration Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the expiration date is valid.\"},{\"AlertID\":\"3f925e9a-6a2c-4fdc-bfdb-3cadcf470ede\",\"AlertName\":\"Issue Date Valid\",\"AlertKey\":\"Issue Date Valid\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified that the issue date is valid.\"},{\"AlertID\":\"2969372f-acbf-4055-9f8d-b81d0e494b44\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Mountain Right\"]}},{\"AlertID\":\"42a570ad-b136-4722-8651-c6c683f7e5f7\",\"AlertName\":\"Visible Pattern\",\"AlertKey\":\"Visible Pattern\",\"AuthenticationResult\":\"Passed\",\"AlertDescription\":\"Verified the presence of a pattern on the visible image.\",\"Regions\":{\"Region\":[\"Background Tree\"]}}]},\"Fields\":{\"IDAuthFieldData\":[{\"Address\":\" IOO FLURRY DR , .LIVERMORE. CA 94550\"},{\"City\":\"LIVERMORE\"},{\"PostalCode\":\"94550\"},{\"State\":\"CA\"},{\"DOB\":{\"Year\":1989,\"Month\":3,\"Day\":4}},{\"DocumentClassName\":\"Drivers License\"},{\"DocumentNumber\":\"F7217708\"},{\"ExpirationDate\":{\"Year\":2022,\"Month\":3,\"Day\":4}},{\"FirstName\":\"VAMSI\"},{\"FullName\":\"VAMSI SAKHINETI\"},{\"GivenName\":\"VAMSI\"},{\"IssueDate\":{\"Year\":2017,\"Month\":7,\"Day\":26}},{\"IssuingStateCode\":\"CA\"},{\"IssuingStateName\":\"California\"},{\"Sex\":\"M\"},{\"Surname\":\"SAKHINETI\"}]}}}}",
+            "Type": "true.id"
+          }
+        ],
+        "Products": [
+          {
+            "ExecutedStepName": "True_ID_Step",
+            "ProductConfigurationName": "TrueID_Flow",
+            "ProductStatus": "pass",
+            "ProductType": "TrueID"
+          }
+        ],
+        "Status": {
+          "ConversationId": "31000101592685",
+          "Reference": "payload.RequestUUID",
+          "RequestId": "294443635",
+          "TransactionStatus": "passed"
+        }
+      }
+    ],
+    "IdVerificationRequest": {
+      "Person": {
+        "Addresses": [
+          {
+            "City": "San Francisco",
+            "Context": "primary",
+            "Country": "US",
+            "State": "CA",
+            "StreetAddress1": "1100 Market St",
+            "Zip5": "94102-3804"
+          }
+        ],
+        "DateOfBirth": {
+          "Day": "3",
+          "Month": "4",
+          "Year": "1989"
+        },
+        "Name": {
+          "FirstName": "VAMSI",
+          "LastName": "SAKHINETI"
+        },
+        "Phones": [
+          {
+            "Context": "mobile",
+            "Number": "7656065125"
+          }
+        ],
+        "SSN": {
+          "Number": "991666666",
+          "Type": "ssn9"
+        }
+      }
+    },
+    "InstantIdCVIInformation": [
+      {
+        "Type": "INSTANT_ID",
+        "Data": "{\"InstantIDResponseEx\":{\"response\":{\"Header\":{\"Status\":0,\"TransactionId\":\"41904\"},\"Result\":{\"InputEcho\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetAddress1\":\"4400 HORNER St unit 4\",\"City\":\"Union City\",\"State\":\"CA\",\"Zip5\":\"94587\"},\"DOB\":{\"Year\":1986,\"Month\":4,\"Day\":24},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"UseDOBFilter\":false,\"DOBRadius\":2,\"Passport\":{\"Number\":\"\",\"ExpirationDate\":{},\"Country\":\"\",\"MachineReadableLine1\":\"\",\"MachineReadableLine2\":\"\"},\"Channel\":\"\",\"OwnOrRent\":\"\"},\"UniqueId\":\"385133856\",\"VerifiedInput\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"County\":\"STAFFORD\"},\"SSN\":\"612527378\",\"HomePhone\":\"7542298653\",\"DOB\":{\"Year\":\"1986\",\"Month\":\"04\",\"Day\":\"24\"}},\"DOBVerified\":true,\"NameAddressSSNSummary\":0,\"NameAddressPhone\":{\"Summary\":\"12\",\"Type\":\"U\"},\"ComprehensiveVerification\":{\"ComprehensiveVerificationIndex\":30,\"RiskIndicators\":{\"RiskIndicator\":[{\"RiskCode\":\"PA\",\"Description\":\"Potential address discrepancy - the Input address may be previous address\",\"Sequence\":1},{\"RiskCode\":\"SD\",\"Description\":\"The input address state is different than LN best address on file\",\"Sequence\":2},{\"RiskCode\":\"10\",\"Description\":\"The input phone number is a mobile number\",\"Sequence\":3}]},\"PotentialFollowupActions\":{\"FollowupAction\":[{\"RiskCode\":\"B\",\"Description\":\"Verify name with Social (via SSN card  DL if applicable  paycheck stub  or other Government Issued I\"},{\"RiskCode\":\"C\",\"Description\":\"Verify name with Address (via DL  utility bill  Directory Assistance  paycheck stub  or other Govern\"}]}},\"ReversePhone\":{\"Name\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"UNION CITY\",\"State\":\"CA\",\"Zip5\":\"94587\"}},\"PhoneOfNameAddress\":\"2404168099\",\"SSNInfo\":{\"Valid\":\"G\",\"IssuedLocation\":\"DISTRICT OF COLUMBIA\",\"IssuedStartDate\":{\"Year\":1977,\"Month\":1},\"IssuedEndDate\":{\"Year\":1979,\"Month\":12}},\"ChronologyHistories\":{\"ChronologyHistory\":[{\"Address\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"StreetAddress1\":\"4400 HORNER ST UNIT 4\",\"City\":\"LOCUST GROVE\",\"State\":\"VA\",\"Zip5\":\"22508\",\"Zip4\":\"2186\"},\"DateFirstSeen\":{\"Year\":2007,\"Month\":9},\"DateLastSeen\":{\"Year\":2013,\"Month\":7},\"IsBestAddress\":true},{\"Address\":{\"StreetAddress1\":\"PO BOX 44851\",\"City\":\"FORT WASHINGTON\",\"State\":\"MD\",\"Zip5\":\"20749\",\"Zip4\":\"4851\"},\"Phone\":\"3018431388\",\"DateFirstSeen\":{\"Year\":1999,\"Month\":2},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}},{\"Address\":{\"StreetAddress1\":\"606 ENGLAND POINTE DR\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"22406\",\"Zip4\":\"6495\"},\"Phone\":\"2404168099\",\"DateFirstSeen\":{\"Year\":2000,\"Month\":5},\"DateLastSeen\":{\"Year\":2013,\"Month\":7}}]},\"AdditionalScore1\":\"0\",\"AdditionalScore2\":\"0\",\"CurrentName\":{\"First\":\"ALYSON\",\"Last\":\"ABELEDA\"},\"PassportValidated\":false,\"DOBMatchLevel\":8,\"SSNFoundForLexID\":true,\"AddressPOBox\":false,\"AddressCMRA\":false,\"InstantIDVersion\":\"1\",\"EmergingId\":false,\"AddressStandardized\":false,\"StandardizedInputAddress\":{\"StreetNumber\":\"4400\",\"StreetName\":\"HORNER\",\"StreetSuffix\":\"ST\",\"UnitDesignation\":\"UNIT\",\"UnitNumber\":\"4\",\"City\":\"FREDERICKSBURG\",\"State\":\"VA\",\"Zip5\":\"94587\",\"Zip4\":\"6495\",\"Latitude\":\"38.355439\",\"Longitude\":\"-77.495279\"}}}}}"
+      }
+    ],
+    "PinPointResponse": {
+      "status": "ok",
+      "message": {
+        "infection_data": {
+          "malware": {
+            "customer_session_id": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+            "info": {},
+            "malware": [
+              {
+                "risk_score": 950,
+                "name": "Simba-brcl",
+                "key": "simba",
+                "id": "53",
+                "signature": "Simba",
+                "targeted": "maybe",
+                "collector": "active_detection",
+                "pattern": "912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18"
+              },
+              {
+                "risk_score": 1000,
+                "name": "Pumba-brcl",
+                "key": "pumba",
+                "id": "50",
+                "signature": "Pumba",
+                "targeted": "maybe",
+                "collector": "passive_detection",
+                "pattern": "912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898"
+              }
+            ],
+            "malware_ids": {
+              "50": {
+                "risk_score": 1000,
+                "targeted": "maybe"
+              },
+              "53": {
+                "risk_score": 950,
+                "targeted": "maybe"
+              }
+            },
+            "risk_score": 1000,
+            "timestamp": "2015-07-08 12:29:33",
+            "encrypted_user_id": "encrypted_user_ID",
+            "encryption_key_id": "company.1.20170724"
+          }
+        },
+        "device_data": {
+          "device_key": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234",
+          "gd_id": "abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234-12345678",
+          "is_new": true,
+          "is_new_device_confidence_level": 0.75,
+          "is_new_global_device": true,
+          "v3": {
+            "screen_width": 1920,
+            "doc_location": "",
+            "activeX": 0,
+            "dma_code": 0,
+            "ip_class": "A",
+            "client_time_zone": -180,
+            "remote_addr": "123.123.123.123",
+            "history_length": 7,
+            "js": 1,
+            "accept_encoding": "gzip, deflate",
+            "counter": 3,
+            "machine_id": "",
+            "region": "05",
+            "screen_dpi": 24,
+            "client_language": "en-US",
+            "isp": "ISP",
+            "screen_height": 1080,
+            "first_time": "2017-02-08 09:27:40",
+            "agent_key": "",
+            "platform": "Win32",
+            "cpu": "Win32",
+            "ip_time_zone": 120,
+            "digest": "abcd1234abcd1234abcd1234abcd1234abcd1234",
+            "screen_touch": 0,
+            "fonts": "800648E87FC13E00BBAA18547FEC9690",
+            "global_cookie": "jgqlqlz28xaqegfzamk",
+            "file_upload_indicator": 0,
+            "mimes": "4118237596",
+            "file_upload": 1,
+            "longitude": 34.764701843262,
+            "navigator_props": 3695045678,
+            "browser_version": "41.0.2228",
+            "client_charset": "UTF-8",
+            "last_access": "2017-02-08 09:27:40",
+            "browser": "Chrome",
+            "charset": 1,
+            "accept_language": "en-US,en;q=0.5",
+            "latitude": 32.067798614502,
+            "org": "ISP",
+            "city": "Tel Aviv-yafo",
+            "first_access": "2017-02-08 09:27:40",
+            "country": "ISR",
+            "continent_code": "AS",
+            "country_name": "",
+            "country_code": "IL",
+            "country_code3": "ISR",
+            "post_code": "",
+            "x_forwarded_for": "123.123.123.123",
+            "id": 876137,
+            "pinpoint_session": "00009576042079220976",
+            "hashed_user_id": "N/A",
+            "os": "Windows 7",
+            "user_agent": "Mozilla",
+            "application": "66640095",
+            "cookie": "0.2157162984033204",
+            "plugins": "2075505175",
+            "area_code": 0,
+            "accept": "image/png,image/*;q=0.8,*/*;q=0.5",
+            "business": "trusteerqa"
+          }
+        },
+        "recommendation": {
+          "recommendation": "allow",
+          "resolution_id": "abcdefghijklmnopqrstuvwxyzabcdef",
+          "reason_id": -1,
+          "reason": "reason text",
+          "risk_score": 0
+        },
+        "risk_engine_recommendation": {
+          "risk_score": 1,
+          "reason_id": 1,
+          "recommendation": "allow_login_restrict",
+          "reason": "reason text"
+        },
+        "customer_session_id": "<CSID>"
+      }
+    },
+    "Promotions": {
+      "OnboardingInvitation": {
+        "EmailAddress": "dds@dds.com",
+        "PhoneNumber": "7656065125"
+      },
+      "PromoCode": "Y834KCUH",
+      "Status": "New"
+    }
+  }]]></ee:set-payload>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="isCaseApprovedFlow"><![CDATA[%dw 2.0
+output application/java
+---
+"false"]]></ee:set-variable>
+					<ee:set-variable variableName="caseStatus"><![CDATA[%dw 2.0
+output application/java
+---
+"Approved"]]></ee:set-variable>
+					<ee:set-variable variableName="IdAuthenticationResponseVar"><![CDATA[%dw 2.0
+output application/json
+---
+{"IdAuthenticationResponse": [{"PassThroughs": [{"Data": {"IDAuthResultResponse": {"Header": {"TransactionId": "2050861R41753"},"Success": true,"AuthenticationResult": {"DocumentName": "California (CA) Driver License","DocAuthResult": "Attention","DocIssuerCode": "CA","DocIssuerName": "California","DocClassCode": "DriversLicense","DocClass": "DriversLicense","DocClassName": "Drivers License","DocIsGeneric": "false","DocIssue": "2010","DocIssueType": "Driver License","DocSize": "ID1","ClassificationMode": "Automatic","OrientationChanged": "false","PresentationChanged": "false","FullName": "VAMSI SAKHINETI","Sex": "Male","Age": "29","DOB": {"Year": 1989,"Month": 3,"Day": 4},"ExpirationDate": {"Year": 2022,"Month": 3,"Day": 4},"Portrait": "","Signature": "","Alerts": {"IDAuthAlertData": [{"AlertID": "97aaa371-16b5-404e-8922-116b8afe5932","AlertName": "2D Barcode Read","AlertKey": "2D Barcode Read","AuthenticationResult": "Attention","AlertDescription": "Verified that the two-dimensional barcode on the document was read successfully."},{"AlertID": "113de986-ab10-497f-bc8b-6f1f2e105509","AlertName": "Document Classification","AlertKey": "Document Classification","AuthenticationResult": "Attention","AlertDescription": "Verified that the type of document is supported and is able to be fully authenticated."},{"AlertID": "9b53da13-250c-4c15-80b0-1fef73ff5b67","AlertName": "Visible Pattern","AlertKey": "Visible Pattern","AuthenticationResult": "Failed","AlertDescription": "Verified the presence of a pattern on the visible image.","Regions": {"Region": ["Background Waves"]}},{"AlertID": "2cbe67a7-87a8-4927-be78-ab77499e14d7","AlertName": "Visible Pattern","AlertKey": "Visible Pattern","AuthenticationResult": "Failed","AlertDescription": "Verified the presence of a pattern on the visible image.","Regions": {"Region": ["Background Bear"]}},{"AlertID": "025c450f-a358-47c9-81d5-97e3443bcaed","AlertName": "Visible Pattern","AlertKey": "Visible Pattern","AuthenticationResult": "Failed","AlertDescription": "Verified the presence of a pattern on the visible image.","Regions": {"Region": ["Seal"]}},{"AlertID": "7400df02-127d-4efa-8503-2ea977e0c100","AlertName": "Birth Date Valid","AlertKey": "Birth Date Valid","AuthenticationResult": "Passed","AlertDescription": "Verified that the birth date is valid."},{"AlertID": "08d4b99c-c147-4596-8d85-a2a52bcd862f","AlertName": "Document Expired","AlertKey": "Document Expired","AuthenticationResult": "Passed","AlertDescription": "Checked if the document is expired."},{"AlertID": "2da1438f-f5d0-40c2-be2c-9ebe7cda3ec4","AlertName": "Expiration Date Valid","AlertKey": "Expiration Date Valid","AuthenticationResult": "Passed","AlertDescription": "Verified that the expiration date is valid."},{"AlertID": "3f925e9a-6a2c-4fdc-bfdb-3cadcf470ede","AlertName": "Issue Date Valid","AlertKey": "Issue Date Valid","AuthenticationResult": "Passed","AlertDescription": "Verified that the issue date is valid."},{"AlertID": "2969372f-acbf-4055-9f8d-b81d0e494b44","AlertName": "Visible Pattern","AlertKey": "Visible Pattern","AuthenticationResult": "Passed","AlertDescription": "Verified the presence of a pattern on the visible image.","Regions": {"Region": ["Background Mountain Right"]}},{"AlertID": "42a570ad-b136-4722-8651-c6c683f7e5f7","AlertName": "Visible Pattern","AlertKey": "Visible Pattern","AuthenticationResult": "Passed","AlertDescription": "Verified the presence of a pattern on the visible image.","Regions": {"Region": ["Background Tree"]}}]},"Fields": {"IDAuthFieldData": [{"Address": " IOO FLURRY DR , .LIVERMORE. CA 94550"},{"City": "LIVERMORE"},{"PostalCode": "94550"},{"State": "CA"},{"DOB": {"Year": 1989,"Month": 3,"Day": 4}},{"DocumentClassName": "Drivers License"},{"DocumentNumber": "F7217708"},{"ExpirationDate": {"Year": 2022,"Month": 3,"Day": 4}},{"FirstName": "VAMSI"},{"FullName": "VAMSI SAKHINETI"},{"GivenName": "VAMSI"},{"IssueDate": {"Year": 2017,"Month": 7,"Day": 26}},{"IssuingStateCode": "CA"},{"IssuingStateName": "California"},{"Sex": "M"},{"Surname": "SAKHINETI"}]}}}}}]}]}]]></ee:set-variable>
+					<ee:set-variable variableName="ofacResponse"><![CDATA[%dw 2.0
+output application/json
+---
+{"Name":"VAMSI SAKHINETI","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]]></ee:set-variable>
+					<ee:set-variable variableName="pepResponse"><![CDATA[%dw 2.0
+output application/java
+---
+{"Name":"VAMSI SAKHINETI","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]]></ee:set-variable>
+					<ee:set-variable variableName="ApplicantType"><![CDATA[%dw 2.0
+output application/java
+---
+"NRA/NONNRA/USCitizen"]]></ee:set-variable>
+					<ee:set-variable variableName="verifyKBAException"><![CDATA[%dw 2.0
+output application/json
+---
+{"errorDescription": "HTTP POST on resource 'https://devopenapi.velobank.com:443/api/system/customerverification/kbaverification' failed: internal server error (500).","errorType": {"parentErrorType": {"parentErrorType": null,"namespace": "MULE","identifier": "ANY"},"namespace": "HTTP","identifier": "INTERNAL_SERVER_ERROR"}}]]></ee:set-variable>
+					<ee:set-variable variableName="fisSystemAPIException"><![CDATA[%dw 2.0
+output application/json
+---
+[{"errorLst": "0 - The NameOnCard field is required."},{"errorLst": "0 - The NameOnCard field is required."},{"errorLst": "0 - The field Zip must be a string with a maximum length of 5."},{"errorLst": "HTTP POST on resource 'https://openapiservices.eastwestbank.com:443/DepositOnboardingServiceDev/api/depositonboarding/checkingaccount' failed: bad request (400)."}]]]></ee:set-variable>
+					<ee:set-variable variableName="IsPartnerRequest"><![CDATA[%dw 2.0
+output application/java
+---
+false]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+	</sub-flow>
+	<flow name="commonMocksFlow" doc:id="e5745db0-0b9b-4a6c-b7f1-8ab510ea3f30" >
+		<logger level="INFO" doc:name="Logger" doc:id="3accb015-09d5-4742-b13f-ce97ca123e2a" />
+
+			<munit-tools:mock-when doc:name="Mock OFAC pep Sys API Response" doc:id="68f686d5-5c6f-4e1b-803e-ac1085708377" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="10982066-f8b1-4055-9a7b-fd1aa578aba3" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="pepResponse" value='#[output application/json --- {"Name":"VAMSI SAKHINETI","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					
+</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock OFAC Sys API Response" doc:id="2b3e5aa9-dcbf-4e49-a7ee-df72c8b8b07d" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="14d452ff-910e-4e56-a4bc-392f6e81a5d0" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="ofacResponse" value='#[output application/json --- {"Name":"VAMSI SAKHINETI","IsPep":null,"ResultID":0,"ResultStatus":"No Match","EntityScore":null,"RequestUUID":null,"ErrorMessageList":null}]' mediaType="application/json" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</flow>
+	<munit:test name="caserequest-test-suite-caseCreationFlowTest" description="Test" doc:id="73276a24-f526-4c25-bd9c-1d5c8be6661a" >
+		<munit:behavior>
+			<flow-ref doc:name="Flow Reference to CaseCreationMockSub_Flow" doc:id="6983a865-5b39-4ea5-9c79-36963b4b2353" name="CaseCreationMockSub_Flow"/>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Reference" doc:id="88c26e4c-1c14-49d9-a971-143175daed88" name="case-payload" />
+			<flow-ref doc:name="Flow-ref to post:\process\case\request:velo-process-api-config" doc:id="6ad8489d-c55f-4131-a8a3-bcfd4bdee91b" name="post:\process\case\request:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert for Success" doc:id="5d66ad83-0d65-4fb8-b0c6-15d0411c2e84" expression="#[payload.result.success]" is="#[MunitTools::equalTo(true)]" message="Create Operation was not a Success"/>
+			<munit-tools:assert-that doc:name="Assert that MSD request looks good" doc:id="147eacfb-3d0e-4577-ab33-dcc88cb5b048" expression="#[vars.msdTmpReq]" is="#[MunitTools::equalTo({&quot;CaseType&quot;:{&quot;Queue&quot;:&quot;KnowYourCustomer&quot;,&quot;Activity&quot;:&quot;Onboarding&quot;},&quot;CustomerInformation&quot;:{&quot;CISNumber&quot;:null,&quot;Names&quot;:null,&quot;FirstName&quot;:&quot;VAMSI&quot;,&quot;MiddleName&quot;:null,&quot;LastName&quot;:&quot;SAKHINETI&quot;,&quot;PreferredName&quot;:null,&quot;PrimaryPhoneNumber&quot;:&quot;7656065125&quot;,&quot;MobilePhoneNumber&quot;:null,&quot;DateOfBirth&quot;:&quot;1989-03-04&quot;,&quot;Addresses&quot;:{&quot;City&quot;: &quot;San Francisco&quot;,&quot;CountryCode&quot;: &quot;US&quot;,&quot;IsForeignAddress&quot;: false,&quot;State&quot;: &quot;CA&quot;,&quot;StreetAddress1&quot;: &quot;1100 Market St&quot;,&quot;StreetAddress2&quot;: &quot;null&quot;,&quot;Zip&quot;: &quot;94102-3804&quot;},&quot;ContactInformation&quot;:null,&quot;AccountType&quot;:&quot;CHK_I_PERS_PREMIER&quot;,&quot;TaxNumber&quot;:&quot;666176172&quot;,&quot;TaxIdType&quot;:&quot;SocialSecurityNumber&quot;,&quot;ForeignTaxID&quot;:null,&quot;CitizenshipCode&quot;:&quot;USA&quot;,&quot;W8CertificateType&quot;:&quot;Blank&quot;,&quot;W8CertificateDate&quot;:&quot;2018-05-16T16:55:15.467Z&quot;,&quot;PrimaryID&quot;:&quot;DL&quot;,&quot;NationalID&quot;:null,&quot;MailCode&quot;:&quot;NoSpecialAction&quot;,&quot;PrimaryLanguage&quot;:&quot;Chinese&quot;,&quot;EmailAddress&quot;:&quot;dds@dds.com&quot;,&quot;AlternateEmail&quot;:&quot;&quot;,&quot;Gender&quot;:&quot;Female&quot;,&quot;CountryofDualCitizenship&quot;:&quot;USA&quot;,&quot;EmploymentDate&quot;:&quot;2015-05-16T16:55:15.467Z&quot;,&quot;EmploymentOrSchool&quot;:&quot;&quot;,&quot;EmploymentStatus&quot;:&quot;EWB&quot;,&quot;Ethnicity&quot;:&quot;AfricanAmerican&quot;,&quot;MaritalStatus&quot;:&quot;Married&quot;,&quot;MothersMaidenName&quot;:&quot;Name&quot;,&quot;Occupation&quot;:&quot;Architecture / Engineering&quot;,&quot;Position&quot;:null,&quot;YearsOfEmployment&quot;:null,&quot;AnnualIncome&quot;:null,&quot;TotalNetWorth&quot;:null,&quot;PrimaryBanking&quot;:null,&quot;TenPercentShareHolder&quot;:null,&quot;IsPoliticallyExposedPerson&quot;:&quot;No&quot;,&quot;Identification&quot;:{&quot;IsTINAppliedFor&quot;:&quot;&quot;},&quot;NonResidentAccoountInformation&quot;:null,&quot;Partner&quot;:null},&quot;CaseDetails&quot;:{&quot;CaseNumber&quot;:null,&quot;CaseManagement&quot;:{&quot;ApplicationId&quot;:&quot;a04m000000BAcfJAAT&quot;,&quot;ApplicationStatus&quot;:&quot;Approved&quot;,&quot;ActivityStatus&quot;:&quot;Approved&quot;}},&quot;CaseAlerts&quot;:{&quot;PinPointResponse&quot;:[{&quot;status&quot;:&quot;ok&quot;,&quot;message&quot;:{&quot;infection_data&quot;:{&quot;malware&quot;:{&quot;customer_session_id&quot;:&quot;a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4&quot;,&quot;info&quot;:{},&quot;malware&quot;:[{&quot;risk_score&quot;:950,&quot;name&quot;:&quot;Simba-brcl&quot;,&quot;key&quot;:&quot;simba&quot;,&quot;id&quot;:&quot;53&quot;,&quot;signature&quot;:&quot;Simba&quot;,&quot;targeted&quot;:&quot;maybe&quot;,&quot;collector&quot;:&quot;active_detection&quot;,&quot;pattern&quot;:&quot;912569c84efc49853e1f0ed773e446e6bca5d5b91e37b12f9a82725e21a48c18&quot;},{&quot;risk_score&quot;:1000,&quot;name&quot;:&quot;Pumba-brcl&quot;,&quot;key&quot;:&quot;pumba&quot;,&quot;id&quot;:&quot;50&quot;,&quot;signature&quot;:&quot;Pumba&quot;,&quot;targeted&quot;:&quot;maybe&quot;,&quot;collector&quot;:&quot;passive_detection&quot;,&quot;pattern&quot;:&quot;912569c84efc49853e1f0ed773ekdflkjlk20024rjjkjlkjlkjkj89r98r00898&quot;}],&quot;malware_ids&quot;:{&quot;50&quot;:{&quot;risk_score&quot;:1000,&quot;targeted&quot;:&quot;maybe&quot;},&quot;53&quot;:{&quot;risk_score&quot;:950,&quot;targeted&quot;:&quot;maybe&quot;}},&quot;risk_score&quot;:1000,&quot;timestamp&quot;:&quot;2015-07-08 12:29:33&quot;,&quot;encrypted_user_id&quot;:&quot;encrypted_user_ID&quot;,&quot;encryption_key_id&quot;:&quot;company.1.20170724&quot;}},&quot;device_data&quot;:{&quot;device_key&quot;:&quot;abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234&quot;,&quot;gd_id&quot;:&quot;abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234abcd1234-12345678&quot;,&quot;is_new&quot;:true,&quot;is_new_device_confidence_level&quot;:0.75,&quot;is_new_global_device&quot;:true,&quot;v3&quot;:{&quot;screen_width&quot;:1920,&quot;doc_location&quot;:&quot;&quot;,&quot;activeX&quot;:0,&quot;dma_code&quot;:0,&quot;ip_class&quot;:&quot;A&quot;,&quot;client_time_zone&quot;:-180,&quot;remote_addr&quot;:&quot;123.123.123.123&quot;,&quot;history_length&quot;:7,&quot;js&quot;:1,&quot;accept_encoding&quot;:&quot;gzip, deflate&quot;,&quot;counter&quot;:3,&quot;machine_id&quot;:&quot;&quot;,&quot;region&quot;:&quot;05&quot;,&quot;screen_dpi&quot;:24,&quot;client_language&quot;:&quot;en-US&quot;,&quot;isp&quot;:&quot;ISP&quot;,&quot;screen_height&quot;:1080,&quot;first_time&quot;:&quot;2017-02-08 09:27:40&quot;,&quot;agent_key&quot;:&quot;&quot;,&quot;platform&quot;:&quot;Win32&quot;,&quot;cpu&quot;:&quot;Win32&quot;,&quot;ip_time_zone&quot;:120,&quot;digest&quot;:&quot;abcd1234abcd1234abcd1234abcd1234abcd1234&quot;,&quot;screen_touch&quot;:0,&quot;fonts&quot;:&quot;800648E87FC13E00BBAA18547FEC9690&quot;,&quot;global_cookie&quot;:&quot;jgqlqlz28xaqegfzamk&quot;,&quot;file_upload_indicator&quot;:0,&quot;mimes&quot;:&quot;4118237596&quot;,&quot;file_upload&quot;:1,&quot;longitude&quot;:34.764701843262,&quot;navigator_props&quot;:3695045678,&quot;browser_version&quot;:&quot;41.0.2228&quot;,&quot;client_charset&quot;:&quot;UTF-8&quot;,&quot;last_access&quot;:&quot;2017-02-08 09:27:40&quot;,&quot;browser&quot;:&quot;Chrome&quot;,&quot;charset&quot;:1,&quot;accept_language&quot;:&quot;en-US,en;q=0.5&quot;,&quot;latitude&quot;:32.067798614502,&quot;org&quot;:&quot;ISP&quot;,&quot;city&quot;:&quot;Tel Aviv-yafo&quot;,&quot;first_access&quot;:&quot;2017-02-08 09:27:40&quot;,&quot;country&quot;:&quot;ISR&quot;,&quot;continent_code&quot;:&quot;AS&quot;,&quot;country_name&quot;:&quot;&quot;,&quot;country_code&quot;:&quot;IL&quot;,&quot;country_code3&quot;:&quot;ISR&quot;,&quot;post_code&quot;:&quot;&quot;,&quot;x_forwarded_for&quot;:&quot;123.123.123.123&quot;,&quot;id&quot;:876137,&quot;pinpoint_session&quot;:&quot;00009576042079220976&quot;,&quot;hashed_user_id&quot;:&quot;N/A&quot;,&quot;os&quot;:&quot;Windows 7&quot;,&quot;user_agent&quot;:&quot;Mozilla&quot;,&quot;application&quot;:&quot;66640095&quot;,&quot;cookie&quot;:&quot;0.2157162984033204&quot;,&quot;plugins&quot;:&quot;2075505175&quot;,&quot;area_code&quot;:0,&quot;accept&quot;:&quot;image/png,image/*;q=0.8,*/*;q=0.5&quot;,&quot;business&quot;:&quot;trusteerqa&quot;}},&quot;recommendation&quot;:{&quot;recommendation&quot;:&quot;allow&quot;,&quot;resolution_id&quot;:&quot;abcdefghijklmnopqrstuvwxyzabcdef&quot;,&quot;reason_id&quot;:-1,&quot;reason&quot;:&quot;reason text&quot;,&quot;risk_score&quot;:0},&quot;risk_engine_recommendation&quot;:{&quot;risk_score&quot;:1,&quot;reason_id&quot;:1,&quot;recommendation&quot;:&quot;allow_login_restrict&quot;,&quot;reason&quot;:&quot;reason text&quot;},&quot;customer_session_id&quot;:&quot;&lt;CSID&gt;&quot;}}],&quot;TrueIDResponse&quot;:null,&quot;OFACResponse&quot;:{&quot;Name&quot;:&quot;VAMSI SAKHINETI&quot;,&quot;IsPep&quot;:null,&quot;ResultID&quot;:0,&quot;ResultStatus&quot;:&quot;No Match&quot;,&quot;EntityScore&quot;:null,&quot;RequestUUID&quot;:null,&quot;ErrorMessageList&quot;:null},&quot;PEPResponse&quot;:{&quot;Name&quot;:&quot;VAMSI SAKHINETI&quot;,&quot;IsPep&quot;:null,&quot;ResultID&quot;:0,&quot;ResultStatus&quot;:&quot;No Match&quot;,&quot;EntityScore&quot;:null,&quot;RequestUUID&quot;:null,&quot;ErrorMessageList&quot;:null},&quot;InstantIDResponse&quot;:null,&quot;TruliooAuthenticationResponse&quot;:null,&quot;TruliooVerificationResponse&quot;:null,&quot;IdAuthentication&quot;:null},&quot;Exceptions&quot;:[{&quot;Source&quot;:&quot;TrueIDResponse&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;OFACResponse&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;PEPResponse&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;PinpointResponse&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;InstantIDResponse&quot;,&quot;Error&quot;:&quot;HTTP POST on resource 'https://devopenapi.velobank.com:443/api/system/customerverification/kbaverification' failed: internal server error (500).&quot;},{&quot;Source&quot;:&quot;TruliooAuthenticationResponse&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;TruliooVerificationResponse&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;PromoCode&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;Synergy&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;FIS&quot;,&quot;Error&quot;:&quot;0 - The NameOnCard field is required. \r\n 0 - The NameOnCard field is required. \r\n 0 - The field Zip must be a string with a maximum length of 5. \r\n HTTP POST on resource 'https://openapiservices.eastwestbank.com:443/DepositOnboardingServiceDev/api/depositonboarding/checkingaccount' failed: bad request (400).&quot;},{&quot;Source&quot;:&quot;Okta&quot;,&quot;Error&quot;:&quot;&quot;},{&quot;Source&quot;:&quot;Generic&quot;,&quot;Error&quot;:&quot;&quot;}]})]"/>
+			<munit-tools:assert-that doc:name="Assert for Case Creation" doc:id="2fde779b-9a05-4981-8d88-e0c724851470" expression="#[payload.data.CaseNumber]" is="#[MunitTools::notNullValue()]" message="Case Not created"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

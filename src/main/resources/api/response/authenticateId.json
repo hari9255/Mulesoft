@@ -1,0 +1,14 @@
+{
+  "data": [
+      {
+          "UserName": "Bidun",
+          "AuthToken": "0010E0002934",
+          "AccountNumber": "0010E0002934"
+      }
+  ],
+  "result": {
+      "success": true,
+      "code": 200,
+      "message": "Success Message"        
+  }
+}

@@ -1,0 +1,250 @@
+environment: "prd"
+http:
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net" 
+  port: "443"
+  listener:
+    port: "8091"
+    basePath: "/onb"
+  request:
+    timeout: "35000" 
+    
+json:
+  logger:
+    application:
+      name: ${project.artifactId}
+      version: ${project.version}
+      
+analytics:
+  host: "eastwestbank.sc.omtrdc.net"
+  endpoint: "b/ss//6/"
+  REPORTSUITEID: "eastwestbankewbdesktopprod1"
+
+okta-process:
+  #host: "velo-olb-process-api.us-w2.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  endpoints:
+   #userProfile: "olb/api/process/iam/users/{userId}"
+   userProfile: "api/system/iam/users/{userId}"
+
+okta:
+  #host: "velo-okta-system-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  endpoints:
+    user: "api/system/iam/users"
+    factorsms: "api/system/iam/factors/sms"
+    factorsmsverify: "api/system/iam/factors/sms/verify"
+    challenge: "api/system/iam/challenge"
+    verify: "api/system/iam/verify"
+  
+  
+promotion:
+  #host: "velo-systemproductpromo-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  update:    
+    path: "api/system/promotions/{promocode}"
+  verify:
+    path: "api/system/promotions/{promocode}/verify"
+  
+
+melissa:
+  #host: "velo-addrdocs-systerm-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  address:
+    path: "api/system/addressvalidator/addressverify"
+    
+synergy:
+  #host: "velo-addrdocs-systerm-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  docsubmit:
+    path: "api/system/docrepository/sendsubmission"   
+  
+#Product/Mortgage Rate
+product:
+  #host: "velo-systemproductpromo-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  path: "api/system/products"
+  
+  
+customerVerificationFlow:
+  #host: "velo-customer-verification-system-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  trueid: 
+    path: "api/system/customerverification/idauthentication"
+  kbaVerification:
+    path: "api/system/customerverification/kbaverificationcvi"
+  kbaVerificationPassed:
+    path: "api/system/customerverification/kbaverificationcvi"
+  kbaVerificationAttention:
+    path: "api/system/customerverification/kbaverification"
+  ofacVerification:
+    path: "api/system/customerverification/ofacverification_v2"
+  getinstantid:
+    path: "api/system/customerverification/idverification"
+    #Deprecated Does Not Return KBA2
+    #path: "api/system/customerverification/idverification"
+  instantIdPassed:
+    path: "api/system/customerverification/idverification"
+  instantIdAttention:
+    path: "api/system/customerverification/idverification"
+  truliooIdAuth:
+    path: "api/system/customerverificationnra/idauthentication"
+  truliooIdVerification:
+    path: "api/system/customerverificationnra/idverification"
+      
+mortgage:
+  #host: "velo-onboarding-system-api-v1.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  submitapplication:
+    path: "api/system/mortgage/submitapplication"
+  coBorrowerSubmitApplication:
+    path: "api/system/mortgage/applications/{applicationid}/borrowers"
+
+caseApproved:
+  #host: "velo-onboarding-system-api-v1.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  checking:
+    path: "api/system/corebanking/application/checking"
+
+fis:
+  #host: "velo-onboarding-system-api-v1.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  application:
+    checking: "api/system/corebanking/application/checking"
+    saving: "api/system/corebanking/application/savings"
+    misc: "api/system/corebanking/miscaccounts"
+    cupcard: "api/system/cupcards"
+    
+cis:
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  create:
+    path: "api/system/customers/create" 
+        
+caseSynergy:
+  #host: "velo-addrdocs-systerm-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  application:
+    path: "api/system/docrepository/sendsubmission"
+    
+caseUpdatePromocode:
+  #host: "velo-systemproductpromo-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  application:
+    path: "api/system/promotions/{promocode}"
+    
+case:
+  #host: "velo-systemproductpromo-api.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  submitCaseRequest:
+    path: "api/system/crm/case"
+    #path: "api/system/crm/dev/case"
+    
+terafina:
+  #host: "apply.velobank.com"
+  host: "eastwestbank.secure.force.com"
+  caseUpdate:
+    path: "services/apexrest/CaseUpdate/v1"
+
+estatement:
+  createInfoImage:
+    path: "api/system/statement/user/{cisnumber}"
+  enrollUserEstatement:
+    path:  "api/system/statement/user/{cisnumber}/accounts"  
+    
+pinpoint:
+  #host: "velo-onboarding-system-api-v1.cloudhub.io"
+  host: "internal-lb-prd-pvt-velobank-api.lb.anypointdns.net"
+  trust:
+    path: "api/system/pinpoint/trust"
+
+partnerCaseUpdate:
+  host: "openapi.velobank.com"
+  path: "api/experience/case/approved"
+    
+variables:    
+  caseStatus:
+    PENDING: "Pending"
+    APRROVED: "Approved"
+    DECLINE: "Declined"
+  ofac:
+    SEARCH_NAME: "Digital Banking"
+    SEARCH_NAME_PEP: "Digital Banking-PEP"
+    ENTITY_TYPE: "Individual"
+  events:
+    BBAE:
+      DECLINE_EVENTS: "event153"
+      APPROVED_EVENTS: "event152"
+    WEBULL:
+      DECLINE_EVENTS: "event157"
+      APPROVED_EVENTS: "event156"
+  THREAT_INTELLIGENCE_PASS_REASONS: ["allow"]
+  THREAT_INTELLIGENCE_FAIL_REASONS: ["deny","alert","authenticate","allow_login_restrict"]
+  fis:
+    TYPE:
+      "Driver License": "VDL"
+      "Passport": "VPP"
+      "NationalId": "VNTID"      
+      "W8": ""
+      "Terms and Conditions": ""
+      "Other": ""  
+api:
+  id: "15506188"
+  
+Settings: 
+  AccountNumber: "11983"
+  Mode: "live"
+  ConversationId: "31000102080715"
+  Locale: "en_US"
+  
+InternalOauth:
+  host: "https://sso-test.velobank.com/oauth2/ausf2c18qqtmGHyX80h7/v1/token"
+  client_id: "0oai59s73dXV9bUbz0h7"
+  client_secret: "s4Q2KYeb34TI8im5H_tmiSETbMBDJEWwDtku5LmE"
+  grant_type: "client_credentials"
+  
+oauth:
+  grant_type: password
+  client_id: "3MVG9CEn_O3jvv0wZC93CYCwP6Tp4z2pcKV.3s1mu6o51U2RR0TMwipBMQTj764tFC4CkCdq.Xq4F1kP6xGg."
+  client_secret: "6016549115816472176"
+  token_url: "https://login.salesforce.com/services/oauth2/token"
+  username: "api.user@eastwestbank.com"
+  password: "Velo@EWB$1Is4eOupi23LLVJETjKgbp4oK"
+  host: "login.salesforce.com"
+  path: "/services/oauth2/token"
+  expiry_duration_sec: "230"
+
+PARTNER:
+  VELO:
+    CATEGORY_CODE: "903"
+  WEBULL:
+    PARTNER_NAME: "WEBULL"
+    PARTNER_CODE: "31000112989176"
+    USER_CODE: "W"
+    CATEGORY_CODE: "822"
+  BBAE:
+    PARTNER_NAME: "BBAE"
+    PARTNER_CODE: "31000112989075"
+    USER_CODE: "B"
+    CATEGORY_CODE: "821"
+
+IDAUTH:
+  SETTINGS:
+    ACCOUNT: "11993"
+    WORKFLOW: "EWB_TrueID_Online_Flow"
+    MODE: "live"
+    
+CARD:
+  ISCARDGENERATED: "false"
+  
+ENROLMENT:
+  USERTYPE: "Personal"
+  ACCOUNTTYPE: "NOW"
+  NOTIFYTYPE: "Email"
+  PAPERLESSSTATUS:
+    NEWDELIVERYPREF: "Paperless"
+    STATEMENTTYPE: "Default"
+  isEnrollEStatement: "true"
+  
+TIMEOUT:
+  ONEMINUTE: "60000"
+  ONEHALFMINUTE: "90000"
+  TWOMINUTE: "120000"

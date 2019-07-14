@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="NonNRASubmission" doc:id="80dc1af8-dd03-4ac6-8721-a55701d65df6" >
+		<!-- <flow-ref doc:name="getcachedataandprocessSub_Flow" doc:id="ba45b180-967f-4e42-894d-ad9ca0e72d12" name="getcachedataandprocessSub_Flow"/>  -->
+		<flow-ref doc:name="getDataFromPayloadAndProcessSub_Flow" doc:id="4a614af1-7d67-43ea-bac5-e79b7b1c5f7f" name="getDataFromPayloadAndProcessSub_Flow"/>
+		<set-variable value="#[payload]" doc:name="SetOriginalPayload" doc:id="bdb24a00-f1f1-446f-b0b8-b1efbaf50679" variableName="originalPayload" />
+		<scatter-gather doc:name="Scatter-Gather" doc:id="e5733349-4120-4966-bff5-65b1f5c5426a" >
+			<route >
+				<flow-ref doc:name="ofacCallSubFlow" doc:id="77754a50-f189-4fc1-842c-83c4f19ef699" name="ofacCallSubFlow"/>
+			</route>
+			<route >
+				<flow-ref doc:name="verifyKBASystemApiCallSubFlow" doc:id="8bbd6314-10f4-4d66-85f4-6fca99af3b28" name="verifyKBASystemApiCallSubFlow"/>
+			</route>
+		</scatter-gather>
+		<set-payload value="#[vars.originalPayload]" doc:name="Set Payload" doc:id="8e77957e-5621-454e-966c-4eb7e4364af3" />
+		<flow-ref doc:name="idauthcheckFlow" doc:id="4c32854a-50da-4e7b-89b3-713916ebd3a9" name="idauthcheckFlow" />
+		<!-- <logger level="INFO" doc:name="Logger" doc:id="abaa416d-7cc1-4432-b1ea-bf1a2370825a" message="Original Payload #[payload]"/> -->
+		<set-variable value="#[payload.CustomerInformation.PEP]" doc:name="SetPEP" doc:id="fa253e83-2c37-4717-bf49-d0c01f53bc3d" variableName="pepFlag"/>
+		<set-variable value="#[vars.ofacResponse.IsCheckPass]" doc:name="ofac Response" doc:id="5c331484-1884-4182-b2dc-5fa2d1cf5951" variableName="ofacCheck"/>
+		<set-variable value="#[vars.instantIdResponse.Products[1].ProductStatus]" doc:name="KBA Answer" doc:id="09034411-8749-4aff-9b3a-10e3075ce653" variableName="kbaAns"/>
+		<ee:transform doc:name="InstantIdResponse" doc:id="f3dee878-ac8c-4ff9-85b7-2946dee04b88">
+							<ee:message>
+							</ee:message>
+							<ee:variables >
+								<ee:set-variable variableName="instantIdCaseResponse" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.ApplicantType == "NONNRA" and vars.isCaseApprovedFlow == "false" and null != vars.instantIdResponse) {
+		Status: {
+			ConversationId: vars.instantIdResponse.Status.ConversationId default null,
+			RequestId: vars.instantIdResponse.Status.RequestId default null,
+			TransactionStatus:   if(vars.instantIdResponse.Status.TransactionStatus == "passed" and vars.instantIdResponse.Status.TransactionReasonCode.Description == "PASS")
+									"Passed"
+								else if (vars.instantIdResponse.Status.TransactionStatus == "passed" and vars.instantIdResponse.Status.TransactionReasonCode.Description == "PENDING")
+									"Passed"
+								else if (vars.instantIdResponse.Status.TransactionStatus == "passed" and vars.instantIdResponse.Status.TransactionReasonCode.Description == "FAIL")
+									"Passed"
+								else if (vars.instantIdResponse.Status.TransactionStatus == "failed" and vars.instantIdResponse.Status.TransactionReasonCode.Description == "FAIL")
+									"Failed"
+								else if (vars.instantIdResponse.Status.TransactionStatus == "passed" and null == vars.instantIdResponse.Status.TransactionReasonCode.Description)
+									"Passed"
+								else "Failed",
+			Reference: vars.instantIdResponse.Reference	,
+			KBA:  if(null != vars.instantIdResponse.Status.TransactionReasonCode.Description)
+					vars.instantIdResponse.Status.TransactionReasonCode.Description
+				  else
+				  	"Unknown"
+			
+		},		
+		Products: vars.instantIdResponse.Products map ( product , indexOfProduct ) -> product,
+		PassThroughs: [
+		  {
+			"Type": if (null != vars.instantIdResponse.PassThroughs[0].Type)
+						vars.instantIdResponse.PassThroughs[0].Type 
+					else "",
+			"Data": if (null != vars.instantIdResponse.PassThroughs[0].Data)
+						read(vars.instantIdResponse.PassThroughs[0].Data, "application/json")
+					else ""	    		 
+			}
+		]
+  }
+  else {}]]></ee:set-variable>
+							</ee:variables>
+						</ee:transform>
+		<set-variable value="#[vars.instantIdResponse.Status.TransactionStatus]"
+							doc:name="SetInstantIDtransactionStatus" doc:id="e8fcacc7-8a93-46b8-8520-e6cfc1ff5ca5"
+							variableName="instantIDtransactionStatus" />
+
+						<set-variable value="#[vars.instantIdResponse.Status.TransactionReasonCode.Description]" doc:name="SetInstantIDtransactionReasonCode" doc:id="88ee6574-f8bb-45e9-a147-2e627486f185" variableName="instantIDtransactionReasonCode"/>
+		<choice doc:name="Choice" doc:id="43f8fc1e-af19-426d-8e11-d0e448b4bef9" >			
+			<when expression="vars.selEnv != 'prd' and vars.tmpPass == true" >
+				<set-variable value="${variables.caseStatus.APRROVED}" doc:name="SetCaseStatus" doc:id="1012822e-307d-47ed-a221-e181b31bb6f6" variableName="caseStatus"/>
+				<flow-ref doc:name="updateCoreSystemFlow" doc:id="4d74ac06-dcc6-4ba2-aef2-6dbec87881da" name="updateCoreSystemFlow"/>			
+			</when>
+			<when expression="not isEmpty(vars.exceptionFlag)">
+				<logger level="INFO" doc:name="ExceptionCaseCreation" doc:id="ca2e0cb7-8600-4bf9-b91d-b0eaed8d4971" message="Create a Case Request for Exception found Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="bf89b94c-c7f4-4ebf-b395-3abf88e9ac24" variableName="caseStatus" />
+				<flow-ref doc:name="caseCreationFlow" doc:id="aac65b19-485d-4d13-a555-3cf331294f8a" name="caseCreationFlow"/>
+			
+			</when>
+			<when expression="#[vars.instantIDtransactionStatus =='pending']">
+                           <logger level="INFO" doc:name="Return KBA2 Question(Bonus Question)" message="Returning KBA2 Question(Bonus Question) Request UUID #[correlationId] Flow Name #[flow.name]"></logger>
+                           <ee:transform doc:name="Transform Message" doc:id="a4fe89f7-5575-4147-8f67-4b2d6b65963f" >
+                                  <ee:message >
+                                  </ee:message>
+                                  <ee:variables >
+                                         <ee:set-variable variableName="kba2Response" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+       ApplicationId: payload.ApplicationId,
+       ApplicationStatus: "Pending",
+       InstantIdResponse: vars.instantIdResponse,     
+       PinpointResponse : payload.PinPointResponse
+}]]></ee:set-variable>
+                                  </ee:variables>
+                           </ee:transform>
+                           <set-payload value="#[vars.kba2Response]" doc:name="SetKba2Response" doc:id="15d8eb04-a4a1-446e-a3a0-444fdc2bc99f" mimeType="application/json"/>
+                           <logger level="INFO" doc:name="KBA2 Payload" doc:id="712cdc4f-c0e0-4f96-b251-ebb8dc635d64" message="KBA2 or Bonus Response :::::::::::::::: #[payload] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+                           <flow-ref doc:name="global-return-response-build" doc:id="620e10fe-510f-44ce-b2d3-7a69e941863f" name="global-return-response-build"/>                          
+                     
+			</when>
+			
+			<when expression="#[vars.pepFlag=='Yes' or vars.pepResponse.ResultStatus == &quot;Match&quot; or vars.ofacResponse.ResultStatus == &quot;Match&quot;]" >
+				<logger level="INFO" doc:name="Logger" doc:id="48a939ba-15c6-47b3-8f73-184435b89784" message="Name Screening or PEP failed"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="413d228b-958c-4f6e-82b1-68b576cf1c2c" variableName="caseStatus"/>
+				<flow-ref doc:name="caseCreationFlow" doc:id="60e8cd91-b026-43cb-b556-7c5294a94c31" name="caseCreationFlow"/>
+			</when>
+			<when expression="#[vars.docAuthResultFlag =='Failed']" >
+				<logger level="INFO" doc:name="ID Auth Check Flow" doc:id="2ee52892-3d59-4462-8523-0bb2b261a213" message="ID Auth Returned  #[vars.docAuthResultFlag] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="705f8cc7-4243-4460-9824-0300ab9bcb4d" variableName="caseStatus"/>
+				<flow-ref doc:name="caseCreationFlow" doc:id="bdffa39f-d7a7-4343-a5ef-3e97e1f703b8" name="caseCreationFlow"/>			
+			</when>
+			<when expression="#[vars.instantIDtransactionStatus == 'passed' and vars.transactionReasonCodeDesc == 'FAIL']" >
+				<logger level="INFO" doc:name="KBA (Instant Id Verification) TransactionStatus is Failed" doc:id="4655d5f8-6d65-4d6b-8581-cbff8b7f5b33" message="KBA (Instant Id Verification) TransactionStatus is #[vars.kbaTransactionStatus] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<set-variable value="${variables.caseStatus.DECLINE}" doc:name="SetCaseStatusToDeclined" doc:id="e75e4160-c614-407f-9f64-7d74a5c8802b" variableName="caseStatus"/>
+				<set-variable value="#[vars.kbaResponse.Information.Description[0]]" doc:name="KBA Response Description" doc:id="4f04325e-bb17-46a3-ab8e-24f16953c009" variableName="kbaTransactionException"/>
+				<ee:transform doc:name="Transform Message" doc:id="fde8fab0-2b4f-4c36-b51a-11335d11a56b">
+					<ee:message>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="kbaTransactionStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+if(vars.kbaTransactionStatus == 'failed' and vars.transactionReasonCodeDesc == 'FAIL')
+	"-"
+else if (vars.kbaTransactionStatus == 'passed' and vars.transactionReasonCodeDesc == 'FAIL')
+	"Failed"
+else 
+	"-"
+]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="791176cb-144f-4297-952d-3fc343369186" message="KBA (Instant Id Verification) Response Description is #[vars.kbaResponse.Information.Description[0]] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<flow-ref doc:name="caseCreationFlow" doc:id="6cbe4723-0054-4e60-bef1-593761af7690" name="caseCreationFlow"/>			
+		    </when> 
+			<!-- <when expression="#[vars.kbaTransactionStatus =='passed' and vars.transactionReasonCodeDesc == 'PENDING']" >
+				<logger level="INFO" doc:name="KBA (Instant Id Verification) TransactionStatus is Pending" doc:id="7d1bc945-a0ef-481d-ba8e-536f4054c4e4" message="KBA (Instant Id Verification) TransactionStatus is #[vars.kbaTransactionStatus] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<json-logger:logger doc:name="KBA (Instant Id Verification) TransactionStatus is Pending" doc:id="30633ac7-c1c0-4aad-b045-a6f206aa4214" config-ref="JSON_Logger_Config" message="KBA (Instant Id Verification) TransactionStatus is Pending">
+					<json-logger:content ><![CDATA[#[output application/json 
+{
+ 	kbaTransactionStatus: vars.kbaTransactionStatus
+}]]]></json-logger:content>
+				</json-logger:logger>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="f08736d1-0a0f-49ae-abbf-ca7638e9a3f5" variableName="caseStatus"/>
+				<set-variable value="#[vars.kbaResponse.Information.Description[0]]" doc:name="KBA Response Description" doc:id="d263fef1-34e4-4c6f-9910-ee1c7bb1b613" variableName="kbaTransactionException"/>
+				<logger level="INFO" doc:name="Logger" doc:id="20dfcee4-db41-4ffd-84a8-63b31140f007" message="KBA (Instant Id Verification) Response Description is #[vars.kbaResponse.Information.Description[0]] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<json-logger:logger doc:name="KBA (Instant Id Verification) Response Description" doc:id="6b6b3f3f-dd88-4d74-9a4d-08cb92c59ab8" config-ref="JSON_Logger_Config" message="KBA (Instant Id Verification) Response Description">
+					<json-logger:content ><![CDATA[#[output application/json 
+{
+ 	kbaResponse : vars.kbaResponse.Information.Description[0]
+}]]]></json-logger:content>
+				</json-logger:logger>
+				<flow-ref doc:name="caseCreationFlow" doc:id="5f6dd0c6-7364-4097-bf21-dd03a1c54d35" name="caseCreationFlow"/>			
+		    
+</when>  -->
+		    <!-- <when expression="vars.kbaTransactionStatus =='passed' and vars.kbaTransactionReasonCode == false" > -->
+		    <when expression="#[vars.instantIDtransactionStatus =='passed' and (vars.instantIDtransactionReasonCode == 'PENDING' or  vars.instantIDtransactionReasonCode == null )]" >
+				<logger level="INFO" doc:name="KBA 2 Answer failed" doc:id="49ab8424-8a60-4826-8e9b-7704cd8969ff" message="#[vars.ApplicationId] KBA 2 Wrongly Answered TransactionStatus is #[vars.kbaTransactionStatus] and TransactionReasonCode is #[vars.kbaTransactionReasonCode] and #[vars.kbaResponseStatus.TransactionReasonCode]"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatusToPending" doc:id="c209a47d-621b-41bb-aae2-1f1e7de4161b" variableName="caseStatus"/>
+				<set-variable value="#[vars.kbaResponse.Information.Description[0]]" doc:name="KBA Response Description" doc:id="9436636e-1dc5-489d-a180-b1605ae194ab" variableName="kbaTransactionException"/>
+				<set-variable value="Pending" doc:name="SetKbaTransactionStatus" doc:id="200b6601-c0a7-4c84-b802-4959166805cf" variableName="instantIDtransactionReasonCode"/>
+				<flow-ref doc:name="caseCreationFlow" doc:id="077ed347-277c-4bb7-bc16-51336ea8199c" name="caseCreationFlow"/>			
+		    
+			</when>	
+			<when expression="#[vars.instantIDtransactionStatus =='failed' and (vars.instantIDtransactionReasonCode == 'FAIL' or vars.instantIDtransactionReasonCode == '' or vars.instantIDtransactionReasonCode == null )]" >
+				<logger level="INFO" doc:name="KBA 2 Answer failed" doc:id="49ab8424-8a60-4826-8e9b-7704cd8969ff" message="#[vars.ApplicationId] KBA 2 Wrongly Answered TransactionStatus is #[vars.kbaTransactionStatus] and TransactionReasonCode is #[vars.kbaTransactionReasonCode] and #[vars.kbaResponseStatus.TransactionReasonCode]"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatusToPending" doc:id="c209a47d-621b-41bb-aae2-1f1e7de4161b" variableName="caseStatus"/>
+				<set-variable value="#[vars.kbaResponse.Information.Description[0]]" doc:name="KBA Response Description" doc:id="9436636e-1dc5-489d-a180-b1605ae194ab" variableName="kbaTransactionException"/>
+				<set-variable value="Pending" doc:name="SetKbaTransactionStatus" doc:id="200b6601-c0a7-4c84-b802-4959166805cf" variableName="instantIDtransactionReasonCode"/>
+				<flow-ref doc:name="caseCreationFlow" doc:id="077ed347-277c-4bb7-bc16-51336ea8199c" name="caseCreationFlow"/>			
+		    
+			</when>			
+			<!-- <when expression='#[vars.ofacResponse.ResultStatus == "Match"]'>
+				<logger level="INFO" doc:name="Name screening failed" doc:id="16e064eb-adbd-47cc-b6ed-2c6051447d85" message="#[vars.ApplicationId] Name screening failed" />
+				<set-variable value="${variables.caseStatus.PENDING}" variableName="caseStatus"
+					doc:name="SetCaseStatusToPending" doc:id="ed239c99-d9cc-4b0f-9e76-703ff366b7a5" />
+				<flow-ref doc:name="caseCreationFlow" doc:id="b462e58c-19df-47d0-8c2d-162a96ad8f91" name="caseCreationFlow" />
+			</when> -->
+			<when expression="#[vars.instantIDtransactionStatus=='passed' and vars.instantIDtransactionReasonCode == 'PASS' and vars.pepFlag=='No' and (vars.pepResponse.ResultStatus == &quot;No Match&quot; or vars.pepResponse.ResultStatus == &quot;Automatic False Positive&quot;) and  vars.ofacResponse.ResultStatus == &quot;No Match&quot;]" >
+				<logger level="INFO" doc:name="Request Flow is from Pre Submit " doc:id="63207cf3-b5af-41d1-a581-391163638e1e" message="Request Flow is from Pre Submit Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<set-variable value="${variables.caseStatus.APRROVED}" doc:name="SetCaseStatus" doc:id="c41e911a-8024-4c77-add2-2cf927b14515" variableName="caseStatus"/>
+				<flow-ref doc:name="updateCoreSystemFlow" doc:id="8e0ad357-a07e-46bb-a05f-a78510355f5b" name="updateCoreSystemFlow" />
+			</when>
+			<!-- <when expression="#[vars.instantIDtransactionStatus =='passed' and vars.instantIDtransactionReasonCode == 'PASS' and vars.pepFlag=='No' and (vars.pepResponse.ResultStatus == &quot;No Match&quot; or vars.pepResponse.ResultStatus == &quot;Automatic False Positive&quot;) and  vars.ofacResponse.ResultStatus == &quot;No Match&quot;]" >
+				<logger level="INFO" doc:name="Request Flow is from Submit With Approved Case status" doc:id="6250bf99-8f76-4c64-a833-f3fde8274e33" message="Request Flow is from Submit With Approved Case status Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<set-variable value="${variables.caseStatus.APRROVED}" doc:name="SetCaseStatusApproved" doc:id="e1c37c33-4d26-41ae-afc3-9fb2aeb9c11d" variableName="caseStatus"/>
+				<set-variable value="Passed" doc:name="SetkbaTransactionStatus" doc:id="2db834f8-d819-469c-b2ad-b2a67e079cb7" variableName="kbaTransactionStatus"/>
+				<flow-ref doc:name="updateCoreSystemFlow" doc:id="505296af-2071-4304-92cf-3794984cfc49" name="updateCoreSystemFlow" />			
+			</when> -->
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="7d3e1ef4-d1f3-48e4-b861-31d46d2104e7" message="Create a Case Request Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="fedc2a21-a50d-449a-8304-a9c270e424de" variableName="caseStatus"/>
+				<set-variable value="null" doc:name="Set Variable" doc:id="2df76097-075e-48c1-916e-38b414dc5734" variableName="kbaTransactionStatus"/>
+				<flow-ref doc:name="caseCreationFlow" doc:id="db54b54a-4591-4421-8e53-d78fb0ad6ad1" name="caseCreationFlow"/>
+			</otherwise>
+		</choice>
+		<!-- <logger level="INFO" doc:name="Submit Flow Response" doc:id="b37e56a8-56f1-4621-8a28-ec8e4d71db28" message="NonNRA Final Submission Response for Application Id #[vars.ApplicationId] :::::::::::::::::::: #[payload] Request UUID #[correlationId] Flow Name #[flow.name]"/> -->
+		<json-logger:logger doc:name="NonNRA Final Submission Response" doc:id="737147d5-b75d-4ff4-8144-4bbcc366eca7" config-ref="JSON_Logger_Config" message="NonNRA Final Submission Response" priority="DEBUG" tracePoint="PRINT">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	NonNRAResponse: payload
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ccff1b93-4bb6-4976-82f7-db91764fda5b" >
+				<flow-ref doc:name="generic-exception" doc:id="e3b35d6a-be8e-44b7-8f97-ae0b32b027b9" name="generic-exception"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

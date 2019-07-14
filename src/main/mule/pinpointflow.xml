@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="pinPointFlow" doc:id="ede41bb6-b332-4255-bb85-4a6b61047288">
+		<!-- <logger level="INFO" doc:name="PinPoint Request"
+			doc:id="dfb40d21-aec0-4a3b-ba7d-864d2872991c" message="PinPoint Request for Application Id #[vars.ApplicationId] Request UUID #[correlationId] Flow Name #[flow.name] :::::::::::::::::: #[vars.pinpointRequest] " /> -->
+		<!-- <http:request method="POST" doc:name="PinpointRequest" doc:id="bad45c7e-8314-43ad-893e-ace9630a5536" 
+			config-ref="HTTP_Request_configuration_pinpoint" path="${pinpoint.trust.path}" 
+			target="pinpointResponse"> <http:body><![CDATA[#[vars.pinpointRequest]]]></http:body> 
+			<http:body><![CDATA[#[vars.pinpointRequest]]]></http:body> </http:request> -->
+
+		<json-logger:logger doc:name="PinPoint Request Payload" doc:id="a12a94e8-14c4-42ac-b2a1-dea4a8dc632a" config-ref="JSON_Logger_Config" message="PinPoint Request Payload" tracePoint="PRINT" priority="DEBUG" endpoint="POST:/${pinpoint.trust.path}">
+			<json-logger:content ><![CDATA[#[output application/json ---
+{
+	pinpointRequest: vars.pinpointRequest,
+	ApplicationId:vars.ApplicationId
+}]]]></json-logger:content>
+		</json-logger:logger>
+		<try doc:name="Try" doc:id="b698f8d6-1b14-470b-a0a1-89923132f83c">
+			<json-logger:logger doc:name="Pinpoint Before Request" doc:id="99e2d874-897a-4ba4-966f-ca0c9848022c" config-ref="JSON_Logger_Config" tracePoint="BEFORE_REQUEST" endpoint="POST:/${pinpoint.trust.path}" message="Pinpoint Before Request"/>
+			<http:request method="POST" doc:name="PinpointRequest"
+				doc:id="bad45c7e-8314-43ad-893e-ace9630a5536" config-ref="HTTPS_System_API_Config"
+				path="/${pinpoint.trust.path}" target="pinpointResponse" responseTimeout="${http.request.timeout}">
+				<http:body><![CDATA[#[vars.pinpointRequest]]]></http:body>
+				<http:headers ><![CDATA[#[output applicaton/java
+---
+{
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+			</http:request>
+			<!-- <logger level="INFO" doc:name="Pinpoint Response" doc:id="69f82737-72db-4fcd-ac28-8730eec48958" message="Pinpoint Response for Application Id #[vars.ApplicationId] Request UUID #[correlationId] Flow Name #[flow.name] :::::::::::::::::::  #[vars.pinpointResponse]" /> -->
+			<logger level="INFO" doc:name="Logger" doc:id="347c2cf6-2841-44ce-a110-5a3882c18484" message="Pinpoint response::::: #[vars.ApplicationId]  ::::::::::::::: #[vars.pinpointResponse]"/>
+			<json-logger:logger doc:name="Pinpoint After Request" doc:id="c6224eac-5390-4694-bfed-8838b7badbd8" config-ref="JSON_Logger_Config" tracePoint="AFTER_REQUEST" endpoint="POST:/${pinpoint.trust.path}" status="#[vars.'httpStatus']" message="Pinpoint After Request"/>
+			<json-logger:logger doc:name="Pinpoint Response" doc:id="10f6b381-36ac-4c78-a73e-0914d2c59dc3" config-ref="JSON_Logger_Config" message="Pinpoint Response" tracePoint="PRINT" priority="DEBUG" endpoint="POST:/${pinpoint.trust.path}">
+				<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	
+	pinpointResponse: vars.pinpointResponse,
+ 	ApplicationId: vars.ApplicationId,
+    
+}]]]></json-logger:content>
+			</json-logger:logger>
+			<flow-ref doc:name="validatePinPointResponse" doc:id="eee476cf-fb9b-464c-8f07-b24994f51e3b" name="validatePinPointResponse"/>
+			<error-handler>
+				<on-error-continue enableNotifications="true"
+					logException="true" doc:name="On Error Continue" doc:id="96f300c6-db09-482e-9c2b-b86e19fa7ec5">
+					<flow-ref doc:name="api-exceptions-response-build" doc:id="0d7d2434-4aca-4361-9939-df13bae19e02"
+						name="api-exceptions-response-build" />
+					<set-variable value="#[vars.tempApiExceptionVar]"
+						doc:name="Set Variable" doc:id="9463f26d-141f-42c1-9771-d7bb050aeceb"
+						variableName="pinPointException" />
+					<logger level="INFO" doc:name="Logger"
+						doc:id="79796bf1-6857-421e-90cd-8e8fa9773537"
+						message="Exception Found in Pinpoint:::::::: #[vars.pinPointException] Request UUID #[correlationId] Flow Name #[flow.name]" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<!-- <logger level="INFO" doc:name="Pinpoint Response"
+			doc:id="69f82737-72db-4fcd-ac28-8730eec48958" message='Pinpoint Response for Application Id #[vars.ApplicationId] :::::::::::::::::::  #[vars.pinpointResponse]' /> -->
+		<set-variable value="#[vars.pinpointResponse.data[1].status]" doc:name="SetPinPointStatus" doc:id="59e2a825-4e98-4e16-9cf1-7cb80db1c2e2" variableName="pinPointStatus"/>
+	</flow>
+	<sub-flow name="validatePinPointResponse" doc:id="d2710895-7359-4692-884e-91577e286ee1" >
+	<try doc:name="Try" doc:id="8a54c028-7661-4457-ad10-d57bfc2c81ed" >
+			<choice doc:name="Choice" doc:id="815fe1bf-54ba-4d42-b574-881e35f1b114">
+			<when expression="vars.pinpointResponse.result.success == true">
+				<logger level="INFO" doc:name="PinPoint Success" doc:id="8746a13c-2c71-416b-ab31-548e89bb8c13" message="FIS Sucess Request UUID #[correlationId] Flow Name #[flow.name]" />
+			</when>
+			<otherwise>
+				<logger level="INFO" doc:name="PinPoint  Failed" doc:id="7f65720f-4d43-4424-ad78-d5fa943422a3" message="PinPoint Failed Request UUID #[correlationId] Flow Name #[flow.name]" />
+				<set-variable value="${variables.caseStatus.PENDING}" doc:name="SetCaseStatus" doc:id="d928e387-5f4c-433e-8225-e32d2d9d0647" variableName="caseStatus" />
+				<set-variable value="#[vars.pinpointResponse.result.message.errorDescription]" doc:name="SetPinpointSystemAPIException" doc:id="0fe2d32a-5b2d-4990-ab17-0bd7cbaade0b" variableName="pinpointSystemAPIException" />
+			</otherwise>
+		</choice>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6a1940a7-d5df-4d54-802c-6b55f3f7897d" >
+					<logger level="INFO" doc:name="Logger" doc:id="82e4a840-7e28-41f7-ab7a-f432bc77da22" message="PinpointResponse not in json format: #[vars.pinpointResponse] Request UUID #[correlationId] Flow Name #[flow.name]"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</sub-flow>
+</mule>

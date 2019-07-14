@@ -1,0 +1,10 @@
+{
+  "ApplicationId": "2c48aa94-42e3-4636-a14e-3aaf27eb37d4",
+  "RequestUUID": "48d5d985-f9cb-407b-889f-712de67dbd50",
+  "ErrorMessageList": [
+    {
+      "ErrorMessageNumber": "string",
+      "ErrorMessageText": "string"
+    }
+  ]
+}

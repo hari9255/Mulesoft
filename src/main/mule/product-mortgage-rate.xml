@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="product-mortgage-rateFlow" doc:id="1a5d6da7-5e0e-4dd7-a7c7-891b3ef8ecc0">
+		<logger level="INFO" doc:name="Logger"
+			doc:id="726deed9-7119-44ea-aaf6-bd6410647e72" message="Product get method called Request UUID #[correlationId] Flow Name #[flow.name]" />
+		<json-logger:logger doc:name="Mortgage Before Request" doc:id="02898292-6216-4422-9477-1916802b3adf" config-ref="JSON_Logger_Config" message="Mortgage Before Request" endpoint="POST:/${product.path}" tracePoint="BEFORE_REQUEST"/>
+		<http:request method="GET" doc:name="Request"
+			doc:id="347b5913-e87e-4dde-a75c-6bfe04bbd6b9" config-ref="HTTP_Request_Product"
+			path="/${product.path}" target="productList"
+			targetValue="#[output application/json --- payload]" responseTimeout="${http.request.timeout}">
+			<http:headers><![CDATA[#[output applicaton/java
+---
+{
+	"Authorization" : vars.token,
+	"X-CORRELATION-ID" : correlationId
+}]]]></http:headers>
+
+		</http:request>
+		<json-logger:logger doc:name="Mortgage After Request" doc:id="57f44401-09a9-408b-a2f7-263ad0ac5446" config-ref="JSON_Logger_Config" message="Mortgage After Request" status="#[vars.'httpStatus']" endpoint="POST:/${product.path}" priority="WARN" tracePoint="AFTER_REQUEST"/>
+		<logger level="INFO" doc:name="Logger"
+			doc:id="69df23ca-2d4b-41fe-8c0f-d210694ba257" message="Response : #[vars.productList] Request UUID #[correlationId] Flow Name #[flow.name]" />
+		<set-payload value="#[vars.productList]" doc:name="Set Payload"
+			doc:id="6830040f-2a19-4d01-a5f9-f4ff2e2e47a6" mimeType="application/json" />
+		<flow-ref doc:name="global-return-response-build" doc:id="464485ff-6096-4846-aaa8-be4b67cd4675"
+			name="global-return-response-build" />
+		<error-handler>
+			<on-error-continue enableNotifications="true"
+				logException="true" doc:name="On Error Continue" doc:id="e8907c45-67ae-4756-8591-596b3b10f2bf">
+				<flow-ref doc:name="generic-exception" doc:id="9c2eac31-9f50-48e8-b150-fb1b45508600"
+					name="generic-exception" />
+			</on-error-continue>
+		</error-handler>
+		
+	</flow>
+</mule>

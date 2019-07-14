@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="partneridverificationflowFlow" doc:id="8e40118a-dff6-4399-9d18-7d128b4a58f2" >
+		<try doc:name="Try" doc:id="7be10f04-a66f-40ab-9998-dd7f731905bc" >
+			<ee:transform doc:name="Transform Message" doc:id="53d68f93-8fa1-4498-8f53-5f58ecdc56f2">
+			<ee:message>
+			</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="partnerInstantIdReq" ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "Settings": {
+      //"AccountNumber": "45065",
+      "AccountNumber": p('Settings.AccountNumber'),
+      "Workflow": "ewb.oao.externalsubmit",
+      //"Mode": "testing",
+      "Mode": p('Settings.Mode'),
+      "Reference": "Reference1",
+      //"Locale": "en_US",
+      "Locale": p('Settings.Locale'),
+      "Venue": "online"
+    },
+    "Person": {
+      "Name": {
+        "FirstName": vars.CustomerName.FirstName[0],
+        "LastName": vars.CustomerName.LastName[0]
+      },
+      "Addresses": [
+        {
+          "StreetAddress1": vars.CustomerPrimaryAddress[0].StreetAddress1,
+          "City": vars.CustomerPrimaryAddress[0].City,
+          "State": vars.CustomerPrimaryAddress[0].State,
+          "Zip5": vars.CustomerPrimaryAddress[0].Zip,
+          "Country": if (vars.CustomerPrimaryAddress[0].CountryCode == "USA") 
+          				"US"
+          			 else 
+          			 	vars.CustomerPrimaryAddress[0].CountryCode default null	,
+          "Context": "primary"
+        }
+      ],
+      "SSN": {
+        "Number": payload..TaxNumber[0] default null,
+        "Type": "ssn9"
+      },
+      "DateOfBirth": {
+        "Year": payload.CustomerInformation.DateOfBirth[0 to 3] default null,
+        "Month": payload.CustomerInformation.DateOfBirth[5 to 6] default null,
+        "Day": payload.CustomerInformation.DateOfBirth[8 to 9] default null
+      },
+      "Phones": [
+        {
+          "Number": vars.primaryContactNumber.Number[0] default null,
+          "Context": "mobile"
+        }
+      ]
+    }
+  } ]]></ee:set-variable>
+				</ee:variables>
+		</ee:transform>
+			<logger level="INFO" doc:name="Logger" doc:id="bf24ce3b-b4a1-4b2f-a0ca-40e808103aaa" message="Partner Instant Id Request for Application id #[vars.ApplicationId] :::::::::::::: #[vars.partnerInstantIdReq]"/>
+			<json-logger:logger doc:name="Instant Id KBA Check Request Payload" doc:id="6d62ae73-297d-467d-8148-fd3488d9f466" config-ref="JSON_Logger_Config" tracePoint="PRINT" message="Partner Instant Id Request Before" priority="DEBUG" endpoint="POST:/${customerVerificationFlow.instantIdPassed.path}">
+				<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	partnerInstantIdReq: vars.partnerInstantIdReq
+}]]]></json-logger:content>
+			</json-logger:logger>
+			<json-logger:logger doc:name="Instant Id KBA Before Request" doc:id="f1c5cb78-0b3c-452c-aedd-cf6aa6ac5c99" config-ref="JSON_Logger_Config" endpoint="POST:/${customerVerificationFlow.instantIdPassed.path}" tracePoint="BEFORE_REQUEST" message="Instant Id KBA Before Request"/>
+			<http:request method="POST" doc:name="InstantIdKBACheck" doc:id="f27ed405-981c-499c-b130-63c82fc28476" config-ref="HTTPS_System_API_Config" path="/${customerVerificationFlow.instantIdPassed.path}" target="instantIdResponse" targetValue="#[output application/json --- payload]">
+				<http:body ><![CDATA[#[vars.partnerInstantIdReq]]]></http:body>
+			</http:request>
+			<logger level="INFO" doc:name="Logger" doc:id="9204818a-4097-4a5f-a37b-ebb44cb019a1" message="Instant ID Response  - Application ID  - #[vars.ApplicationId] :::::::::::::: #[vars.instantIdResponse]"/>
+			<ee:transform doc:name="Transform Message" doc:id="6f9bb107-f5d7-46e5-bd66-97ed2b778cd1" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="kbaTransactionStatus" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.instantIdResponse.Status.TransactionStatus default null]]></ee:set-variable>
+					<ee:set-variable variableName="transactionReasonCodeDesc" ><![CDATA[%dw 2.0
+output application/json
+---
+if(null != vars.instantIdResponse.Status.TransactionReasonCode 
+	and
+	null != vars.instantIdResponse.Status.TransactionReasonCode.Description
+)
+vars.instantIdResponse.Status.TransactionReasonCode.Description 
+else null]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<json-logger:logger doc:name="Instant Id KBA After Request" doc:id="8d8677ce-2b13-4b1f-b476-e56d0e676d96" config-ref="JSON_Logger_Config" endpoint="POST:/${customerVerificationFlow.instantIdPassed.path}" tracePoint="AFTER_REQUEST" status="#[vars.'httpStatus']" message="Instant Id KBA After Request"/>
+			<json-logger:logger doc:name="Instant Id KBA Check Response" doc:id="688f9f74-7593-41e5-a888-43ef4d66a632" config-ref="JSON_Logger_Config" tracePoint="PRINT" message="Instant Id KBA Check Response" priority="DEBUG">
+				<json-logger:content ><![CDATA[#[output application/json ---
+{
+ 	instantIdResponse: vars.instantIdResponse
+}]]]></json-logger:content>
+			</json-logger:logger>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="9cc91c1c-d761-4e66-96ed-95d5db7da8a3" >
+					<flow-ref doc:name="api-exceptions-response-build" doc:id="9c0567b4-ba23-4673-8da8-9c3c6c6adf6a" name="api-exceptions-response-build" />
+					<logger level="INFO" doc:name="Logger" doc:id="e72d3a34-4a5c-4b46-b3b7-d51ee759bc00" message="Exception Found in IDV :::::::: #[vars.pepException] Request UUID #[correlationId] Flow Name #[flow.name]" />
+					<ee:transform doc:name="Transform Message" doc:id="3271d573-65e6-4d16-ad85-d6bf59b56c94" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="instantIdException" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.tempApiExceptionVar]]></ee:set-variable>
+							<ee:set-variable variableName="exceptionFlag" ><![CDATA[%dw 2.0
+output application/json
+---
+"true"]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+				</on-error-continue>
+			</error-handler>
+		</try>
+	</flow>
+</mule>

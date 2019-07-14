@@ -1,0 +1,204 @@
+{
+  "ApplicationId": "a04m000000BAcfJAAT",
+  "ApplicantType": "NRA/NONNRA",
+  "RequestUUID": "a04m000000BAcfJAAT",
+  "AccountInformation": {
+    "AccountType": "CHK_NI_PERS_VALUE",
+    "CustomerToAccountRelationship": {
+      "AddressLineOfTINOwner": 1,
+      "Customer1AccountAssociationType": "Primary",
+      "Customer1AccountRelationshipCode": "000",
+      "Customer2AccountAssociationType": "Primary",
+      "NumberOfStatementCopies": 1
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptAssumed"
+    },
+    "CardAccount": {
+      "CardNameLine1": "Vamsi  Sakhineti"
+    }
+  },
+  "CustomerInformation": {
+    "Address": {
+      "City": "San Francisco",
+      "CountryCode": "US",
+      "IsForeignAddress": false,
+      "State": "CA",
+      "StreetAddress1": "1100 Market St",
+      "StreetAddress2": "null",
+      "Zip": "94102-3804"
+    },
+    "SourceofFunds": {
+      "Source": "FundfromEMP",
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": "Yes/No",
+        "ForeignInActivity": {
+          "ForeignIncomingActivity": "Yes/No",
+          "IncomingWires": 3,
+          "IncomingWiresAmount": 233445.34
+        },
+        "ForeignOutActivity": {
+          "ForeignOutgoingActivity": "Yes/No",
+          "OutgoingWires": 3,
+          "OutgoingWiresAmount": 233445.34
+        }
+      }
+    },
+    "VisaType": "Student",
+    "ForeignTaxID": "3738897489",
+    "BranchNumber": "8034",
+    "CitizenshipCode": "US",
+    "CostCenterNumber": 1145,
+    "CountryOfBirth": "India",
+    "DateOfBirth": "1989-03-04",
+    "EmailAddress": "dds@dds.com",
+    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+    "EmploymentOrSchool": "EWB",
+    "EntityType": "Unknown",
+    "Ethnicity": "AfricanAmerican",
+    "FirstName": "VAMSI",
+    "Gender": "Female",
+    "Identification": {
+      "IdentificationInformation1": {
+        "ExpirationDate": "2020-05-16T16:55:15.468Z",
+        "IssueDate": "2010-05-16T16:55:15.468Z",
+        "IssuingEntity": "DMV",
+        "IssuingLocation": "Pasadena",
+        "Number": "F4567",
+        "Type": "DL"
+      },
+      "IdentificationInformation2": {
+        "ExpirationDate": "2028-05-16T16:55:15.468Z",
+        "IssueDate": "2008-05-16T16:55:15.468Z",
+        "IssuingEntity": "US",
+        "IssuingLocation": "Pasadena",
+        "Number": "R4567",
+        "Type": "Passport"
+      },
+      "IsTINAppliedFor": true,
+      "Status": "VerifiedByBanker"
+    },
+    "LastName": "SAKHINETI",
+    "MiddleName": "SAKHINETI",
+    "MailCode": "NoSpecialAction",
+    "MaritalStatus": "Married",
+    "MothersMaidenName": "Name",
+    "Occupation": "Architecture / Engineering",
+    "PEP": "No",
+    "CISNumber": "1234567",
+    "PrimaryID": "DL",
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": 30744,
+    "PrimaryPhoneNumber": "7656065125",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "SSN": "991666666",
+    "SSN_Type": "ssn9",
+    "SearchName": "WatchList",
+    "SecondaryOfficerNumber": 30744,
+    "TaxIdType": "SocialSecurityNumber",
+    "TaxNumber": "901669346",
+    "Title": "",
+    "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+    "W8CertificateType": "Blank"
+  },
+  "IdAuthenticationResponse": [
+    {
+      "PassThroughs": [
+        {
+          "Data": "[{\"Name\":\"Document Expired\",\"IsValid\":false,\"Value\":\"2008-12-25T00:00:00\",\"DocumentId\":\"3254f9a7-06b6-42a5-b740-1c592738d609\",\"Description\":\"The document has expired. Verified that the document expiration date does not occur before the current date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Birth Date Valid\",\"IsValid\":true,\"Value\":\"1972-12-25T00:00:00\",\"DocumentId\":\"1cc1d211-8f33-43be-88ef-b71866c61e1a\",\"Description\":\"The birth date is valid. Verified that the birth date is valid, in the expected format, and occurs on or before the current date and not outside a reasonable range.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Birth Date\"},{\"Name\":\"Document Classification\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"c0629316-ed21-409e-8c1e-5215fd12ba58\",\"Description\":\"The document type is supported. Verified that the document is recognized as a supported document type and that the type of document can be fully authenticated.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Expiration Date Valid\",\"IsValid\":true,\"Value\":\"2008-12-25T00:00:00\",\"DocumentId\":\"c3ef25cf-a950-4d3e-969f-ac9ba6b7bb72\",\"Description\":\"The expiration date is valid. Verified that the document expiration date is valid, in the expected format, and occurs after the issue and birth dates.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Layout Valid\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"ffc9a646-0785-4876-b4eb-d30b7c6dd3f2\",\"Description\":\"The layout is correct for the document series. This authentication will fail if the relative positions of features on the document are outside the normal area. Possible reasons this test may fail for a valid document may be that the document was moving or slipped during the capture, or the document may be excessively worn or damaged.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"da870548-6a61-4960-a932-f959c6403bc8\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"d28928e3-f863-4c14-bb59-3e2cc015569e\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"8c6f9249-e155-4fdd-9e64-033853741d21\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"60d0411d-6003-4584-8c6e-05f61f591c91\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"18d3eb71-4768-4171-8919-8a8f01027f91\",\"Description\":\"A visible pattern was found. Verified that a security feature in the GlobalGateway Document Verification Integration Guide Confidential. Copyright © 2018 Trulioo Information Services Inc. All rights reserved. No part of this document may be reproduced without the express written consent of Trulioo Information Services Inc. 16 of 34 visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"52907d27-954b-4b43-9534-cd8095d7333b\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"f16631ca-df78-4543-b7bc-fbf49d0aa750\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"}]",
+          "Type": "true.id"
+        }
+      ],
+      "Products": [
+        {
+          "ExecutedStepName": "True_ID_Step",
+          "ProductConfigurationName": "TrueID_Flow",
+          "ProductStatus": "pass",
+          "ProductType": "TrueID"
+        }
+      ],
+      "Status": {
+        "ConversationId": "31000101592685",
+        "Reference": "payload.RequestUUID",
+        "RequestId": "294443635",
+        "TransactionStatus": "passed"
+      }
+    }
+  ],
+  "IdVerificationRequest": {
+    "Settings": {
+      "AccountNumber": "45065",
+      "Workflow": "public.testing.redherrings.open",
+      "Mode": "testing",
+      "Reference": "Reference1",
+      "Locale": "en_US",
+      "Venue": "online"
+    },
+    "Person": {
+      "Name": {
+        "FirstName": "ALYSON",
+        "LastName": "ABELEDA"
+      },
+      "Addresses": [
+        {
+          "StreetAddress1": "4400 HORNER St unit 4",
+          "City": "Union City",
+          "State": "CA",
+          "Zip5": "94587",
+          "Country": "US",
+          "Context": "primary"
+        }
+      ],
+      "SSN": {
+        "Number": "612527378",
+        "Type": "ssn9"
+      },
+      "DateOfBirth": {
+        "Year": "1986",
+        "Month": "4",
+        "Day": "24"
+      },
+      "Phones": [
+        {
+          "Number": "7542298653",
+          "Context": "mobile"
+        }
+      ]
+    }
+  },
+  "PinPointRequest": [
+    {
+      "handler": "session_info",
+      "customer_session_id": "FjzMtjEufgywC4lBdqSdeWGXz",
+      "remote_addr": "63.157.54.31",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36",
+      "result": "pass",
+      "channel": "online",
+      "new_account_data": {
+        "new_account": true,
+        "first_name": "EDWINA",
+        "last_name": "SORIANO",
+        "phone_number": "6142564942",
+        "email": "test307@ewb.com"
+      }
+    },
+    {
+      "handler": "pinpoint_eval",
+      "customer_session_id": "FjzMtjEufgywC4lBdqSdeWGXz",
+      "remote_addr": "63.157.54.31",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36",
+      "activity": "new_account",
+      "url": "https://dev-eastwestbank.cs20.force.com/tf4sf__dsp#/get-started",
+      "timestamp": "2018-06-28 09:08:45"
+    }
+  ],
+  "Promotions": {
+    "OnboardingInvitation": {
+      "EmailAddress": "dds@dds.com",
+      "PhoneNumber": "7656065125"
+    },
+    "PromoCode": "Y834KCUH",
+    "Status": "New"
+  }
+}

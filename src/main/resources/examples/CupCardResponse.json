@@ -1,0 +1,20 @@
+{
+	"data": {
+		"ResponseCode": "string",
+		"ResponseDescription": "string",
+		"NewCardNumber": 0,
+		"Balance": 0,
+		"TransactionId": "string",
+		"CustomerId": "string",
+		"Fee": 0,
+		"ReferenceId": "string",
+		"NameOnCard": "string",
+		"RequestUUID": "string",
+		"ErrorMessageList": []
+	},
+	"result": {
+		"success": true,
+		"code": "200",
+		"message": null
+	}
+}

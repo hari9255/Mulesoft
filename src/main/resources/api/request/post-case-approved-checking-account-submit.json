@@ -1,0 +1,145 @@
+{
+  "RequestUUID": "1535052706",
+  "CaseId": "12345",
+  "CaseStatus": "Approved",
+  "ApplicationId": "1868683kfnd879",
+  "CustomerInformation": {
+    "DateOfBirth": "1980-05-16T16:55:15.467Z",
+    "FirstName": "John",
+    "LastName": "Doe",
+    "MiddleInitial": "M",
+    "CISNumber": "12345678",
+    "Title": "Sr Dev",
+    "EntityType": "Unknown",
+    "SearchName": "WatchList",
+    "PEP": "true",
+    "CountryOfBirth": "USA",
+    "Address": {
+      "StreetAddress1": "9300 Flair Dr",
+      "StreetAddress2": "300",
+      "City": "El Monte",
+      "State": "CA",
+      "Zip": "91731",
+      "CountryCode": "US",
+      "TimeAtAddress": {
+        "Years": 2,
+        "Month": 1
+      },
+      "IsForeignAddress": false
+    },
+      "MailingAddress": {
+      "StreetAddress1": "9301 Flair Dr",
+      "StreetAddress2": "300",
+      "City": "El Monte",
+      "State": "CA",
+      "Zip": "91731",
+      "CountryCode": "USA"
+    },
+    "PrimaryPhoneNumber": "6662367234",
+    "FaxPhoneNumber": "6662367234",
+    "SecondaryPhoneNumber": "6662367234",
+    "MobilePhoneNumber": "6662367234",
+    "TaxNumber": "734561234",
+    "TaxIdType": "SocialSecurityNumber",
+    "CitizenshipCode": "US",
+    "W8CertificateType": "Blank",
+    "PrimaryID": "DL",
+    "BranchNumber": "8034",
+    "CostCenterNumber": 1145,
+    "MailCode": "NoSpecialAction",
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": 30744,
+    "SecondaryOfficerNumber": 30744,
+    "Gender": "Female",
+    "CategoryCode1" : "903",
+    "CountryofDualCitizenship" :"USA",
+    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+    "EmploymentOrSchool": "EWB",
+    "Ethnicity": "AfricanAmerican",
+    "MaritalStatus": "Married",
+    "MothersMaidenName": "Name",
+    "Occupation": "AdminManagerial",
+    "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+    "SSN": "213527485",
+    "SSN_Type": "ssn9",
+    "Identification": {
+      "Status": "VerifiedByBanker",
+      "IsTINAppliedFor": true,
+      "NonDocumentaryIdentificationInformation": "VLN",
+      "IdentificationInformation1": {
+        "Type": "DL",
+        "Number": "F4567",
+        "IssuingEntity": "DMV",
+        "IssuingLocation": "Pasadena",
+        "IssueDate": "2010-05-16T16:55:15.468Z",
+        "ExpirationDate": "2020-05-16T16:55:15.468Z"
+      },
+      "IdentificationInformation2": {
+        "Type": "Passport",
+        "Number": "R4567",
+        "IssuingEntity": "US",
+        "IssuingLocation": "Pasadena",
+        "IssueDate": "2008-05-16T16:55:15.468Z",
+        "ExpirationDate": "2028-05-16T16:55:15.468Z"
+      }
+    },
+    "EmailAddress": "name@email.com"
+  },
+  "Promotions": {
+    "Status": "New",
+    "PromoCode": "2KD0AKSA",
+    "OnboardingInvitation": {
+      "EmailAddress": "email.address@gmail.com",
+      "PhoneNumber": "893-929-9391"
+    }
+  },
+  "Documents": [
+    {
+      "DocumentExtension": "JPG",
+      "DocumentSource": "Deposit",
+      "DocumentService": "IDAuthentication",
+      "DocumentContent": "",
+      "Front": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA",
+      "Back": "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAA",
+      "DocumentType": "W9",
+      "SourceIdentifierId": "tererwerwere",
+      "AccountNumber": "1234",
+      "CustomerNumber": "5678",
+      "DocumentDate": "2018-02-28T16:41:41.090Z",
+      "OfficerCode": "Jonh Doe"
+    },
+    {
+      "DocumentExtension": "JPG",
+      "DocumentSource": "Deposit",
+      "DocumentService": "Terifina",
+      "DocumentContent": "111000000000000000000000000000000000000",
+      "Front": "",
+      "Back": "",
+      "DocumentType": "DriversLicense",
+      "SourceIdentifierId": "tererwerwere",
+      "AccountNumber": "1234",
+      "CustomerNumber": "5678",
+      "DocumentDate": "2018-02-28T16:41:41.090Z",
+      "OfficerCode": "Jonh Doe"
+    }
+  ],
+  "CheckingAccount": {
+    "AccountType": "CHK_I_PERS_PREMIER",
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptAssumed",
+      "UserCode" : "D",
+      "StatusCodes" : ["NeverClose"],
+      "BulkFileType": "ImageFile"
+    },
+   		"CardAccount":{
+         "CardNameLine1":"Vamsi  Sakhineti"
+      },
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Customer2AccountAssociationType": "Primary",
+      "NumberOfStatementCopies": 1,
+      "AddressLineOfTINOwner": 1
+    }
+  }
+}

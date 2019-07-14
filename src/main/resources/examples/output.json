@@ -1,0 +1,67 @@
+{
+  "ApplicantType": "NONNRA",
+   "IdVerificationRequest": {
+    
+  },
+  "IdAuthenticationResponse": [
+	],
+  "RequestUUID": "a040x000001Qz0wAAC",  
+  "ApplicationId": "APP-M-02985",  
+  "AccountInformation": {
+    "AccountType": "CHK_I_PERS_PREMIER",
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptConfirmed",
+      "UserCode": "D",
+      "StatusCodes": [
+        "NeverClose"
+      ],
+      "BulkFileType": "ImageFile"
+    },
+    "CustomerToAccountRelationship": {
+      "Customer1AccountRelationshipCode": "000",
+      "Customer1AccountAssociationType": "Primary",
+      "Address": {
+        "StreetAddress1": "983R Massachusetts Ave",
+        "StreetAddress2": "",
+        "City": "Cambridge",
+        "State": "MA",
+        "Zip": "02138-5301",
+        "CountryCode": "US",
+        "IsForeignAddress": false
+      },
+      "NumberOfStatementCopies": 1,
+      "AddressLineOfTINOwner": 1
+    }
+  },
+  "CustomerInformation": {
+    "DateOfBirth": "1988-08-02",
+    "FirstName": "Varsha",
+    "LastName": "KS",
+    "CISNumber": "00000061099",
+    "PEP": "No",
+    "Address": {
+      "StreetAddress1": "983R Massachusetts Ave",
+      "StreetAddress2": "",
+      "City": "Cambridge",
+      "State": "MA",
+      "Zip": "02138-5301",
+      "CountryCode": "US",
+      "IsForeignAddress": false
+    },
+    "MobilePhoneNumber": "7767767766",
+    "TaxNumber": "666176172",
+    "TaxIdType": "SocialSecurityNumber",
+    "CitizenshipCode": "USA",
+    "BranchNumber": "8088",
+    "CostCenterNumber": "88",
+    "CategoryCode1": "903",
+    "Occupation": "ArchitectureOrEngineering",
+    "Identification": {
+      "Status": "NonDocVerification",
+      "NonDocumentaryIdentificationInformation": "VLN"
+    },
+    "EmailAddress": "depositdemo@ewb.com",
+    "RequestUUID": "a040x000001Qz0wAAC"
+  },
+  "Documents": []
+}

@@ -1,0 +1,37 @@
+{
+	"Settings": {
+		"AccountNumber": "45065",
+		"Mode": "testing",
+		"ConversationId": "31000095253376",
+		"Locale": "en_US"
+	},
+	"Answers": {
+		"QuestionSetId": 91200276,
+		"Questions": [
+			{
+				"QuestionId": 312298006,
+				"Choices": [
+					{
+						"Choice": "1535052606"
+					}
+				]
+			},
+			{
+				"QuestionId": 312298016,
+				"Choices": [
+					{
+						"Choice": "1535052656"
+					}
+				]
+			},
+			{
+				"QuestionId": 312298026,
+				"Choices": [
+					{
+						"Choice": "1535052706"
+					}
+				]
+			}
+		]
+	}
+}

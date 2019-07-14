@@ -1,0 +1,1587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<munit:config name="NONUS-Citizen-Terafina-flow-test-suite.xml" />
+	<munit:test name="NONUS-Citizen-Terafina-SuccessScenarioTest" description="Test" doc:id="71ef6327-9e4b-40b7-8854-08ab72b2cb6d">
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="384a235b-3394-4ade-afda-437fa865c707" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="7a1c97f1-61f9-4e86-9efb-ca21dabb456d" name="OFAC-Mock"/>
+			<flow-ref doc:name="PepMock" doc:id="bc89ba1b-9438-4e76-8f16-4f94a690a449" name="PepMock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="95ecd050-9dfc-4c67-a7d7-6a74e224ec23" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="51968210-f812-4dfb-b3cf-5943b866e6f5" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="f1602441-678f-4793-8a56-f6ff95c51658" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="6a1ca124-bbad-492e-82ce-d3cd45067979" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="70023d7e-93e4-4c97-bf12-1cc2b2a4084b" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set payload and variables" doc:id="a3db86ff-73cf-4116-88bb-a549435c4acc" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "ApplicationId": "a04m000000BAcfJAAT",
+  "ApplicantType": "NRA",
+  "RequestUUID": "a04m000000BAcfJAAT",
+  "AccountInformation": {
+    "AccountType": "CHK_I_PERS_PREMIER",
+    "CustomerToAccountRelationship": {
+      "AddressLineOfTINOwner": 1,
+      "Customer1AccountAssociationType": "Primary",
+      "Customer1AccountRelationshipCode": "000",
+      "Customer2AccountAssociationType": "Primary",
+      "NumberOfStatementCopies": 1
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptAssumed",
+      "UserCode": "D",
+      "StatusCodes": [
+        "NeverClose"
+      ],
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": null
+  },
+  "CustomerInformation": {
+    "Address": {
+      "City": "San Francisco",
+      "CountryCode": "US",
+      "IsForeignAddress": false,
+      "State": "CA",
+      "StreetAddress1": "1100 Market St",
+      "StreetAddress2": "null",
+      "Zip": "94102-3804"
+    },
+    "SourceofFunds": {
+      "Source": "FundfromEMP",
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": "Yes/No",
+        "ForeignInActivity": {
+          "ForeignIncomingActivity": "Yes/No",
+          "IncomingWires": 3,
+          "IncomingWiresAmount": 233445.34
+        },
+        "ForeignOutActivity": {
+          "ForeignOutgoingActivity": "Yes/No",
+          "OutgoingWires": 3,
+          "OutgoingWiresAmount": 233445.34
+        }
+      }
+    },
+    "VisaType": "Student",
+    "ForeignTaxID": "3738897489",
+    "BranchNumber": "8088",
+    "CitizenshipCode": "USA",
+    "CostCenterNumber": 88,
+    "CountryOfBirth": "India",
+    "DateOfBirth": "1989-03-04",
+    "EmailAddress": "dds@dds.com",
+    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+    "EmploymentOrSchool": "EWB",
+    "EntityType": "Unknown",
+    "Ethnicity": "AfricanAmerican",
+    "FirstName": "Yanming",
+    "Gender": "Female",
+    "Identification": {
+      "IdentificationInformation1": {
+        "ExpirationDate": "2020-05-16T16:55:15.468Z",
+        "IssueDate": "2010-05-16T16:55:15.468Z",
+        "IssuingEntity": "DMV",
+        "IssuingLocation": "Pasadena",
+        "Number": "F4567",
+        "Type": "DL"
+      },
+      "IdentificationInformation2": {
+        "ExpirationDate": "2028-05-16T16:55:15.468Z",
+        "IssueDate": "2008-05-16T16:55:15.468Z",
+        "IssuingEntity": "US",
+        "IssuingLocation": "Pasadena",
+        "Number": "R4567",
+        "Type": "Passport"
+      },
+      "IsTINAppliedFor": true,
+      "Status": "VerifiedByBanker"
+    },
+    "LastName": "Hu",
+    "MiddleName": "",
+    "MailCode": "NoSpecialAction",
+    "MaritalStatus": "Married",
+    "MothersMaidenName": "Name",
+    "Occupation": "Architecture / Engineering",
+    "PEP": "No",
+    "CISNumber": "00000061099",
+    "PrimaryID": "DL",
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": 30744,
+    "MobilePhoneNumber": "7656065125",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "SSN": "991666666",
+    "SSN_Type": "ssn9",
+    "SearchName": "WatchList",
+    "SecondaryOfficerNumber": 30744,
+    "TaxIdType": "SocialSecurityNumber",
+    "TaxNumber": "666176172",
+    "Title": "",
+    "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+    "W8CertificateType": "Blank"
+  },
+  "IdAuthenticationResponse": [
+    {
+      "TransactionID": "b08ee36d-7e6e-46f7-a785-0592b946d40a",
+      "DocumentType": "Passport/DrivingLicence/IdentityCard",
+      "UploadedDt": "2018-07-30T23:20:41",
+      "CountryCode": "CN",
+      "ProductName": "Identity Verification",
+      "Record": {
+        "TransactionRecordID": "a83bdd0f-666a-450f-bcd6-35cad76026a7",
+        "RecordStatus": "match",
+        "DatasourceResults": [
+          {
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "DatasourceFields": [],
+            "AppendedFields": [
+              {
+                "FieldName": "AuthenticityReasons",
+                "Data": "DocumentCountryNoMatch"
+              },
+              {
+                "FieldName": "PostalCode",
+                "Data": "78550-0000"
+              },
+              {
+                "FieldName": "City",
+                "Data": "HARLINGEN"
+              },
+              {
+                "FieldName": "YearOfBirth",
+                "Data": "1972"
+              },
+              {
+                "FieldName": "DocumentVerified",
+                "Data": "False"
+              },
+              {
+                "FieldName": "AuthenticityDetails",
+                "Data": "[{\"Name\":\"Birth Date Valid\",\"IsValid\":true,\"Value\":\"1972-11-15T00:00:00\",\"DocumentId\":\"40e7eda7-3a92-45dd-9e34-e00b94cbfe37\",\"Description\":\"The birth date is valid. Verified that the birth date is valid, in the expected format, and occurs on or before the current date and not outside a reasonable range.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Birth Date\"},{\"Name\":\"Document Classification\",\"IsValid\":true,\"Value\":\"Texas (TX) Driver License 2009\",\"DocumentId\":\"609412cb-7ba7-44ff-8fe2-aec34105da7b\",\"Description\":\"The document type is supported. Verified that the document is recognized as a supported document type and that the type of document can be fully authenticated.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Document Expired\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"f1b3b344-e3f3-40da-bc4a-88d1ecfad52c\",\"Description\":\"The document has not expired. Verified that the document expiration date does not occur before the current date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Expiration Date Valid\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"06c57fb2-f1cf-4677-8003-25797fe246bc\",\"Description\":\"The expiration date is valid. Verified that the document expiration date is valid, in the expected format, and occurs after the issue and birth dates.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Issue Date Valid\",\"IsValid\":true,\"Value\":\"2010-07-03T00:00:00\",\"DocumentId\":\"ceb56a03-3502-47e8-a217-d6bde77a4607\",\"Description\":\"The issue date is valid. Verified that the document issue date is valid, in the expected format, does not occur in the future, does not occur before the date of birth, and does not occur after the expiration date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Issue Date\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"fd05713e-1569-4750-901d-db622cf0a433\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"84cb897c-f7e6-4917-850b-dcddf4069a91\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"929da7eb-f9ec-49f4-a38a-1957d67ec448\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"}]"
+              },
+              {
+                "FieldName": "Address1",
+                "Data": "1725 W FILMORE AVE"
+              },
+              {
+                "FieldName": "StateProvince",
+                "Data": "TX"
+              },
+              {
+                "FieldName": "DocumentNumber",
+                "Data": "98765432"
+              },
+              {
+                "FieldName": "FullName",
+                "Data": "MARY ANNA HARPER"
+              },
+              {
+                "FieldName": "FirstName",
+                "Data": "MARY ANNA"
+              },
+              {
+                "FieldName": "LastName",
+                "Data": "HARPER"
+              },
+              {
+                "FieldName": "Issuer",
+                "Data": "Texas"
+              },
+              {
+                "FieldName": "Gender",
+                "Data": "F"
+              },
+              {
+                "FieldName": "DayOfBirth",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfBirth",
+                "Data": "11"
+              },
+              {
+                "FieldName": "DayOfExpiry",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfExpiry",
+                "Data": "11"
+              },
+              {
+                "FieldName": "YearOfExpiry",
+                "Data": "2018"
+              },
+              {
+                "FieldName": "DayOfIssue",
+                "Data": "03"
+              },
+              {
+                "FieldName": "MonthOfIssue",
+                "Data": "07"
+              },
+              {
+                "FieldName": "YearOfIssue",
+                "Data": "2010"
+              }
+            ],
+            "Errors": [],
+            "FieldGroups": []
+          }
+        ],
+        "Errors": [],
+        "Rule": {
+          "RuleName": "RuleScript DocumentVerification",
+          "Note": "Script manually created"
+        }
+      },
+      "Errors": []
+    },
+    {
+      "TransactionID": "b08ee36d-7e6e-46f7-a785-0592b946d40a",
+      "DocumentType": "Passport/DrivingLicence/IdentityCard",
+      "UploadedDt": "2018-07-30T23:20:41",
+      "CountryCode": "CN",
+      "ProductName": "Identity Verification",
+      "Record": {
+        "TransactionRecordID": "a83bdd0f-666a-450f-bcd6-35cad76026a7",
+        "RecordStatus": "match",
+        "DatasourceResults": [
+          {
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "DatasourceFields": [],
+            "AppendedFields": [
+              {
+                "FieldName": "AuthenticityReasons",
+                "Data": "DocumentCountryNoMatch"
+              },
+              {
+                "FieldName": "PostalCode",
+                "Data": "78550-0000"
+              },
+              {
+                "FieldName": "City",
+                "Data": "HARLINGEN"
+              },
+              {
+                "FieldName": "YearOfBirth",
+                "Data": "1972"
+              },
+              {
+                "FieldName": "DocumentVerified",
+                "Data": "False"
+              },
+              {
+                "FieldName": "AuthenticityDetails",
+                "Data": "[{\"Name\":\"Birth Date Valid\",\"IsValid\":true,\"Value\":\"1972-11-15T00:00:00\",\"DocumentId\":\"40e7eda7-3a92-45dd-9e34-e00b94cbfe37\",\"Description\":\"The birth date is valid. Verified that the birth date is valid, in the expected format, and occurs on or before the current date and not outside a reasonable range.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Birth Date\"},{\"Name\":\"Document Classification\",\"IsValid\":true,\"Value\":\"Texas (TX) Driver License 2009\",\"DocumentId\":\"609412cb-7ba7-44ff-8fe2-aec34105da7b\",\"Description\":\"The document type is supported. Verified that the document is recognized as a supported document type and that the type of document can be fully authenticated.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Document Expired\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"f1b3b344-e3f3-40da-bc4a-88d1ecfad52c\",\"Description\":\"The document has not expired. Verified that the document expiration date does not occur before the current date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Expiration Date Valid\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"06c57fb2-f1cf-4677-8003-25797fe246bc\",\"Description\":\"The expiration date is valid. Verified that the document expiration date is valid, in the expected format, and occurs after the issue and birth dates.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Issue Date Valid\",\"IsValid\":true,\"Value\":\"2010-07-03T00:00:00\",\"DocumentId\":\"ceb56a03-3502-47e8-a217-d6bde77a4607\",\"Description\":\"The issue date is valid. Verified that the document issue date is valid, in the expected format, does not occur in the future, does not occur before the date of birth, and does not occur after the expiration date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Issue Date\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"fd05713e-1569-4750-901d-db622cf0a433\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"84cb897c-f7e6-4917-850b-dcddf4069a91\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"929da7eb-f9ec-49f4-a38a-1957d67ec448\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"}]"
+              },
+              {
+                "FieldName": "Address1",
+                "Data": "1725 W FILMORE AVE"
+              },
+              {
+                "FieldName": "StateProvince",
+                "Data": "TX"
+              },
+              {
+                "FieldName": "DocumentNumber",
+                "Data": "98765432"
+              },
+              {
+                "FieldName": "FullName",
+                "Data": "MARY ANNA HARPER"
+              },
+              {
+                "FieldName": "FirstName",
+                "Data": "MARY ANNA"
+              },
+              {
+                "FieldName": "LastName",
+                "Data": "HARPER"
+              },
+              {
+                "FieldName": "Issuer",
+                "Data": "Texas"
+              },
+              {
+                "FieldName": "Gender",
+                "Data": "F"
+              },
+              {
+                "FieldName": "DayOfBirth",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfBirth",
+                "Data": "11"
+              },
+              {
+                "FieldName": "DayOfExpiry",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfExpiry",
+                "Data": "11"
+              },
+              {
+                "FieldName": "YearOfExpiry",
+                "Data": "2018"
+              },
+              {
+                "FieldName": "DayOfIssue",
+                "Data": "03"
+              },
+              {
+                "FieldName": "MonthOfIssue",
+                "Data": "07"
+              },
+              {
+                "FieldName": "YearOfIssue",
+                "Data": "2010"
+              }
+            ],
+            "Errors": [],
+            "FieldGroups": []
+          }
+        ],
+        "Errors": [],
+        "Rule": {
+          "RuleName": "RuleScript DocumentVerification",
+          "Note": "Script manually created"
+        }
+      },
+      "Errors": []
+    }
+  ],
+  "IdVerificationRequest": {
+    "AcceptTruliooTermsAndConditions": true,
+    "CleansedAddress": false,
+    "VerboseMode": true,
+    "ConfigurationName": "Identity Verification",
+    "CountryCode": "CN",
+    "DataFields": {
+      "PersonInfo": {
+        "FirstGivenName": "è¨€æ˜Ž",
+        "FirstSurName": "èƒ¡",
+        "DayOfBirth": 5,
+        "MonthOfBirth": 6,
+        "YearOfBirth": 1976
+      },
+      "NationalIds": [
+        {
+          "IDNumber": "440861896421345987",
+          "Type": "NationalID"
+        }
+      ]
+    }
+  },
+  "PinPointRequest": [
+    {
+      "handler": "session_info",
+      "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+      "remote_addr": "59.165.215.253",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+      "result": "pass",
+      "channel": "online",
+      "new_account_data": {
+        "new_account": true,
+        "first_name": "Varsha",
+        "last_name": "KS",
+        "phone_number": "7767767766",
+        "email": "depositdemo@ewb.com"
+      }
+    },
+    {
+      "handler": "pinpoint_eval",
+      "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+      "remote_addr": "59.165.215.253",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+      "activity": "new_account",
+      "url": "http://uat-eastwestbank.cs95.force.com/tf4sf__dsp#/get-started",
+      "timestamp": "2018-07-20 11:12:37"
+    }
+  ],
+  "Promotions": {
+    "OnboardingInvitation": {
+      "EmailAddress": "dds@dds.com",
+      "PhoneNumber": "7656065125"
+    },
+    "PromoCode": "Y834KCUH",
+    "Status": "New"
+  }
+}]]></ee:set-payload>
+				</ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="skipTrueIDResponse"><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_PASS_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_PASS_REASONS')]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_FAIL_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_FAIL_REASONS')]]></ee:set-variable>
+					<ee:set-variable variableName="retSuccMes" ><![CDATA[%dw 2.0
+output application/json
+---
+"Success"]]></ee:set-variable>
+					<ee:set-variable variableName="successCode" ><![CDATA[%dw 2.0
+output application/json
+---
+true]]></ee:set-variable>
+					<ee:set-variable variableName="IsPartnerRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+true]]></ee:set-variable>
+					<ee:set-variable variableName="isCaseApprovedFlow" ><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+            
+</ee:variables>				
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="1b0951e7-2ec3-4c7f-b041-e1b8a99dd1e1" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="4985c548-c777-4f96-b4fe-69dc216fa49e" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Application Creation" doc:id="0c70ed6d-3007-4c7e-9f7c-5304d5a6c731" expression="#[payload.data.ApplicationId]" is='#[MunitTools::notNullValue()]' message="Application was not created"/>
+			<munit-tools:assert-that doc:name="Assert Case Creation" doc:id="c76c5a13-4249-4582-be79-10e98ee50d5d" expression="#[payload.data.CaseNumber]" is='#[MunitTools::notNullValue()]' message="Case was not created"/>
+			<munit-tools:assert-that doc:name="Assert Application Status" doc:id="dceb0544-f2c4-48d3-94a5-19d73ffdbcfd" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Approved")]' message="Application was not created with Pending status"/>
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="NONUS-Citizen-Terafina-IdAuth-FailureScenarioTest" description="Test" doc:id="0f36b61a-ee1e-4ac1-9999-7f6f83800638" >
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="158d703d-ef9f-4e86-b63b-c3fecc98aee8" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="310df0b3-5c23-494f-a957-d06b55dd000f" name="OFAC-Mock"/>
+			<flow-ref doc:name="PepMock" doc:id="07087fd5-7cd0-40e6-b701-5d4a17fc9d42" name="PepMock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="01df24e9-821d-4e2c-bd3e-ff1db768504f" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="c61d15f1-1a75-41a4-9afa-58a2395fa96c" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="c1c6167c-6bdc-4658-ab13-481bcb0a3431" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="04ba4f34-283c-4be7-bb16-ae3d5a150669" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="23ac40f4-094c-4298-b107-b5b48b91551a" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<ee:transform doc:name="Set payload and variables" doc:id="1e9d25d5-2cc5-4898-b1da-4b8cd97bd458" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "ApplicationId": "a04m000000BAcfJAAT",
+  "ApplicantType": "NRA",
+  "RequestUUID": "a04m000000BAcfJAAT",
+  "AccountInformation": {
+    "AccountType": "CHK_I_PERS_PREMIER",
+    "CustomerToAccountRelationship": {
+      "AddressLineOfTINOwner": 1,
+      "Customer1AccountAssociationType": "Primary",
+      "Customer1AccountRelationshipCode": "000",
+      "Customer2AccountAssociationType": "Primary",
+      "NumberOfStatementCopies": 1
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptAssumed",
+      "UserCode": "D",
+      "StatusCodes": [
+        "NeverClose"
+      ],
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": null
+  },
+  "CustomerInformation": {
+    "Address": {
+      "City": "San Francisco",
+      "CountryCode": "US",
+      "IsForeignAddress": false,
+      "State": "CA",
+      "StreetAddress1": "1100 Market St",
+      "StreetAddress2": "null",
+      "Zip": "94102-3804"
+    },
+    "SourceofFunds": {
+      "Source": "FundfromEMP",
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": "Yes/No",
+        "ForeignInActivity": {
+          "ForeignIncomingActivity": "Yes/No",
+          "IncomingWires": 3,
+          "IncomingWiresAmount": 233445.34
+        },
+        "ForeignOutActivity": {
+          "ForeignOutgoingActivity": "Yes/No",
+          "OutgoingWires": 3,
+          "OutgoingWiresAmount": 233445.34
+        }
+      }
+    },
+    "VisaType": "Student",
+    "ForeignTaxID": "3738897489",
+    "BranchNumber": "8088",
+    "CitizenshipCode": "USA",
+    "CostCenterNumber": 88,
+    "CountryOfBirth": "India",
+    "DateOfBirth": "1989-03-04",
+    "EmailAddress": "dds@dds.com",
+    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+    "EmploymentOrSchool": "EWB",
+    "EntityType": "Unknown",
+    "Ethnicity": "AfricanAmerican",
+    "FirstName": "Yanming",
+    "Gender": "Female",
+    "Identification": {
+      "IdentificationInformation1": {
+        "ExpirationDate": "2020-05-16T16:55:15.468Z",
+        "IssueDate": "2010-05-16T16:55:15.468Z",
+        "IssuingEntity": "DMV",
+        "IssuingLocation": "Pasadena",
+        "Number": "F4567",
+        "Type": "DL"
+      },
+      "IdentificationInformation2": {
+        "ExpirationDate": "2028-05-16T16:55:15.468Z",
+        "IssueDate": "2008-05-16T16:55:15.468Z",
+        "IssuingEntity": "US",
+        "IssuingLocation": "Pasadena",
+        "Number": "R4567",
+        "Type": "Passport"
+      },
+      "IsTINAppliedFor": true,
+      "Status": "VerifiedByBanker"
+    },
+    "LastName": "Hu",
+    "MiddleName": "",
+    "MailCode": "NoSpecialAction",
+    "MaritalStatus": "Married",
+    "MothersMaidenName": "Name",
+    "Occupation": "Architecture / Engineering",
+    "PEP": "No",
+    "CISNumber": "00000061099",
+    "PrimaryID": "DL",
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": 30744,
+    "MobilePhoneNumber": "7656065125",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "SSN": "991666666",
+    "SSN_Type": "ssn9",
+    "SearchName": "WatchList",
+    "SecondaryOfficerNumber": 30744,
+    "TaxIdType": "SocialSecurityNumber",
+    "TaxNumber": "666176172",
+    "Title": "",
+    "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+    "W8CertificateType": "Blank"
+  },
+  "IdAuthenticationResponse": [
+    {
+      "TransactionID": "b08ee36d-7e6e-46f7-a785-0592b946d40a",
+      "DocumentType": "Passport/DrivingLicence/IdentityCard",
+      "UploadedDt": "2018-07-30T23:20:41",
+      "CountryCode": "CN",
+      "ProductName": "Identity Verification",
+      "Record": {
+        "TransactionRecordID": "a83bdd0f-666a-450f-bcd6-35cad76026a7",
+        "RecordStatus": "nomatch",
+        "DatasourceResults": [
+          {
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "DatasourceFields": [],
+            "AppendedFields": [
+              {
+                "FieldName": "AuthenticityReasons",
+                "Data": "DocumentCountryNoMatch"
+              },
+              {
+                "FieldName": "PostalCode",
+                "Data": "78550-0000"
+              },
+              {
+                "FieldName": "City",
+                "Data": "HARLINGEN"
+              },
+              {
+                "FieldName": "YearOfBirth",
+                "Data": "1972"
+              },
+              {
+                "FieldName": "DocumentVerified",
+                "Data": "False"
+              },
+              {
+                "FieldName": "AuthenticityDetails",
+                "Data": "[{\"Name\":\"Birth Date Valid\",\"IsValid\":true,\"Value\":\"1972-11-15T00:00:00\",\"DocumentId\":\"40e7eda7-3a92-45dd-9e34-e00b94cbfe37\",\"Description\":\"The birth date is valid. Verified that the birth date is valid, in the expected format, and occurs on or before the current date and not outside a reasonable range.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Birth Date\"},{\"Name\":\"Document Classification\",\"IsValid\":true,\"Value\":\"Texas (TX) Driver License 2009\",\"DocumentId\":\"609412cb-7ba7-44ff-8fe2-aec34105da7b\",\"Description\":\"The document type is supported. Verified that the document is recognized as a supported document type and that the type of document can be fully authenticated.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Document Expired\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"f1b3b344-e3f3-40da-bc4a-88d1ecfad52c\",\"Description\":\"The document has not expired. Verified that the document expiration date does not occur before the current date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Expiration Date Valid\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"06c57fb2-f1cf-4677-8003-25797fe246bc\",\"Description\":\"The expiration date is valid. Verified that the document expiration date is valid, in the expected format, and occurs after the issue and birth dates.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Issue Date Valid\",\"IsValid\":true,\"Value\":\"2010-07-03T00:00:00\",\"DocumentId\":\"ceb56a03-3502-47e8-a217-d6bde77a4607\",\"Description\":\"The issue date is valid. Verified that the document issue date is valid, in the expected format, does not occur in the future, does not occur before the date of birth, and does not occur after the expiration date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Issue Date\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"fd05713e-1569-4750-901d-db622cf0a433\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"84cb897c-f7e6-4917-850b-dcddf4069a91\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"929da7eb-f9ec-49f4-a38a-1957d67ec448\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"}]"
+              },
+              {
+                "FieldName": "Address1",
+                "Data": "1725 W FILMORE AVE"
+              },
+              {
+                "FieldName": "StateProvince",
+                "Data": "TX"
+              },
+              {
+                "FieldName": "DocumentNumber",
+                "Data": "98765432"
+              },
+              {
+                "FieldName": "FullName",
+                "Data": "MARY ANNA HARPER"
+              },
+              {
+                "FieldName": "FirstName",
+                "Data": "MARY ANNA"
+              },
+              {
+                "FieldName": "LastName",
+                "Data": "HARPER"
+              },
+              {
+                "FieldName": "Issuer",
+                "Data": "Texas"
+              },
+              {
+                "FieldName": "Gender",
+                "Data": "F"
+              },
+              {
+                "FieldName": "DayOfBirth",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfBirth",
+                "Data": "11"
+              },
+              {
+                "FieldName": "DayOfExpiry",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfExpiry",
+                "Data": "11"
+              },
+              {
+                "FieldName": "YearOfExpiry",
+                "Data": "2018"
+              },
+              {
+                "FieldName": "DayOfIssue",
+                "Data": "03"
+              },
+              {
+                "FieldName": "MonthOfIssue",
+                "Data": "07"
+              },
+              {
+                "FieldName": "YearOfIssue",
+                "Data": "2010"
+              }
+            ],
+            "Errors": [],
+            "FieldGroups": []
+          }
+        ],
+        "Errors": [],
+        "Rule": {
+          "RuleName": "RuleScript DocumentVerification",
+          "Note": "Script manually created"
+        }
+      },
+      "Errors": []
+    },
+    {
+      "TransactionID": "b08ee36d-7e6e-46f7-a785-0592b946d40a",
+      "DocumentType": "Passport/DrivingLicence/IdentityCard",
+      "UploadedDt": "2018-07-30T23:20:41",
+      "CountryCode": "CN",
+      "ProductName": "Identity Verification",
+      "Record": {
+        "TransactionRecordID": "a83bdd0f-666a-450f-bcd6-35cad76026a7",
+        "RecordStatus": "nomatch",
+        "DatasourceResults": [
+          {
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "DatasourceFields": [],
+            "AppendedFields": [
+              {
+                "FieldName": "AuthenticityReasons",
+                "Data": "DocumentCountryNoMatch"
+              },
+              {
+                "FieldName": "PostalCode",
+                "Data": "78550-0000"
+              },
+              {
+                "FieldName": "City",
+                "Data": "HARLINGEN"
+              },
+              {
+                "FieldName": "YearOfBirth",
+                "Data": "1972"
+              },
+              {
+                "FieldName": "DocumentVerified",
+                "Data": "False"
+              },
+              {
+                "FieldName": "AuthenticityDetails",
+                "Data": "[{\"Name\":\"Birth Date Valid\",\"IsValid\":true,\"Value\":\"1972-11-15T00:00:00\",\"DocumentId\":\"40e7eda7-3a92-45dd-9e34-e00b94cbfe37\",\"Description\":\"The birth date is valid. Verified that the birth date is valid, in the expected format, and occurs on or before the current date and not outside a reasonable range.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Birth Date\"},{\"Name\":\"Document Classification\",\"IsValid\":true,\"Value\":\"Texas (TX) Driver License 2009\",\"DocumentId\":\"609412cb-7ba7-44ff-8fe2-aec34105da7b\",\"Description\":\"The document type is supported. Verified that the document is recognized as a supported document type and that the type of document can be fully authenticated.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Document Expired\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"f1b3b344-e3f3-40da-bc4a-88d1ecfad52c\",\"Description\":\"The document has not expired. Verified that the document expiration date does not occur before the current date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Expiration Date Valid\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"06c57fb2-f1cf-4677-8003-25797fe246bc\",\"Description\":\"The expiration date is valid. Verified that the document expiration date is valid, in the expected format, and occurs after the issue and birth dates.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Issue Date Valid\",\"IsValid\":true,\"Value\":\"2010-07-03T00:00:00\",\"DocumentId\":\"ceb56a03-3502-47e8-a217-d6bde77a4607\",\"Description\":\"The issue date is valid. Verified that the document issue date is valid, in the expected format, does not occur in the future, does not occur before the date of birth, and does not occur after the expiration date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Issue Date\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"fd05713e-1569-4750-901d-db622cf0a433\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"84cb897c-f7e6-4917-850b-dcddf4069a91\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"929da7eb-f9ec-49f4-a38a-1957d67ec448\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"}]"
+              },
+              {
+                "FieldName": "Address1",
+                "Data": "1725 W FILMORE AVE"
+              },
+              {
+                "FieldName": "StateProvince",
+                "Data": "TX"
+              },
+              {
+                "FieldName": "DocumentNumber",
+                "Data": "98765432"
+              },
+              {
+                "FieldName": "FullName",
+                "Data": "MARY ANNA HARPER"
+              },
+              {
+                "FieldName": "FirstName",
+                "Data": "MARY ANNA"
+              },
+              {
+                "FieldName": "LastName",
+                "Data": "HARPER"
+              },
+              {
+                "FieldName": "Issuer",
+                "Data": "Texas"
+              },
+              {
+                "FieldName": "Gender",
+                "Data": "F"
+              },
+              {
+                "FieldName": "DayOfBirth",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfBirth",
+                "Data": "11"
+              },
+              {
+                "FieldName": "DayOfExpiry",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfExpiry",
+                "Data": "11"
+              },
+              {
+                "FieldName": "YearOfExpiry",
+                "Data": "2018"
+              },
+              {
+                "FieldName": "DayOfIssue",
+                "Data": "03"
+              },
+              {
+                "FieldName": "MonthOfIssue",
+                "Data": "07"
+              },
+              {
+                "FieldName": "YearOfIssue",
+                "Data": "2010"
+              }
+            ],
+            "Errors": [],
+            "FieldGroups": []
+          }
+        ],
+        "Errors": [],
+        "Rule": {
+          "RuleName": "RuleScript DocumentVerification",
+          "Note": "Script manually created"
+        }
+      },
+      "Errors": []
+    }
+  ],
+  "IdVerificationRequest": {
+    "AcceptTruliooTermsAndConditions": true,
+    "CleansedAddress": false,
+    "VerboseMode": true,
+    "ConfigurationName": "Identity Verification",
+    "CountryCode": "CN",
+    "DataFields": {
+      "PersonInfo": {
+        "FirstGivenName": "è¨€æ˜Ž",
+        "FirstSurName": "èƒ¡",
+        "DayOfBirth": 5,
+        "MonthOfBirth": 6,
+        "YearOfBirth": 1976
+      },
+      "NationalIds": [
+        {
+          "IDNumber": "440861896421345987",
+          "Type": "NationalID"
+        }
+      ]
+    }
+  },
+  "PinPointRequest": [
+    {
+      "handler": "session_info",
+      "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+      "remote_addr": "59.165.215.253",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+      "result": "pass",
+      "channel": "online",
+      "new_account_data": {
+        "new_account": true,
+        "first_name": "Varsha",
+        "last_name": "KS",
+        "phone_number": "7767767766",
+        "email": "depositdemo@ewb.com"
+      }
+    },
+    {
+      "handler": "pinpoint_eval",
+      "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+      "remote_addr": "59.165.215.253",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+      "activity": "new_account",
+      "url": "http://uat-eastwestbank.cs95.force.com/tf4sf__dsp#/get-started",
+      "timestamp": "2018-07-20 11:12:37"
+    }
+  ],
+  "Promotions": {
+    "OnboardingInvitation": {
+      "EmailAddress": "dds@dds.com",
+      "PhoneNumber": "7656065125"
+    },
+    "PromoCode": "Y834KCUH",
+    "Status": "New"
+  }
+}]]></ee:set-payload>
+				</ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="skipTrueIDResponse"><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_PASS_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_PASS_REASONS')]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_FAIL_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_FAIL_REASONS')]]></ee:set-variable>
+					<ee:set-variable variableName="retSuccMes" ><![CDATA[%dw 2.0
+output application/json
+---
+"Success"]]></ee:set-variable>
+					<ee:set-variable variableName="successCode" ><![CDATA[%dw 2.0
+output application/json
+---
+true]]></ee:set-variable>
+					<ee:set-variable variableName="IsPartnerRequest" ><![CDATA[%dw 2.0
+output application/json
+---
+true]]></ee:set-variable>
+					<ee:set-variable variableName="isCaseApprovedFlow" ><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+            
+</ee:variables>				
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="f2d2726c-4705-4dce-ad23-428d7cd88aa3" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="cde3438b-c0d1-4d45-a648-36be675c6e33" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Application Creation" doc:id="190a5936-a4b8-4459-96db-0c874da3e3a7" expression="#[payload.data.ApplicationId]" is='#[MunitTools::notNullValue()]' message="Application was not created"/>
+			<munit-tools:assert-that doc:name="Assert Case Creation" doc:id="4a18449e-c132-444c-aadd-24d8dd2c4660" expression="#[payload.data.CaseNumber]" is='#[MunitTools::notNullValue()]' message="Case was not created"/>
+			<munit-tools:assert-that doc:name="Assert Application Status" doc:id="81c56ae9-17e0-4f88-88e2-ab70f2a297ef" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Application was not created with Pending status"/>
+		</munit:validation>
+	</munit:test>
+	<sub-flow name="OFAC-Failure-Mock" doc:id="d5c2a3ce-e6aa-48ad-99dc-641727c1332d">
+		<logger level="INFO" doc:name="Logger" doc:id="ba594742-a36f-4de0-9950-4ec25c5f065e" message="Mocking OFAC" />
+
+			<munit-tools:mock-when doc:name="Mock OFAC Sys API Response" doc:id="898d632c-d857-46b9-af79-ba9911833d71" processor="http:request">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="10982066-f8b1-4055-9a7b-fd1aa578aba3" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+	</sub-flow>	
+	<sub-flow name="NONUS-Citizen-Terafina-Set-Environment-sub-flow" doc:id="23dabd38-5092-444c-9de0-e11a3c2e3eb0" >
+		<ee:transform doc:name="Set payload and variables" doc:id="d7516d4e-b0f7-4e0a-b9fd-cb20f69d15e7">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "ApplicationId": "a04m000000BAcfJAAT",
+  "ApplicantType": "NRA",
+  "RequestUUID": "a04m000000BAcfJAAT",
+  "AccountInformation": {
+    "AccountType": "CHK_I_PERS_PREMIER",
+    "CustomerToAccountRelationship": {
+      "AddressLineOfTINOwner": 1,
+      "Customer1AccountAssociationType": "Primary",
+      "Customer1AccountRelationshipCode": "000",
+      "Customer2AccountAssociationType": "Primary",
+      "NumberOfStatementCopies": 1
+    },
+    "DepositAccount": {
+      "WithholdingIndicator": "ExemptAssumed",
+      "UserCode": "D",
+      "StatusCodes": [
+        "NeverClose"
+      ],
+      "BulkFileType": "ImageFile"
+    },
+    "CardAccount": null
+  },
+  "CustomerInformation": {
+    "Address": {
+      "City": "San Francisco",
+      "CountryCode": "US",
+      "IsForeignAddress": false,
+      "State": "CA",
+      "StreetAddress1": "1100 Market St",
+      "StreetAddress2": "null",
+      "Zip": "94102-3804"
+    },
+    "SourceofFunds": {
+      "Source": "FundfromEMP",
+      "MiscDemographic": 2,
+      "CustomerIntentforIntWireTransfer": {
+        "TransferServices": "Yes/No",
+        "ForeignInActivity": {
+          "ForeignIncomingActivity": "Yes/No",
+          "IncomingWires": 3,
+          "IncomingWiresAmount": 233445.34
+        },
+        "ForeignOutActivity": {
+          "ForeignOutgoingActivity": "Yes/No",
+          "OutgoingWires": 3,
+          "OutgoingWiresAmount": 233445.34
+        }
+      }
+    },
+    "VisaType": "Student",
+    "ForeignTaxID": "3738897489",
+    "BranchNumber": "8088",
+    "CitizenshipCode": "USA",
+    "CostCenterNumber": 88,
+    "CountryOfBirth": "India",
+    "DateOfBirth": "1989-03-04",
+    "EmailAddress": "dds@dds.com",
+    "EmploymentDate": "2015-05-16T16:55:15.467Z",
+    "EmploymentOrSchool": "EWB",
+    "EntityType": "Unknown",
+    "Ethnicity": "AfricanAmerican",
+    "FirstName": "Yanming",
+    "Gender": "Female",
+    "Identification": {
+      "IdentificationInformation1": {
+        "ExpirationDate": "2020-05-16T16:55:15.468Z",
+        "IssueDate": "2010-05-16T16:55:15.468Z",
+        "IssuingEntity": "DMV",
+        "IssuingLocation": "Pasadena",
+        "Number": "F4567",
+        "Type": "DL"
+      },
+      "IdentificationInformation2": {
+        "ExpirationDate": "2028-05-16T16:55:15.468Z",
+        "IssueDate": "2008-05-16T16:55:15.468Z",
+        "IssuingEntity": "US",
+        "IssuingLocation": "Pasadena",
+        "Number": "R4567",
+        "Type": "Passport"
+      },
+      "IsTINAppliedFor": true,
+      "Status": "VerifiedByBanker"
+    },
+    "LastName": "Hu",
+    "MiddleName": "",
+    "MailCode": "NoSpecialAction",
+    "MaritalStatus": "Married",
+    "MothersMaidenName": "Name",
+    "Occupation": "Architecture / Engineering",
+    "PEP": "No",
+    "CISNumber": "00000061099",
+    "PrimaryID": "DL",
+    "PrimaryLanguage": "Chinese",
+    "PrimaryOfficerNumber": 30744,
+    "MobilePhoneNumber": "7656065125",
+    "RequestUUID": "a04m000000BAcfJAAT",
+    "SSN": "991666666",
+    "SSN_Type": "ssn9",
+    "SearchName": "WatchList",
+    "SecondaryOfficerNumber": 30744,
+    "TaxIdType": "SocialSecurityNumber",
+    "TaxNumber": "666176172",
+    "Title": "",
+    "W8CertificateDate": "2018-05-16T16:55:15.467Z",
+    "W8CertificateType": "Blank"
+  },
+  "IdAuthenticationResponse": [
+    {
+      "TransactionID": "b08ee36d-7e6e-46f7-a785-0592b946d40a",
+      "DocumentType": "Passport/DrivingLicence/IdentityCard",
+      "UploadedDt": "2018-07-30T23:20:41",
+      "CountryCode": "CN",
+      "ProductName": "Identity Verification",
+      "Record": {
+        "TransactionRecordID": "a83bdd0f-666a-450f-bcd6-35cad76026a7",
+        "RecordStatus": "match",
+        "DatasourceResults": [
+          {
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "DatasourceFields": [],
+            "AppendedFields": [
+              {
+                "FieldName": "AuthenticityReasons",
+                "Data": "DocumentCountryNoMatch"
+              },
+              {
+                "FieldName": "PostalCode",
+                "Data": "78550-0000"
+              },
+              {
+                "FieldName": "City",
+                "Data": "HARLINGEN"
+              },
+              {
+                "FieldName": "YearOfBirth",
+                "Data": "1972"
+              },
+              {
+                "FieldName": "DocumentVerified",
+                "Data": "False"
+              },
+              {
+                "FieldName": "AuthenticityDetails",
+                "Data": "[{\"Name\":\"Birth Date Valid\",\"IsValid\":true,\"Value\":\"1972-11-15T00:00:00\",\"DocumentId\":\"40e7eda7-3a92-45dd-9e34-e00b94cbfe37\",\"Description\":\"The birth date is valid. Verified that the birth date is valid, in the expected format, and occurs on or before the current date and not outside a reasonable range.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Birth Date\"},{\"Name\":\"Document Classification\",\"IsValid\":true,\"Value\":\"Texas (TX) Driver License 2009\",\"DocumentId\":\"609412cb-7ba7-44ff-8fe2-aec34105da7b\",\"Description\":\"The document type is supported. Verified that the document is recognized as a supported document type and that the type of document can be fully authenticated.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Document Expired\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"f1b3b344-e3f3-40da-bc4a-88d1ecfad52c\",\"Description\":\"The document has not expired. Verified that the document expiration date does not occur before the current date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Expiration Date Valid\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"06c57fb2-f1cf-4677-8003-25797fe246bc\",\"Description\":\"The expiration date is valid. Verified that the document expiration date is valid, in the expected format, and occurs after the issue and birth dates.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Issue Date Valid\",\"IsValid\":true,\"Value\":\"2010-07-03T00:00:00\",\"DocumentId\":\"ceb56a03-3502-47e8-a217-d6bde77a4607\",\"Description\":\"The issue date is valid. Verified that the document issue date is valid, in the expected format, does not occur in the future, does not occur before the date of birth, and does not occur after the expiration date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Issue Date\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"fd05713e-1569-4750-901d-db622cf0a433\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"84cb897c-f7e6-4917-850b-dcddf4069a91\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"929da7eb-f9ec-49f4-a38a-1957d67ec448\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"}]"
+              },
+              {
+                "FieldName": "Address1",
+                "Data": "1725 W FILMORE AVE"
+              },
+              {
+                "FieldName": "StateProvince",
+                "Data": "TX"
+              },
+              {
+                "FieldName": "DocumentNumber",
+                "Data": "98765432"
+              },
+              {
+                "FieldName": "FullName",
+                "Data": "MARY ANNA HARPER"
+              },
+              {
+                "FieldName": "FirstName",
+                "Data": "MARY ANNA"
+              },
+              {
+                "FieldName": "LastName",
+                "Data": "HARPER"
+              },
+              {
+                "FieldName": "Issuer",
+                "Data": "Texas"
+              },
+              {
+                "FieldName": "Gender",
+                "Data": "F"
+              },
+              {
+                "FieldName": "DayOfBirth",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfBirth",
+                "Data": "11"
+              },
+              {
+                "FieldName": "DayOfExpiry",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfExpiry",
+                "Data": "11"
+              },
+              {
+                "FieldName": "YearOfExpiry",
+                "Data": "2018"
+              },
+              {
+                "FieldName": "DayOfIssue",
+                "Data": "03"
+              },
+              {
+                "FieldName": "MonthOfIssue",
+                "Data": "07"
+              },
+              {
+                "FieldName": "YearOfIssue",
+                "Data": "2010"
+              }
+            ],
+            "Errors": [],
+            "FieldGroups": []
+          }
+        ],
+        "Errors": [],
+        "Rule": {
+          "RuleName": "RuleScript DocumentVerification",
+          "Note": "Script manually created"
+        }
+      },
+      "Errors": []
+    },
+    {
+      "TransactionID": "b08ee36d-7e6e-46f7-a785-0592b946d40a",
+      "DocumentType": "Passport/DrivingLicence/IdentityCard",
+      "UploadedDt": "2018-07-30T23:20:41",
+      "CountryCode": "CN",
+      "ProductName": "Identity Verification",
+      "Record": {
+        "TransactionRecordID": "a83bdd0f-666a-450f-bcd6-35cad76026a7",
+        "RecordStatus": "match",
+        "DatasourceResults": [
+          {
+            "DatasourceName": "Acuant AssureID Document Verification Test",
+            "DatasourceFields": [],
+            "AppendedFields": [
+              {
+                "FieldName": "AuthenticityReasons",
+                "Data": "DocumentCountryNoMatch"
+              },
+              {
+                "FieldName": "PostalCode",
+                "Data": "78550-0000"
+              },
+              {
+                "FieldName": "City",
+                "Data": "HARLINGEN"
+              },
+              {
+                "FieldName": "YearOfBirth",
+                "Data": "1972"
+              },
+              {
+                "FieldName": "DocumentVerified",
+                "Data": "False"
+              },
+              {
+                "FieldName": "AuthenticityDetails",
+                "Data": "[{\"Name\":\"Birth Date Valid\",\"IsValid\":true,\"Value\":\"1972-11-15T00:00:00\",\"DocumentId\":\"40e7eda7-3a92-45dd-9e34-e00b94cbfe37\",\"Description\":\"The birth date is valid. Verified that the birth date is valid, in the expected format, and occurs on or before the current date and not outside a reasonable range.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Birth Date\"},{\"Name\":\"Document Classification\",\"IsValid\":true,\"Value\":\"Texas (TX) Driver License 2009\",\"DocumentId\":\"609412cb-7ba7-44ff-8fe2-aec34105da7b\",\"Description\":\"The document type is supported. Verified that the document is recognized as a supported document type and that the type of document can be fully authenticated.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Document Expired\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"f1b3b344-e3f3-40da-bc4a-88d1ecfad52c\",\"Description\":\"The document has not expired. Verified that the document expiration date does not occur before the current date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Expiration Date Valid\",\"IsValid\":true,\"Value\":\"2018-11-15T00:00:00\",\"DocumentId\":\"06c57fb2-f1cf-4677-8003-25797fe246bc\",\"Description\":\"The expiration date is valid. Verified that the document expiration date is valid, in the expected format, and occurs after the issue and birth dates.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Expiration Date\"},{\"Name\":\"Issue Date Valid\",\"IsValid\":true,\"Value\":\"2010-07-03T00:00:00\",\"DocumentId\":\"ceb56a03-3502-47e8-a217-d6bde77a4607\",\"Description\":\"The issue date is valid. Verified that the document issue date is valid, in the expected format, does not occur in the future, does not occur before the date of birth, and does not occur after the expiration date.\",\"Source\":\"VisualInspectionZone\",\"Properties\":\"VIZ Issue Date\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"fd05713e-1569-4750-901d-db622cf0a433\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Color Response\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"84cb897c-f7e6-4917-850b-dcddf4069a91\",\"Description\":\"The color response is correct. Verified that a region of the document responds as expected when viewed with white illumination.  This test may be used to (1) verify the integrity of the photo to detect photo substitutions, (2) verify that the document is not counterfeit, or (3) verify that a document has not been tampered with or modified.\",\"Source\":\"\",\"Properties\":\"\"},{\"Name\":\"Visible Pattern\",\"IsValid\":true,\"Value\":\"\",\"DocumentId\":\"929da7eb-f9ec-49f4-a38a-1957d67ec448\",\"Description\":\"A visible pattern was found. Verified that a security feature in the visible spectrum is present and in an expected location on the document.\",\"Source\":\"\",\"Properties\":\"\"}]"
+              },
+              {
+                "FieldName": "Address1",
+                "Data": "1725 W FILMORE AVE"
+              },
+              {
+                "FieldName": "StateProvince",
+                "Data": "TX"
+              },
+              {
+                "FieldName": "DocumentNumber",
+                "Data": "98765432"
+              },
+              {
+                "FieldName": "FullName",
+                "Data": "MARY ANNA HARPER"
+              },
+              {
+                "FieldName": "FirstName",
+                "Data": "MARY ANNA"
+              },
+              {
+                "FieldName": "LastName",
+                "Data": "HARPER"
+              },
+              {
+                "FieldName": "Issuer",
+                "Data": "Texas"
+              },
+              {
+                "FieldName": "Gender",
+                "Data": "F"
+              },
+              {
+                "FieldName": "DayOfBirth",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfBirth",
+                "Data": "11"
+              },
+              {
+                "FieldName": "DayOfExpiry",
+                "Data": "15"
+              },
+              {
+                "FieldName": "MonthOfExpiry",
+                "Data": "11"
+              },
+              {
+                "FieldName": "YearOfExpiry",
+                "Data": "2018"
+              },
+              {
+                "FieldName": "DayOfIssue",
+                "Data": "03"
+              },
+              {
+                "FieldName": "MonthOfIssue",
+                "Data": "07"
+              },
+              {
+                "FieldName": "YearOfIssue",
+                "Data": "2010"
+              }
+            ],
+            "Errors": [],
+            "FieldGroups": []
+          }
+        ],
+        "Errors": [],
+        "Rule": {
+          "RuleName": "RuleScript DocumentVerification",
+          "Note": "Script manually created"
+        }
+      },
+      "Errors": []
+    }
+  ],
+  "IdVerificationRequest": {
+    "AcceptTruliooTermsAndConditions": true,
+    "CleansedAddress": false,
+    "VerboseMode": true,
+    "ConfigurationName": "Identity Verification",
+    "CountryCode": "CN",
+    "DataFields": {
+      "PersonInfo": {
+        "FirstGivenName": "Ã¨Â¨â‚¬Ã¦ËœÅ½",
+        "FirstSurName": "Ã¨Æ’Â¡",
+        "DayOfBirth": 5,
+        "MonthOfBirth": 6,
+        "YearOfBirth": 1976
+      },
+      "NationalIds": [
+        {
+          "IDNumber": "440861896421345987",
+          "Type": "NationalID"
+        }
+      ]
+    }
+  },
+  "PinPointRequest": [
+    {
+      "handler": "session_info",
+      "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+      "remote_addr": "59.165.215.253",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+      "result": "pass",
+      "channel": "online",
+      "new_account_data": {
+        "new_account": true,
+        "first_name": "Varsha",
+        "last_name": "KS",
+        "phone_number": "7767767766",
+        "email": "depositdemo@ewb.com"
+      }
+    },
+    {
+      "handler": "pinpoint_eval",
+      "customer_session_id": "158Ctioo31eE0Um9GYvrHHRrm",
+      "remote_addr": "59.165.215.253",
+      "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
+      "activity": "new_account",
+      "url": "http://uat-eastwestbank.cs95.force.com/tf4sf__dsp#/get-started",
+      "timestamp": "2018-07-20 11:12:37"
+    }
+  ],
+  "Promotions": {
+    "OnboardingInvitation": {
+      "EmailAddress": "dds@dds.com",
+      "PhoneNumber": "7656065125"
+    },
+    "PromoCode": "Y834KCUH",
+    "Status": "New"
+  }
+}]]></ee:set-payload>
+				</ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="skipTrueIDResponse"><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_PASS_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_PASS_REASONS')]]></ee:set-variable>
+				<ee:set-variable variableName="THREAT_INTELLIGENCE_FAIL_REASONS"><![CDATA[%dw 2.0
+output application/json
+---
+p('variables.THREAT_INTELLIGENCE_FAIL_REASONS')]]></ee:set-variable>
+					<ee:set-variable variableName="retSuccMes"><![CDATA[%dw 2.0
+output application/json
+---
+"Success"]]></ee:set-variable>
+					<ee:set-variable variableName="successCode"><![CDATA[%dw 2.0
+output application/json
+---
+true]]></ee:set-variable>
+					<ee:set-variable variableName="IsPartnerRequest"><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+					<ee:set-variable variableName="isCaseApprovedFlow"><![CDATA[%dw 2.0
+output application/json
+---
+false]]></ee:set-variable>
+            
+</ee:variables>				
+			</ee:transform>
+	</sub-flow>
+	<munit:test name="NONUS-Citizen-Terafina-Partner-SuccessScenarioTest" description="Test" doc:id="8d34d803-613b-4c4f-8091-96bf8404eb26">
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="2799701c-ec33-4107-9882-5015480045e2" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="d560094d-7215-4a9c-91e0-c12b560532ec" name="OFAC-Mock"/>
+			<flow-ref doc:name="PepMock" doc:id="bc952b80-24a6-492d-8675-09ab0eb300e8" name="PepMock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="8c982f52-a4a7-40c6-84f2-2b98abb17dd2" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="62b1888f-1782-4cbb-89b5-55e980448265" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="efe48562-1e4b-45ac-8b8c-f445566e9dac" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="e614252b-4182-4b19-baab-a418a4e75bad" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="bd3b4262-8472-4e3c-a1ac-81b1ee974fca" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="NONUS-Citizen-Terafina-Set-Environment-sub-flow" doc:id="c539421d-4518-4c35-8edd-07d0247468ce" name="NONUS-Citizen-Terafina-Set-Environment-sub-flow"/>
+			<set-variable value="#[true]" doc:name="Is Partner Request" doc:id="5cda5f40-ae0b-44b8-936b-d81ec2b5051d" variableName="IsPartnerRequest" />
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="086d38ec-8a42-45c6-b84a-e5507333daa1" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="d348ed58-faf6-4457-83a6-91573f62643a" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Application Creation" doc:id="1f6a304c-846b-47e7-9269-c6172b2feef4" expression="#[payload.data.ApplicationId]" is='#[MunitTools::notNullValue()]' message="Application was not created"/>
+			<munit-tools:assert-that doc:name="Assert Case Creation" doc:id="6def65b8-b632-435d-be85-121e72d3673a" expression="#[payload.data.CaseNumber]" is='#[MunitTools::notNullValue()]' message="Case was not created"/>
+			<munit-tools:assert-that doc:name="Assert Application Status" doc:id="b38267fc-aa1f-49a5-ac9b-b8e81ec13102" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Approved")]' message="Application was not created with Pending status"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="NONUS-Citizen-Terafina-NonPartnerSuccessScenarioTest" description="Test" doc:id="6200cfdf-2cb8-4c2c-8491-d6c4b01b41dc">
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="043327e3-2b08-4273-97ac-01ae6ca9e2eb" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="f87c9338-f80f-48b6-b9ad-6c02f256b1e9" name="OFAC-Mock"/>
+			<flow-ref doc:name="PepMock" doc:id="9781d0d7-bd13-404e-b47e-fd1f1b2fb581" name="PepMock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="8b454a11-d216-4e8d-80ff-9c7a796337bb" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="66d16d36-4a91-4582-8722-cec9db963d44" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="122ae322-ed03-47e2-af0c-10d56786a7a5" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="91e36095-ecff-4c06-b1bb-f5f5a71c3d76" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="c33de5cb-4789-4130-a208-a8e97d2a6e0c" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="NONUS-Citizen-Terafina-Set-Environment-sub-flow" doc:id="64f57db9-95b2-412e-971e-113e44c33bd5" name="NONUS-Citizen-Terafina-Set-Environment-sub-flow"/>
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="a66061fb-d55e-4d76-b502-a6872bc9c3d9" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="b5ab5c70-8f65-4bca-9d8e-7c3ed1c060f4" processor="set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="31dfc0cf-01ad-4f55-a027-8f145b0b0ca3" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="3e3c56b5-b7d0-48a1-b91a-a88043f1c8a4" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Application Creation" doc:id="ddba4d4a-e45c-4f57-963f-03981497ad09" expression="#[payload.data.ApplicationId]" is='#[MunitTools::notNullValue()]' message="Application was not created"/>
+			<munit-tools:assert-that doc:name="Assert Case Creation" doc:id="025fa491-c131-4d46-949a-6201d05b4160" expression="#[payload.data.CaseNumber]" is='#[MunitTools::notNullValue()]' message="Case was not created"/>
+			<munit-tools:assert-that doc:name="Assert Application Status" doc:id="e3689a6d-4d4f-4e0a-a009-b1ca57262f14" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Approved")]' message="Application was not created with Pending status"/>
+		</munit:validation>
+	</munit:test>	
+	<munit:test name="NONUS-Citizen-Terafina-ByPassScenarioTest" description="Test" doc:id="3ae37886-6f2f-4c65-a8fa-e01fdb1a83e0">
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="745ec4c6-fd45-4363-aff6-40867779ac2f" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="d54d7305-37d6-4d79-9667-f9d24dfacd84" name="OFAC-Mock"/>
+			<flow-ref doc:name="PepMock" doc:id="1ed7dd57-5876-4e7d-9e12-8bd63498ef44" name="PepMock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="8880e8ce-2db2-403f-ba0f-9341f8faa7d2" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="e7b72601-91d0-443c-b726-9ea98cf9eb86" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="8de9c006-8a95-44a9-8062-1f221ca2af9b" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="24f61300-75fd-4bde-82cd-90f1c8e5c19c" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="664c4926-a7f2-43d8-929f-3f982e9313c4" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="NONUS-Citizen-Terafina-Set-Environment-sub-flow" doc:id="9dfe9276-20cd-4d8b-86b1-47a8c57fcfdc" name="NONUS-Citizen-Terafina-Set-Environment-sub-flow"/>
+			<ee:transform doc:name="Set Bypass condition" doc:id="dd64cbd5-2728-44c4-912a-f4f235cf133a" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload ++ {
+	"Pass" : true
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="2067c747-eb9f-4e84-a915-3101e5538a52" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call" doc:id="048ff24f-1cba-4780-82dc-ce8a3f905894" processor="mule:set-variable" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="63faec01-ee10-4483-b15e-80c90662114f" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="4197e57b-81ef-433f-9408-657ab1a64af1" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Application Creation" doc:id="70c3a867-6d29-48ab-a28b-c671bdd29a63" expression="#[payload.data.ApplicationId]" is='#[MunitTools::notNullValue()]' message="Application was not created"/>
+			<munit-tools:assert-that doc:name="Assert Case Creation" doc:id="7e6829f2-372c-47a6-9483-3dbc94ecb71f" expression="#[payload.data.CaseNumber]" is='#[MunitTools::notNullValue()]' message="Case was not created"/>
+			<munit-tools:assert-that doc:name="Assert Application Status" doc:id="2798c353-d880-4e87-8f59-9697716efcae" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Approved")]' message="Application was not created with Pending status"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="NONUS-Citizen-Terafina-OFAC-FailureScenarioTest" description="Test" doc:id="5a5905b2-910a-4e64-88ba-eb4d3bef6616">
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="ca07f357-7db1-4ea8-bf34-76d43795e9dd" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="915ccc9f-45ea-462d-98dd-eb31cb6b9a9f" name="OFAC-Mock"/>
+			<flow-ref doc:name="OFACPEP-Failure-Mock" doc:id="c0944f47-1efd-434d-8b98-18301ec96e0c" name="OFAC-Failure-Mock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="a61315b3-7448-4f7f-964f-85eb3c30f59e" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="25eb6bfe-c337-4f38-b493-70f5943392a5" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="f18dbc43-c9fe-4544-aacd-acb525c46d07" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="e2de3e38-8a38-421d-bc16-dabfcabf9f2f" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="bbe9c3ef-23d8-4af3-bc68-6b2f880334a5" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="NONUS-Citizen-Terafina-Set-Environment-sub-flow" doc:id="3fa155df-2641-43b1-aa49-94cbebf3feda" name="NONUS-Citizen-Terafina-Set-Environment-sub-flow"/>
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="90a2b0ae-8a32-455a-9b6c-e4c223a53d40" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call to Exception Choice branch" doc:id="d541602d-d8be-4b01-aadf-a535f63474dc" processor="mule:set-variable" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="63f68155-5d17-4486-9e45-8355b3e655e9" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="2806baa0-4298-4548-a256-116ff75ba65b" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Application Creation" doc:id="d0a6770f-4696-4782-b8e6-d242904c7b33" expression="#[payload.data.ApplicationId]" is='#[MunitTools::notNullValue()]' message="Application was not created"/>
+			<munit-tools:assert-that doc:name="Assert Case Creation" doc:id="9879bd9c-bbde-41f5-8820-57cd32d7f3cf" expression="#[payload.data.CaseNumber]" is='#[MunitTools::notNullValue()]' message="Case was not created"/>
+			<munit-tools:assert-that doc:name="Assert Application Status" doc:id="f5a51347-9b5e-46c9-94ef-0c07bd831e3c" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Application was not created with Pending status"/>
+			
+		</munit:validation>
+	</munit:test>
+	<munit:test name="NONUS-Citizen-Terafina-OFAC-Match-ScenarioTest" description="Test" doc:id="90678a22-caef-438f-a4ae-6a586839f934">
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="af6bd469-e262-4acb-b47f-5c0e9386f17c" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-MatchResponse-Mock" doc:id="466e578a-4190-457d-8633-3eefd360ff8d" name="OFAC-MatchResponse-Mock"/>
+			<flow-ref doc:name="PepMock" doc:id="4c90451a-eba3-4c93-a74a-a53f64d3df23" name="PepMock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="80f3d7ec-711e-4e83-a89c-d8b73b94f064" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="bfe8a143-b983-4c4c-94e9-a5b2ea88b57e" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="1b098bfd-c7d3-486f-b4ac-e359e5af00e3" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="849c3fed-9f45-4b4c-b1f2-d64f1a0cfc4b" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="f6981724-5bee-49c2-b46a-9e56d0122123" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="NONUS-Citizen-Terafina-Set-Environment-sub-flow" doc:id="c5c743ca-199c-4bdb-9833-3db63c4b7faa" name="NONUS-Citizen-Terafina-Set-Environment-sub-flow"/>
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="241b6c26-8ce5-4d9f-b483-d3b0f2458d0b" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call to OFAC Choice branch" doc:id="6b5cbc8c-cfaf-4c54-9a5e-c683864904c7" processor="mule:set-variable" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="d34c6d7b-003c-4a72-8c82-b792da5a5c24" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="148af83f-096f-41db-9067-5dc8b2909759" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Application Creation" doc:id="1d333f70-73c1-4038-978e-dd8db241c0d4" expression="#[payload.data.ApplicationId]" is='#[MunitTools::notNullValue()]' message="Application was not created"/>
+			<munit-tools:assert-that doc:name="Assert Case Creation" doc:id="2a22018c-77f6-407a-84b7-869656153db2" expression="#[payload.data.CaseNumber]" is='#[MunitTools::notNullValue()]' message="Case was not created"/>
+			<munit-tools:assert-that doc:name="Assert Application Status" doc:id="2c6bd34d-7101-4fc8-a85c-2329e146a40d" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Application was not created with Pending status"/>
+			
+		</munit:validation>
+	</munit:test>
+	<munit:test name="NONUS-Citizen-Terafina-OFACPEP-Match-ScenarioTest" description="Test" doc:id="9256fbbc-65bf-4f3c-ba77-3b3e7e54ab53">
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="dc0519fb-97fe-476d-88fb-fd58c1bc7be5" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="fdbd8c6e-144c-4fb1-a361-943f3faad5f7" name="OFAC-Mock"/>
+			<flow-ref doc:name="Pep-MatchResponse-Mock" doc:id="d012f459-c0dc-4e02-8b07-f911d7ba37a9" name="Pep-MatchResponse-Mock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="5b19f488-bc5c-4660-961f-2ad9ced14eff" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="a27fa234-996d-4fdb-bbd4-c4331c175e91" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="6d1de0cb-a571-4fce-b87b-49f55fe128f5" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="b67863e6-5461-4cad-8042-07f188d76e2d" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="f437e8eb-7ba5-4cf3-b8ed-7de7a2be1715" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="NONUS-Citizen-Terafina-Set-Environment-sub-flow" doc:id="256f6230-59d9-4ed5-9ec9-adfc9c31f568" name="NONUS-Citizen-Terafina-Set-Environment-sub-flow"/>
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="e27ec71e-0481-43dc-b8ce-9e2125ea5db5" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call to PEP Choice branch" doc:id="1d00c1f2-0230-4fd4-a086-db1662aca662" processor="mule:set-variable" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="85d90943-7cb9-4491-b6dd-6c04a924e10e" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="84d20ab3-8095-4716-beea-730454ed8bec" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Application Creation" doc:id="c37c834a-fa82-46ee-abeb-c2fd0ecc5755" expression="#[payload.data.ApplicationId]" is='#[MunitTools::notNullValue()]' message="Application was not created"/>
+			<munit-tools:assert-that doc:name="Assert Case Creation" doc:id="e6554557-8653-4194-85a9-828b766eb767" expression="#[payload.data.CaseNumber]" is='#[MunitTools::notNullValue()]' message="Case was not created"/>
+			<munit-tools:assert-that doc:name="Assert Application Status" doc:id="1b32402d-33a4-4b2c-95e7-6b8ea0df6ac9" expression="#[payload.data.ApplicationStatus]" is='#[MunitTools::equalTo("Pending")]' message="Application was not created with Pending status"/>
+			
+		</munit:validation>
+	</munit:test>
+	<munit:test name="NONUS-Citizen-Terafina-InvalidApplicantType-ScenarioTest" description="Test" doc:id="3f352ad5-1bbf-4800-a32e-0bbf9412ea27">
+		<munit:behavior >
+			<flow-ref doc:name="PinpointSuccessMockSub_Flow" doc:id="d5fcc138-ff62-4cfd-9959-a4e7e9306f9b" name="PinpointSuccessMockSub_Flow"/>
+			<flow-ref doc:name="OFAC-Mock" doc:id="7b6d543f-1c1e-4215-9660-c3e01416e1b8" name="OFAC-Mock"/>
+			<flow-ref doc:name="Pep-MatchResponse-Mock" doc:id="a5e08f77-1501-4b9c-90b8-76ba20ba4b6e" name="Pep-MatchResponse-Mock"/>
+			<flow-ref doc:name="TruliooIDVerificationMock" doc:id="2fe86033-c2a4-44bc-b9b0-55c2d8c29d29" name="TruliooIDVerificationMock"/>
+			<flow-ref doc:name="FISCheckingAccountTerafinaFlowMock" doc:id="c4fef81c-03ee-45dd-a86c-e7c484fab626" name="FISCheckingAccountTerafinaFlowMock"/>
+			<flow-ref doc:name="MSDCaseCreationResponseMock" doc:id="942ee404-723b-4e52-acb9-f6cd0a1f6f85" name="MSDCaseCreationResponseMock"/>
+			<flow-ref doc:name="OktaCreateUserAlreadyPresentMockSub_Flow" doc:id="1fbc6b0f-ac1c-4f0c-b988-30aa28cec72b" name="OktaCreateUserAlreadyPresentMockSub_Flow"/>
+			<flow-ref doc:name="OktaUpdateUserProfileMockSub_Flow" doc:id="a2c2d930-a0e7-4356-a031-fa97120c0215" name="OktaUpdateUserProfileMockSub_Flow"/>
+		
+</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="NONUS-Citizen-Terafina-Set-Environment-sub-flow" doc:id="252f7c43-7221-4e66-9634-c07b2fe63981" name="NONUS-Citizen-Terafina-Set-Environment-sub-flow"/>
+			<ee:transform doc:name="Set Applicant Type" doc:id="db59b582-6128-4374-99b6-3d386bcb6591" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload mapObject {
+	($$) : if (($$ as String) == "ApplicantType") "UNKNOWN" else $
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+			<flow-ref doc:name="Flow-ref to post:\process\submit\presubmission:velo-process-api-config" doc:id="81097e3b-398d-44da-b553-29b3972bfb5f" name="post:\process\submit\presubmission:velo-process-api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call to Unknown Applicant Type Branch" doc:id="517e59c1-0a0f-498f-ba58-ffc5ab36c065" processor="mule:flow-ref" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute attributeName="doc:id" whereValue="131b127f-57c6-4ed0-a8ed-6f978595b518" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert-that doc:name="Assert Successfull execution" doc:id="d9d4edc4-c7b4-4461-95fc-4d01968f69fd" expression="#[payload.result.success]" is='#[MunitTools::equalTo(true)]' message="Execution failed"/>
+			<munit-tools:assert-that doc:name="Assert Status Code" doc:id="ef0fa8b0-8a30-438e-9215-9fa363c2a06b" expression="#[payload.result.code]" is='#[MunitTools::equalTo("400")]' message="Status code is not 400"/>
+			
+		</munit:validation>
+	</munit:test>			
+</mule>
