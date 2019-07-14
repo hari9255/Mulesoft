@@ -37,7 +37,7 @@ output application/json
 				</ee:transform>
 			</when>						
 			<when expression="payload.PartnerId != null" >
-				<logger level="INFO" doc:name="Logger" doc:id="0a70221b-f07f-4ce3-b4f0-606c0befe790" message="Call Experience API to Initiate the case Approved flow."/>
+				<logger level="INFO" doc:name="Logger" doc:id="0a70221b-f07f-4ce3-b4f0-606c0befe790" message="Call Experience API to Initiate the case Approved flow. call"/>
 				<flow-ref doc:name="caseupdateBBAEFlow" doc:id="14f29598-1940-4600-aa91-cd05d2fccf4c" name="caseupdateBBAEFlow"/>
 			</when>
 			<otherwise >
